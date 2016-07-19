@@ -1,0 +1,3 @@
+[submodule "LocalMovies"]
+	path = LocalMovies
+	url = https://github.com/rahmnathan/LocalMovies
