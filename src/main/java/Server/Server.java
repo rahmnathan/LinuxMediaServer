@@ -5,10 +5,10 @@ package Server;
  * Created 12/2015
  */
 
-import MovieData.MainFile;
+import MovieData.DirectoryExplorer;
 import Phone.Phone;
-import PlayMovie.PlayMovie;
-import Thread.listenServer;
+import PlayMovie.MoviePlayer;
+import Thread.PhoneConnection;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -17,10 +17,10 @@ import java.net.Socket;
 public class Server {
     
     public static void main(String[] args){
-        new Server().phoneListen();
+        new Server().listenForPhoneConnection();
     }
     
-    private void phoneListen() {
+    private void listenForPhoneConnection() {
 
         try {
             ServerSocket serverSocket = new ServerSocket(3999);
@@ -31,7 +31,7 @@ public class Server {
                 try {
                     ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
                     Phone connectedPhone = (Phone) objectInputStream.readObject();
-                    new listenServer(connectedPhone).start();
+                    new PhoneConnection(connectedPhone).start();
                     objectInputStream.close();
                 } catch (EOFException e){
                     e.printStackTrace();
@@ -43,24 +43,24 @@ public class Server {
         }
     }
     
-    public void send(Phone connectedPhone){
+    public void sendTitles(Phone connectedPhone){
         
         // This method sends current title list to the Android app
         
         try {
             Socket socket = new Socket(connectedPhone.getPhoneIP(), 3998);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-            objectOutputStream.writeObject(new MainFile(connectedPhone.getPath()).getTitles());
+            objectOutputStream.writeObject(new DirectoryExplorer(connectedPhone.getPath()).getTitles());
             socket.close();
             
-            server();
+            listenForCommand();
         }
         catch(IOException | ClassNotFoundException e){
             e.printStackTrace();
         }
     }
     
-    private void server() throws IOException, ClassNotFoundException {
+    private void listenForCommand() throws IOException, ClassNotFoundException {
                             
         // Listening for movie choice from android app
 
@@ -68,19 +68,17 @@ public class Server {
         Socket socket = serverSocket.accept();
         ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
         Phone connectedPhone = (Phone) objectInputStream.readObject();
-        objectInputStream.close();
         serverSocket.close();
-        socket.close();
 
         if (connectedPhone.isCasting()){
             // Play Movie at received Index
 
-            new PlayMovie(connectedPhone).start();
+            new MoviePlayer(connectedPhone).start();
 
-            server();
+            listenForCommand();
         }
         else {
-            send(connectedPhone);
+            sendTitles(connectedPhone);
         }
     }
 }

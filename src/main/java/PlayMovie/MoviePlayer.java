@@ -1,6 +1,6 @@
 package PlayMovie;
 
-import Controls.Controls;
+import Controls.ControlListener;
 import Phone.Phone;
 
 import java.io.IOException;
@@ -9,11 +9,11 @@ import java.io.IOException;
  * @author nathan
  */
 
-public class PlayMovie extends Thread {
+public class MoviePlayer extends Thread {
 
     private Phone connectedPhone;
     
-    public PlayMovie(Phone connectedPhone){
+    public MoviePlayer(Phone connectedPhone){
         this.connectedPhone = connectedPhone;
     }
     
@@ -34,7 +34,7 @@ public class PlayMovie extends Thread {
                     " set_window --name " + connectedPhone.getPhoneName()).start();
 
 
-            new Controls().castControls();
+            new ControlListener().castControls();
         }catch(IOException | InterruptedException e){
             e.printStackTrace();
         }

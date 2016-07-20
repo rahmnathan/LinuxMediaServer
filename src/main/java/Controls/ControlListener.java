@@ -9,7 +9,7 @@ import java.net.Socket;
 /**
  * @author nathan
  */
-public class Controls {
+public class ControlListener {
     
     private enum controls {
         VOLUME_UP, VOLUME_DOWN, SEEK_FORWARD, SEEK_BACK, PLAY_PAUSE, STOP

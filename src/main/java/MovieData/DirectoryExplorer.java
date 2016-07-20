@@ -10,11 +10,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainFile {
+public class DirectoryExplorer {
 
     private String currentPath;
 
-    public MainFile (String currentPath){
+    public DirectoryExplorer(String currentPath){
         this.currentPath = currentPath;
     }
 
