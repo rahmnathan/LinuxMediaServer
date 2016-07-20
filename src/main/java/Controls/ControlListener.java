@@ -15,7 +15,7 @@ public class ControlListener {
         VOLUME_UP, VOLUME_DOWN, SEEK_FORWARD, SEEK_BACK, PLAY_PAUSE, STOP
     }
     
-    public void castControls() {
+    public void start() {
         
         // Listening for controls from the app
         try{

@@ -34,7 +34,7 @@ public class MoviePlayer extends Thread {
                     " set_window --name " + connectedPhone.getPhoneName()).start();
 
 
-            new ControlListener().castControls();
+            new ControlListener().start();
         }catch(IOException | InterruptedException e){
             e.printStackTrace();
         }

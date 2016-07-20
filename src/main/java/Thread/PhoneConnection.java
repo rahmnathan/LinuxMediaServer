@@ -2,7 +2,6 @@ package Thread;
 
 import Phone.Phone;
 import Server.Server;
-import Thread.PhoneConnection;
 
 /**
  * Created by nathan on 6/9/16.
