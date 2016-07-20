@@ -17,28 +17,15 @@ public class MainFile {
     public MainFile (String currentPath){
         this.currentPath = currentPath;
     }
-    
-    private List<String> movieFolders(){
-        
-        // Collecting a list of folders that contain movies
-        
-        List<String> movieFolders = new ArrayList<>();
-        File[] movieList = new File(currentPath).listFiles();
-
-        for (File file:movieList){
-            movieFolders.add(file.getName());
-        }
-        return movieFolders;
-    }
 
     public List<String> getTitles(){
-        
-        // Creating a list of titles from their paths.
-        
-        List<String> titlesFinal = new ArrayList<>();
-        for (String path : movieFolders()) {
-            titlesFinal.add(path.substring(currentPath.length()));
+
+        File[] movieList = new File(currentPath).listFiles();
+        List<String> titles = new ArrayList<>();
+
+        for (File file : movieList) {
+            titles.add(file.getName());
         }
-    return titlesFinal;
+    return titles;
     }
 }
