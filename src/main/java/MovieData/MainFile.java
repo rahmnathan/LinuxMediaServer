@@ -24,17 +24,9 @@ public class MainFile {
         
         List<String> movieFolders = new ArrayList<>();
         File[] movieList = new File(currentPath).listFiles();
-        String[] movieFolderPaths = Arrays.toString(movieList).split(",");
-        
-        // Cleaning the Paths
-        
-        for (String path : movieFolderPaths){
-            if (path.charAt(path.length()-1)== ']'){
-                movieFolders.add(path.substring(1,path.length()-1));
-            }
-            else {
-                movieFolders.add(path.substring(1));
-            }
+
+        for (File file:movieList){
+            movieFolders.add(file.getName());
         }
         return movieFolders;
     }
