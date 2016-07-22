@@ -12,13 +12,14 @@ public class Phone implements Serializable {
     private String castIP;
     private String phoneName;
     private String path;
+    private String mainPath;
     private boolean casting;
 
-    public Phone(String castIP, String phoneIP, String phoneName, String path) {
+    public Phone(String castIP, String phoneIP, String phoneName, String mainPath) {
         this.phoneIP = phoneIP;
         this.castIP = castIP;
         this.phoneName = phoneName;
-        this.path = path;
+        this.mainPath = mainPath;
     }
 
     public String getPhoneIP() {
@@ -55,5 +56,9 @@ public class Phone implements Serializable {
 
     public boolean isCasting(){
         return casting;
+    }
+
+    public String getMainPath(){
+        return mainPath;
     }
 }
