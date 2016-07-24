@@ -34,31 +34,31 @@ public class ControlListener {
 
                 switch(control){
                     case PLAY_PAUSE: 
-                        new ProcessBuilder("/bin/bash", "-c", "xdotool key space").start();
+                        executeControl("space");
                         break;
 
                     case SEEK_BACK:
-                        new ProcessBuilder("/bin/bash", "-c", "xdotool key Left").start();
+                        executeControl("Left");
                         break;
 
                     case SEEK_FORWARD:
-                        new ProcessBuilder("/bin/bash", "-c", "xdotool key Right").start();
+                        executeControl("Right");
                         break;
 
                     case VOLUME_UP:
-                        new ProcessBuilder("/bin/bash", "-c", "xdotool key Up").start();
+                        executeControl("Up");
                         break;
 
                     case VOLUME_DOWN:
-                        new ProcessBuilder("/bin/bash", "-c", "xdotool key Down").start();
+                        executeControl("Down");
                         break;
 
                     case STOP:
-                        new ProcessBuilder("/bin/bash", "-c", "xdotool key space").start();
-                        new ProcessBuilder("/bin/bash", "-c", "xdotool type Q").start();                
-                        serverSocket.close();
+                        executeControl("space");
+                        stopStream();
+
                         socket.close();
-                        bufferedReader.close();
+                        serverSocket.close();
                         break;
                 }
             }
@@ -66,4 +66,13 @@ public class ControlListener {
             e.printStackTrace();
         }
     }
+
+    private void executeControl(String key) throws IOException {
+        new ProcessBuilder("/bin/bash", "-c", "xdotool key " + key).start();
+    }
+
+    private void stopStream() throws IOException {
+        new ProcessBuilder("/bin/bash", "-c", "xdotool type Q").start();
+    }
+
 }

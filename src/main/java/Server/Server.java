@@ -50,7 +50,7 @@ public class Server {
         try {
             Socket socket = new Socket(connectedPhone.getPhoneIP(), 3998);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-            objectOutputStream.writeObject(new DirectoryExplorer(connectedPhone.getPath()).getTitles());
+            objectOutputStream.writeObject(new DirectoryExplorer(connectedPhone.getPath()).getTitleList());
             socket.close();
             
             listenForCommand();

@@ -17,7 +17,7 @@ public class DirectoryExplorer {
         this.currentPath = currentPath;
     }
 
-    public List<String> getTitles(){
+    public List<String> getTitleList(){
 
         File[] movieList = new File(currentPath).listFiles();
         List<String> titles = new ArrayList<>();
