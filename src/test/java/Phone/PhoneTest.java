@@ -4,9 +4,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- * Created by Nathan on 7/23/2016.
- */
 public class PhoneTest {
 
     Phone myPhone;

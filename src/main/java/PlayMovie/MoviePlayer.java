@@ -5,10 +5,6 @@ import Phone.Phone;
 
 import java.io.IOException;
 
-/*
- * @author nathan
- */
-
 public class MoviePlayer extends Thread {
 
     private Phone connectedPhone;

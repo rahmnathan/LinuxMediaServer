@@ -6,9 +6,6 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-/**
- * @author nathan
- */
 public class ControlListener {
     
     private enum controls {

@@ -2,9 +2,6 @@ package Phone;
 
 import java.io.Serializable;
 
-/**
- * Created by Nathan on 6/11/2016.
- */
 public class Phone implements Serializable {
     private static final long serialVersionUID = 514387573;
     private String phoneIP;

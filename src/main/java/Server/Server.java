@@ -1,10 +1,5 @@
 package Server;
 
-/*
- * @author Nathan Rahm
- * Created 12/2015
- */
-
 import MovieData.DirectoryExplorer;
 import Phone.Phone;
 import PlayMovie.MoviePlayer;

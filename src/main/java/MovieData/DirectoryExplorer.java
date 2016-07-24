@@ -1,10 +1,5 @@
 package MovieData;
 
-/*
- * @author Nathan Rahm
- * Created 12/2015
- */
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
