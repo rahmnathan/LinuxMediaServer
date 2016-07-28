@@ -1,12 +1,13 @@
 package Phone;
 
+import networking.Phone;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 public class PhoneTest {
 
-    Phone myPhone;
+    private Phone myPhone;
 
     @Before
     public void initialize(){
@@ -15,7 +16,7 @@ public class PhoneTest {
 
     @Test
     public void testPhoneConstructor(){
-        Assert.assertEquals("TestCastIP", myPhone.getCastIP());
+        Assert.assertEquals("TestCastIP", myPhone.getChromecastIP());
         Assert.assertEquals("TestPhoneIP", myPhone.getPhoneIP());
         Assert.assertEquals("TestPhoneName", myPhone.getPhoneName());
         Assert.assertEquals("TestPath", myPhone.getMainPath());

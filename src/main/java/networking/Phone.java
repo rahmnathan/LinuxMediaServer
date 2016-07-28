@@ -1,20 +1,20 @@
-package Phone;
+package networking;
 
 import java.io.Serializable;
 
 public class Phone implements Serializable {
     private static final long serialVersionUID = 514387573;
-    private String phoneIP;
+    private final String phoneIP;
+    private final String mainPath;
+    private final String castIP;
+    private final String phoneName;
     private String computerIP;
-    private String castIP;
-    private String phoneName;
     private String path;
-    private String mainPath;
     private boolean casting;
 
-    public Phone(String castIP, String phoneIP, String phoneName, String mainPath) {
+    public Phone(String chromecastIP, String phoneIP, String phoneName, String mainPath) {
         this.phoneIP = phoneIP;
-        this.castIP = castIP;
+        this.castIP = chromecastIP;
         this.phoneName = phoneName;
         this.mainPath = mainPath;
     }
@@ -27,7 +27,7 @@ public class Phone implements Serializable {
         return computerIP;
     }
 
-    public String getCastIP() {
+    public String getChromecastIP() {
         return castIP;
     }
 

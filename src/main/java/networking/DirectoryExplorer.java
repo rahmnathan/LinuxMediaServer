@@ -1,12 +1,12 @@
-package MovieData;
+package networking;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DirectoryExplorer {
+class DirectoryExplorer {
 
-    private String currentPath;
+    private final String currentPath;
 
     public DirectoryExplorer(String currentPath){
         this.currentPath = currentPath;
