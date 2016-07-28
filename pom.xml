@@ -30,7 +30,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>networking.Server</mainClass>
+                            <mainClass>executor.Executor</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
