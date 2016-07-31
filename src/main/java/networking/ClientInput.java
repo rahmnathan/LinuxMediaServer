@@ -2,6 +2,7 @@ package networking;
 
 import player.MoviePlayer;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
@@ -15,27 +16,34 @@ public class ClientInput {
 
         // Listening for movie choice from android app
 
-        while(true) {
-            try {
-                ServerSocket serverSocket = new ServerSocket(3998);
-                Socket socket = serverSocket.accept();
-                ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
+        try {
 
-                Phone connectedPhone = (Phone) objectInputStream.readObject();
+            ServerSocket serverSocket = new ServerSocket(3998);
+            Socket socket;
 
-                serverSocket.close();
+            while (true) {
+                Phone connectedPhone;
+                socket = serverSocket.accept();
 
-                if (connectedPhone.isCasting()) {
+                try {
+                    ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
 
-                    new MoviePlayer(connectedPhone).start();
+                    connectedPhone = (Phone) objectInputStream.readObject();
 
-                } else {
-                    server.send(connectedPhone);
+                    socket.close();
+
+                    if (connectedPhone.isCasting()) {
+                        new MoviePlayer(connectedPhone).start();
+                    } else {
+                        server.send(connectedPhone);
+                    }
+
+                } catch (EOFException | ClassNotFoundException e) {
+                    e.printStackTrace();
                 }
-
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
