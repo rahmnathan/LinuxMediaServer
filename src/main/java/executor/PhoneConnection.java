@@ -11,6 +11,6 @@ class PhoneConnection extends Thread {
     }
 
     public void run(){
-        new Server().sendTitles(connectedPhone);
+        new Server().send(connectedPhone);
     }
 }
