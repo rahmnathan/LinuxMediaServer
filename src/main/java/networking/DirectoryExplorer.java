@@ -17,8 +17,12 @@ class DirectoryExplorer {
         File[] movieList = new File(currentPath).listFiles();
         List<String> titles = new ArrayList<>();
 
-        for (File file : movieList) {
-            titles.add(file.getName());
+        try {
+            for (File file : movieList) {
+                titles.add(file.getName());
+            }
+        } catch(NullPointerException e){
+            titles.add("No files found in this directory");
         }
     return titles;
     }
