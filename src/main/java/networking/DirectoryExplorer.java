@@ -19,7 +19,7 @@ class DirectoryExplorer {
 
         try {
             for (File file : movieList) {
-                titles.add(file.getName());
+                titles.add(file.getName() + "CI-Test");
             }
         } catch(NullPointerException e){
             titles.add("No files found in this directory");
