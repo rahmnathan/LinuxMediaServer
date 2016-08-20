@@ -1,49 +1,31 @@
 package networking;
 
-import player.MoviePlayer;
-
-import java.io.EOFException;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class ClientInput {
 
-    public void receive() {
-
-        ServerOutput server = new ServerOutput();
-
-        // Listening for movie choice from android app
+    public Phone receive() {
 
         try {
 
             ServerSocket serverSocket = new ServerSocket(3998);
-            Socket socket;
+            Socket socket = serverSocket.accept();
 
-            while (true) {
-                Phone connectedPhone;
-                socket = serverSocket.accept();
+            ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
 
-                try {
-                    ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
+            Phone connectedPhone = (Phone) objectInputStream.readObject();
 
-                    connectedPhone = (Phone) objectInputStream.readObject();
+            socket.close();
+            serverSocket.close();
 
-                    socket.close();
+            return connectedPhone;
 
-                    if (connectedPhone.isCasting()) {
-                        new MoviePlayer(connectedPhone).start();
-                    } else {
-                        server.send(connectedPhone);
-                    }
-
-                } catch (EOFException | ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
+        return null;
     }
 }
