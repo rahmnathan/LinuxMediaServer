@@ -21,6 +21,10 @@ public class MoviePlayer extends Thread {
         try{
             // Play movie via castnow
 
+            new ProcessBuilder("/bin/bash", "-c", "export DISPLAY=:0").start();
+
+            Thread.sleep(1000);
+
             new ProcessBuilder("xterm", "-e", "castnow \"" + connectedPhone.getPath() +  "\" --myip " +
                     connectedPhone.getComputerIP() + " --address " + connectedPhone.getChromecastIP()).start();
             Thread.sleep(3000);
