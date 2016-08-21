@@ -1,15 +1,15 @@
 package player;
 
-import networking.Phone;
+import networking.DeviceConnection;
 
 import java.io.IOException;
 
 public class MoviePlayer extends Thread {
 
-    private final Phone connectedPhone;
+    private final DeviceConnection connectedDeviceConnection;
     
-    public MoviePlayer(Phone connectedPhone){
-        this.connectedPhone = connectedPhone;
+    public MoviePlayer(DeviceConnection connectedDeviceConnection){
+        this.connectedDeviceConnection = connectedDeviceConnection;
     }
     
     public void run(){
@@ -21,15 +21,15 @@ public class MoviePlayer extends Thread {
         try{
             // Play movie via castnow
 
-            new ProcessBuilder("xterm", "-e", "castnow \"" + connectedPhone.getPath() +  "\" --myip " +
-                    connectedPhone.getComputerIP() + " --address " + connectedPhone.getChromecastIP()).start();
+            new ProcessBuilder("xterm", "-e", "castnow \"" + connectedDeviceConnection.getCurrentPath() +  "\" --myip " +
+                    connectedDeviceConnection.getComputerIP() + " --address " + connectedDeviceConnection.getChromecastIP()).start();
             Thread.sleep(3000);
 
             // Rename window so we can find it later
 
             new ProcessBuilder("/bin/bash", "-c", "xdotool search --name " +
-                    connectedPhone.getPath().substring(connectedPhone.getPath().length() - 6) +
-                    " set_window --name " + connectedPhone.getPhoneName()).start();
+                    connectedDeviceConnection.getCurrentPath().substring(connectedDeviceConnection.getCurrentPath().length() - 6) +
+                    " set_window --name " + connectedDeviceConnection.getPhoneName()).start();
 
             new ControlListener().start();
 

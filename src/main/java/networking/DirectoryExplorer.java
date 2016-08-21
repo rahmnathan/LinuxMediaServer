@@ -4,15 +4,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-class DirectoryExplorer {
+public class DirectoryExplorer {
 
-    private final String currentPath;
-
-    public DirectoryExplorer(String currentPath){
-        this.currentPath = currentPath;
-    }
-
-    public List<String> getTitleList(){
+    public List<String> getTitleList(String currentPath){
 
         File[] movieList = new File(currentPath).listFiles();
         List<String> titles = new ArrayList<>();
