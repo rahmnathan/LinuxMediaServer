@@ -15,18 +15,20 @@ public class RestListener {
     private final DirectoryExplorer directoryExplorer = new DirectoryExplorer();
 
     @RequestMapping("/titlerequest")
-    public List<String> titlerequest(@RequestParam(value = "path", defaultValue = "/Movies") String currentPath,
-                                     @RequestParam(value = "phoneName") String phoneName,
-                                     @RequestParam(value = "phoneIP") String phoneIP,
-                                     @RequestParam(value = "casting") boolean casting,
-                                     @RequestParam(value = "computerIP") String computerIP,
-                                     @RequestParam(value = "chromeIP") String chromeIP) {
+    public List<String> titlerequest(@RequestParam(value = "path", defaultValue = "/Movies") String currentPath) {
 
-        if (!casting) {
-            return directoryExplorer.getTitleList(currentPath);
-        } else {
-            new MoviePlayer(new DeviceConnection(chromeIP, phoneIP, phoneName, currentPath, computerIP)).run();
-            return null;
-        }
+        return directoryExplorer.getTitleList(currentPath);
+    }
+
+    @RequestMapping("/playmovie")
+    public void playMovie(@RequestParam(value = "path", defaultValue = "/Movies") String currentPath,
+                          @RequestParam(value = "phoneName") String phoneName,
+                          @RequestParam(value = "phoneIP") String phoneIP,
+                          @RequestParam(value = "computerIP") String computerIP,
+                          @RequestParam(value = "chromeIP") String chromeIP){
+
+        System.out.println(currentPath);
+
+        new MoviePlayer(new DeviceConnection(chromeIP, phoneIP, phoneName, currentPath, computerIP)).run();
     }
 }
