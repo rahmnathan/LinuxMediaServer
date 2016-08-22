@@ -31,8 +31,6 @@ public class MoviePlayer extends Thread {
                     connectedDeviceConnection.getCurrentPath().substring(connectedDeviceConnection.getCurrentPath().length() - 6) +
                     " set_window --name " + connectedDeviceConnection.getPhoneName()).start();
 
-            new ControlListener().start();
-
         }catch(IOException | InterruptedException e){
             e.printStackTrace();
         }
