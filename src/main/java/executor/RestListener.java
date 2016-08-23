@@ -23,10 +23,9 @@ public class RestListener {
     @RequestMapping("/playmovie")
     public void playMovie(@RequestParam(value = "path", defaultValue = "/Movies") String currentPath,
                           @RequestParam(value = "phoneName") String phoneName,
-                          @RequestParam(value = "phoneIP") String phoneIP,
                           @RequestParam(value = "computerIP") String computerIP,
                           @RequestParam(value = "chromeIP") String chromeIP){
 
-        new MoviePlayer(new DeviceConnection(chromeIP, phoneIP, phoneName, currentPath, computerIP)).run();
+        new MoviePlayer(new DeviceConnection(chromeIP, phoneName, currentPath, computerIP)).run();
     }
 }
