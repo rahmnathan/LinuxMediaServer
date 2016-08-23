@@ -18,10 +18,6 @@ public class DeviceConnection implements Serializable {
         this.computerIP = computerIP;
     }
 
-    public String getPhoneIP() {
-        return phoneIP;
-    }
-
     public String getComputerIP() {
         return computerIP;
     }

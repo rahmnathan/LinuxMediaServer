@@ -27,8 +27,6 @@ public class RestListener {
                           @RequestParam(value = "computerIP") String computerIP,
                           @RequestParam(value = "chromeIP") String chromeIP){
 
-        System.out.println(currentPath);
-
         new MoviePlayer(new DeviceConnection(chromeIP, phoneIP, phoneName, currentPath, computerIP)).run();
     }
 }
