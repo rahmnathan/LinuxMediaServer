@@ -1,8 +1,6 @@
 package networking;
 
-import java.io.Serializable;
-
-public class DeviceConnection implements Serializable {
+public class DeviceConnection {
     private final String castIP;
     private final String phoneName;
     private String computerIP;
