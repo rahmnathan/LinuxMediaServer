@@ -18,12 +18,11 @@ public class RestListener {
 
     private static final DirectoryExplorer directoryExplorer = new DirectoryExplorer();
 
-    public static final LoadingCache<String, List<String>> titles =
+    private static final LoadingCache<String, List<String>> titles =
             CacheBuilder.newBuilder()
                     .maximumSize(100)
                     .build(
                             new CacheLoader<String, List<String>>() {
-
                                 @Override
                                 public List<String> load(String currentPath) {
                                     return directoryExplorer.getTitleList(currentPath);
@@ -31,8 +30,7 @@ public class RestListener {
                             });
 
     @RequestMapping("/titlerequest")
-    public List<String> titlerequest(@RequestParam(value = "path", defaultValue = "/Movies") String currentPath) {
-
+    public List<String> titlerequest(@RequestParam(value = "path") String currentPath) {
         try {
             return titles.get(currentPath);
         }catch(ExecutionException e){

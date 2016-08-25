@@ -3,8 +3,8 @@ package networking;
 public class DeviceConnection {
     private final String castIP;
     private final String phoneName;
-    private String computerIP;
-    private String currentPath;
+    private final String computerIP;
+    private final String currentPath;
 
     public DeviceConnection(String chromecastIP, String phoneName, String currentPath, String computerIP) {
         this.castIP = chromecastIP;
