@@ -1,4 +1,4 @@
-package rahmnathan;
+package nr.linuxmedieserver.device;
 
 public class Device {
     private final String castIP;

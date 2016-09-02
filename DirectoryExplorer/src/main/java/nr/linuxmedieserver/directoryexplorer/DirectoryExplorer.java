@@ -1,4 +1,4 @@
-package rahmnathan;
+package nr.linuxmedieserver.directoryexplorer;
 
 import java.io.File;
 import java.util.ArrayList;

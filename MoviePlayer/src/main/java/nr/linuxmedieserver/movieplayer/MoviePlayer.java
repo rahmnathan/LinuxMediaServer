@@ -1,4 +1,6 @@
-package rahmnathan;
+package nr.linuxmedieserver.movieplayer;
+
+import nr.linuxmedieserver.device.Device;
 
 import java.io.IOException;
 

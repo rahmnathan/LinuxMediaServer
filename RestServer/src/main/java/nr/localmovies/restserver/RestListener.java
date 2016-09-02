@@ -1,4 +1,4 @@
-package executor;
+package nr.localmovies.restserver;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -6,11 +6,11 @@ import com.google.common.cache.LoadingCache;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import rahmnathan.Device;
-import rahmnathan.DirectoryExplorer;
-import rahmnathan.KeyPressExecutor;
-import rahmnathan.KeyPressExecutor.Controls;
-import rahmnathan.MoviePlayer;
+import nr.linuxmedieserver.device.Device;
+import nr.linuxmedieserver.directoryexplorer.DirectoryExplorer;
+import nr.linuxmedieserver.keypressexecutor.KeyPressExecutor;
+import nr.linuxmedieserver.keypressexecutor.KeyPressExecutor.Controls;
+import nr.linuxmedieserver.movieplayer.MoviePlayer;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
