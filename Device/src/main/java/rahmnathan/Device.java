@@ -1,12 +1,12 @@
-package networking;
+package rahmnathan;
 
-public class DeviceConnection {
+public class Device {
     private final String castIP;
     private final String phoneName;
     private final String computerIP;
     private final String currentPath;
 
-    public DeviceConnection(String chromecastIP, String phoneName, String currentPath, String computerIP) {
+    public Device(String chromecastIP, String phoneName, String currentPath, String computerIP) {
         this.castIP = chromecastIP;
         this.phoneName = phoneName;
         this.currentPath = currentPath;

@@ -1,25 +1,14 @@
-package player;
-
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+package rahmnathan;
 
 import java.io.IOException;
 
-@RestController
-public class ControlListener {
+public class KeyPressExecutor {
     
-    private enum Controls {
+    public enum Controls {
         VOLUME_UP, VOLUME_DOWN, SEEK_FORWARD, SEEK_BACK, PLAY_PAUSE, STOP
     }
 
-    @RequestMapping("/control")
-    public void start(@RequestParam("control") String control,
-                      @RequestParam("name") String name) {
-
-        // Selecting window and executing control
-
-        Controls keyPress = Controls.valueOf(control);
+    public void executeCommand(Controls keyPress, String name){
 
         try {
             new ProcessBuilder("/bin/bash", "-c", "xdotool search --name " + name +

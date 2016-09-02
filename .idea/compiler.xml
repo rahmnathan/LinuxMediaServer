@@ -22,11 +22,21 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
-        <module name="LinuxMediaServer" />
+        <module name="Device" />
+        <module name="DirectoryExplorer" />
+        <module name="KeyPressExecutor" />
+        <module name="MoviePlayer" />
+        <module name="RestServer" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="Device" target="1.8" />
+      <module name="DirectoryExplorer" target="1.8" />
+      <module name="KeyPressExecutor" target="1.8" />
       <module name="LinuxMediaServer" target="1.8" />
+      <module name="MoviePlayer" target="1.8" />
+      <module name="RemoveControlListener" target="1.6" />
+      <module name="RestServer" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

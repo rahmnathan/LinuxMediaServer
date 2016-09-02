@@ -1,14 +1,12 @@
-package player;
-
-import networking.DeviceConnection;
+package rahmnathan;
 
 import java.io.IOException;
 
 public class MoviePlayer extends Thread {
 
-    private final DeviceConnection connectedDevice;
+    private final Device connectedDevice;
     
-    public MoviePlayer(DeviceConnection connectedDevice){
+    public MoviePlayer(Device connectedDevice){
         this.connectedDevice = connectedDevice;
     }
     

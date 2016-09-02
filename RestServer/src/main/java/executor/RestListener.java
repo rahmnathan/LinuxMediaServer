@@ -3,12 +3,14 @@ package executor;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import networking.DeviceConnection;
-import networking.DirectoryExplorer;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import player.MoviePlayer;
+import rahmnathan.Device;
+import rahmnathan.DirectoryExplorer;
+import rahmnathan.KeyPressExecutor;
+import rahmnathan.KeyPressExecutor.Controls;
+import rahmnathan.MoviePlayer;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -17,6 +19,7 @@ import java.util.concurrent.ExecutionException;
 public class RestListener {
 
     private static final DirectoryExplorer directoryExplorer = new DirectoryExplorer();
+    private static final KeyPressExecutor KEY_PRESS_EXECUTOR = new KeyPressExecutor();
 
     private static final LoadingCache<String, List<String>> titles =
             CacheBuilder.newBuilder()
@@ -45,7 +48,16 @@ public class RestListener {
                           @RequestParam(value = "computerIP") String computerIP,
                           @RequestParam(value = "chromeIP") String chromeIP){
 
-        new MoviePlayer(new DeviceConnection(chromeIP, phoneName, currentPath, computerIP)).run();
+        new MoviePlayer(new Device(chromeIP, phoneName, currentPath, computerIP)).run();
+    }
+
+    @RequestMapping("/control")
+    public void start(@RequestParam("control") String control,
+                      @RequestParam("name") String name) {
+
+        Controls keyPress = Controls.valueOf(control);
+
+        KEY_PRESS_EXECUTOR.executeCommand(keyPress, name);
     }
 
     @RequestMapping("/refresh")

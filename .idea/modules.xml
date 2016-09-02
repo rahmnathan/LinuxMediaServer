@@ -2,7 +2,12 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/Device/Device.iml" filepath="$PROJECT_DIR$/Device/Device.iml" />
+      <module fileurl="file://$PROJECT_DIR$/DirectoryExplorer/DirectoryExplorer.iml" filepath="$PROJECT_DIR$/DirectoryExplorer/DirectoryExplorer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/KeyPressExecutor/KeyPressExecutor.iml" filepath="$PROJECT_DIR$/KeyPressExecutor/KeyPressExecutor.iml" />
       <module fileurl="file://$PROJECT_DIR$/LinuxMediaServer.iml" filepath="$PROJECT_DIR$/LinuxMediaServer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MoviePlayer/MoviePlayer.iml" filepath="$PROJECT_DIR$/MoviePlayer/MoviePlayer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/RestServer/RestServer.iml" filepath="$PROJECT_DIR$/RestServer/RestServer.iml" />
     </modules>
   </component>
 </project>
