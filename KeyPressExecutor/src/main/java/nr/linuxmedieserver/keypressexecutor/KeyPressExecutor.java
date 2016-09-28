@@ -42,7 +42,6 @@ public class KeyPressExecutor {
             case STOP:
                 executeControl("space");
                 stopStream();
-
                 break;
         }
     }

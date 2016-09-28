@@ -48,7 +48,14 @@ public class RestListener {
                           @RequestParam(value = "computerIP") String computerIP,
                           @RequestParam(value = "chromeIP") String chromeIP){
 
-        new MoviePlayer(new Device(chromeIP, phoneName, currentPath, computerIP)).run();
+        Device.Builder builder = Device.Builder.newInstance();
+
+        builder .chromecastIP(chromeIP)
+                .computerIP(computerIP)
+                .currentPath(currentPath)
+                .phoneName(phoneName);
+
+        new MoviePlayer(builder.build()).run();
     }
 
     @RequestMapping("/control")
