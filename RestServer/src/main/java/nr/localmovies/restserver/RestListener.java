@@ -32,6 +32,11 @@ public class RestListener {
                                 }
                             });
 
+    /**
+     *
+     * @param currentPath - Path to directory you wish to list
+     * @return - List of files in specified directory
+     */
     @RequestMapping("/titlerequest")
     public List<String> titlerequest(@RequestParam(value = "path") String currentPath) {
         try {
@@ -42,6 +47,13 @@ public class RestListener {
         return null;
     }
 
+    /**
+     *
+     * @param currentPath - Path to video you wish to play
+     * @param phoneName - Unique name of connection (to avoid connection conflicts)
+     * @param computerIP - IP of your server
+     * @param chromeIP - IP of the chromecast you wish playback to start on
+     */
     @RequestMapping("/playmovie")
     public void playMovie(@RequestParam(value = "path", defaultValue = "/Movies") String currentPath,
                           @RequestParam(value = "phoneName") String phoneName,
@@ -58,6 +70,11 @@ public class RestListener {
         new MoviePlayer(builder.build()).run();
     }
 
+    /**
+     *
+     * @param control - The desired control to execute (VOLUME_UP, VOLUME_DOWN, SEEK_FORWARD, SEEK_BACK, PLAY_PAUSE, STOP)
+     * @param name - The name of your device that you started playback with
+     */
     @RequestMapping("/control")
     public void start(@RequestParam("control") String control,
                       @RequestParam("name") String name) {
@@ -67,6 +84,9 @@ public class RestListener {
         KEY_PRESS_EXECUTOR.executeCommand(keyPress, name);
     }
 
+    /**
+     * This endpoint clears the cache of all movie info and retrieves updated info
+     */
     @RequestMapping("/refresh")
     public void refresh(){
         titles.invalidateAll();
