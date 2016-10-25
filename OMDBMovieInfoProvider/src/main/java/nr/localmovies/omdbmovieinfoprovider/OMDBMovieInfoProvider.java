@@ -2,7 +2,6 @@ package nr.localmovies.omdbmovieinfoprovider;
 
 import com.google.common.io.ByteStreams;
 
-import com.sun.org.apache.xml.internal.security.utils.Base64;
 import nr.localmovies.movieinfoapi.MovieInfo;
 import nr.localmovies.movieinfoapi.MovieInfoProvider;
 import org.json.JSONObject;
@@ -14,6 +13,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Base64;
 
 public class OMDBMovieInfoProvider implements MovieInfoProvider {
 
@@ -33,7 +33,7 @@ public class OMDBMovieInfoProvider implements MovieInfoProvider {
 
             MovieInfo.Builder movieInfoBuilder = MovieInfo.Builder.newInstace();
             movieInfoBuilder.setTitle(x);
-            movieInfoBuilder.setImage(Base64.encode(getImage(jsonObject)));
+            movieInfoBuilder.setImage(Base64.getEncoder().encode(getImage(jsonObject)).toString());
 
             try {
                 movieInfoBuilder.setIMDBRating(jsonObject.getString("imdbRating"));
