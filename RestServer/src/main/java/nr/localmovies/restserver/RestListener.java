@@ -46,11 +46,10 @@ public class RestListener {
      * @return - List of files in specified directory
      */
     @RequestMapping(value = "/titlerequest", produces="application/json")
-    public String titlerequest(@RequestParam(value = "path") String currentPath) {
-        ObjectMapper objectMapper = new ObjectMapper();
+    public List<MovieInfo> titlerequest(@RequestParam(value = "path") String currentPath) {
         try {
-            return objectMapper.writeValueAsString(MOVIE_INFO_LOADER.get(currentPath));
-        }catch(ExecutionException | JsonProcessingException e){
+            return MOVIE_INFO_LOADER.get(currentPath);
+        }catch(ExecutionException e){
             e.printStackTrace();
         }
         return null;
