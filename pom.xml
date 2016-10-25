@@ -14,6 +14,8 @@
         <module>Device</module>
         <module>MoviePlayer</module>
         <module>KeyPressExecutor</module>
+        <module>MovieInfoAPI</module>
+        <module>OMDBMovieInfoProvider</module>
     </modules>
 
     <parent>
@@ -32,7 +34,17 @@
             <artifactId>junit</artifactId>
             <version>4.12</version>
         </dependency>
-
+        <dependency>
+            <groupId>su.litvak.chromecast</groupId>
+            <artifactId>api-v2</artifactId>
+            <version>0.9.2</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.21</version>
+        </dependency>
     </dependencies>
 
 </project>

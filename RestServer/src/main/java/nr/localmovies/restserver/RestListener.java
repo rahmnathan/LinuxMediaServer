@@ -1,8 +1,13 @@
 package nr.localmovies.restserver;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import nr.localmovies.movieinfoapi.MovieInfo;
+import nr.localmovies.movieinfoapi.MovieInfoProvider;
+import nr.localmovies.omdbmovieinfoprovider.OMDBMovieInfoProvider;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,15 +25,18 @@ public class RestListener {
 
     private static final DirectoryExplorer directoryExplorer = new DirectoryExplorer();
     private static final KeyPressExecutor KEY_PRESS_EXECUTOR = new KeyPressExecutor();
+    private static final MovieInfoProvider movieInfoProvider = new OMDBMovieInfoProvider();
 
-    private static final LoadingCache<String, List<String>> titles =
+    private static final LoadingCache<String, List<MovieInfo>> MOVIE_INFO_LOADER =
             CacheBuilder.newBuilder()
-                    .maximumSize(100)
+                    .maximumSize(250)
                     .build(
-                            new CacheLoader<String, List<String>>() {
+                            new CacheLoader<String, List<MovieInfo>>() {
                                 @Override
-                                public List<String> load(String currentPath) {
-                                    return directoryExplorer.getTitleList(currentPath);
+                                public List<MovieInfo> load(String currentPath) {
+                                    List<String> currentTitles = directoryExplorer.getTitleList(currentPath);
+
+                                    return movieInfoProvider.getMovieInfo(currentTitles, currentPath);
                                 }
                             });
 
@@ -37,11 +45,12 @@ public class RestListener {
      * @param currentPath - Path to directory you wish to list
      * @return - List of files in specified directory
      */
-    @RequestMapping("/titlerequest")
-    public List<String> titlerequest(@RequestParam(value = "path") String currentPath) {
+    @RequestMapping(value = "/titlerequest", produces="application/json")
+    public String titlerequest(@RequestParam(value = "path") String currentPath) {
+        ObjectMapper objectMapper = new ObjectMapper();
         try {
-            return titles.get(currentPath);
-        }catch(ExecutionException e){
+            return objectMapper.writeValueAsString(MOVIE_INFO_LOADER.get(currentPath));
+        }catch(ExecutionException | JsonProcessingException e){
             e.printStackTrace();
         }
         return null;
@@ -89,6 +98,6 @@ public class RestListener {
      */
     @RequestMapping("/refresh")
     public void refresh(){
-        titles.invalidateAll();
+        MOVIE_INFO_LOADER.invalidateAll();
     }
 }
