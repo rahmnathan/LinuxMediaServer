@@ -5,10 +5,10 @@ public class MovieInfo {
     private String title;
     private String IMDBRating;
     private String metaRating;
-    private byte[] image;
+    private String image;
     private String releaseYear;
 
-    private MovieInfo(String title, String IMDBRating, String metaRating, byte[] image, String releaseYear) {
+    private MovieInfo(String title, String IMDBRating, String metaRating, String image, String releaseYear) {
         this.title = title;
         this.IMDBRating = IMDBRating;
         this.metaRating = metaRating;
@@ -32,7 +32,7 @@ public class MovieInfo {
         return metaRating;
     }
 
-    public byte[] getImage() {
+    public String getImage() {
         return image;
     }
 
@@ -46,7 +46,7 @@ public class MovieInfo {
         private String title;
         private String IMDBRating;
         private String metaRating;
-        private byte[] image;
+        private String image;
         private String releaseYear;
 
         public static Builder newInstace(){
@@ -68,7 +68,7 @@ public class MovieInfo {
             return this;
         }
 
-        public Builder setImage(byte[] image) {
+        public Builder setImage(String image) {
             this.image = image;
             return this;
         }
