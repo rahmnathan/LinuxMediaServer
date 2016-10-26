@@ -33,7 +33,7 @@ public class OMDBMovieInfoProvider implements MovieInfoProvider {
 
             MovieInfo.Builder movieInfoBuilder = MovieInfo.Builder.newInstace();
             movieInfoBuilder.setTitle(x);
-            movieInfoBuilder.setImage(Base64.getEncoder().encode(getImage(jsonObject)).toString());
+            movieInfoBuilder.setImage(Base64.getEncoder().encodeToString(getImage(jsonObject)));
 
             try {
                 movieInfoBuilder.setIMDBRating(jsonObject.getString("imdbRating"));
