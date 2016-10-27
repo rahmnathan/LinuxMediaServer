@@ -1,5 +1,7 @@
 package nr.localmovies.movieinfoapi;
 
+import java.io.Serializable;
+
 public class MovieInfo {
 
     private String title;
@@ -14,6 +16,34 @@ public class MovieInfo {
         this.metaRating = metaRating;
         this.image = image;
         this.releaseYear = releaseYear;
+    }
+
+    public MovieInfo() {
+    }
+
+    public MovieInfo setTitle(String title) {
+        this.title = title;
+        return this;
+    }
+
+    public MovieInfo setIMDBRating(String IMDBRating) {
+        this.IMDBRating = IMDBRating;
+        return this;
+    }
+
+    public MovieInfo setMetaRating(String metaRating) {
+        this.metaRating = metaRating;
+        return this;
+    }
+
+    public MovieInfo setImage(String image) {
+        this.image = image;
+        return this;
+    }
+
+    public MovieInfo setReleaseYear(String releaseYear) {
+        this.releaseYear = releaseYear;
+        return this;
     }
 
     public String getReleaseYear(){

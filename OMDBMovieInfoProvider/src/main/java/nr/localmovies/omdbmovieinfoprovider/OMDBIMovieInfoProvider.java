@@ -3,8 +3,12 @@ package nr.localmovies.omdbmovieinfoprovider;
 import com.google.common.io.ByteStreams;
 
 import nr.localmovies.movieinfoapi.MovieInfo;
-import nr.localmovies.movieinfoapi.MovieInfoProvider;
+import nr.localmovies.movieinfoapi.IMovieInfoProvider;
+import nr.localmovies.movieinfoapi.MovieInfoEntity;
+import nr.localmovies.movieinfoapi.MovieInfoRepository;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -15,12 +19,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Base64;
 
-public class OMDBMovieInfoProvider implements MovieInfoProvider {
+public class OMDBIMovieInfoProvider implements IMovieInfoProvider {
 
     @Override
     public List<MovieInfo> getMovieInfo(List<String> titleList, String currentPath){
 
-            return getInfoFromOMDB(titleList, currentPath);
+        return getInfoFromOMDB(titleList, currentPath);
     }
 
     private List<MovieInfo> getInfoFromOMDB(List<String> titleList, String currentPath){
@@ -57,6 +61,7 @@ public class OMDBMovieInfoProvider implements MovieInfoProvider {
 
             movieDataList.add(movieInfoBuilder.build());
         }
+
         return movieDataList;
     }
 

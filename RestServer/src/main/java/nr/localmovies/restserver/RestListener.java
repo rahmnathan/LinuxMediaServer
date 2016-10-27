@@ -1,13 +1,16 @@
 package nr.localmovies.restserver;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import nr.localmovies.movieinfoapi.MovieInfo;
-import nr.localmovies.movieinfoapi.MovieInfoProvider;
-import nr.localmovies.omdbmovieinfoprovider.OMDBMovieInfoProvider;
+import nr.localmovies.movieinfoapi.IMovieInfoProvider;
+import nr.localmovies.movieinfoapi.MovieInfoEntity;
+import nr.localmovies.movieinfoapi.MovieInfoRepository;
+import nr.localmovies.omdbmovieinfoprovider.OMDBIMovieInfoProvider;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,18 +28,19 @@ public class RestListener {
 
     private static final DirectoryExplorer directoryExplorer = new DirectoryExplorer();
     private static final KeyPressExecutor KEY_PRESS_EXECUTOR = new KeyPressExecutor();
-    private static final MovieInfoProvider movieInfoProvider = new OMDBMovieInfoProvider();
+    private static final IMovieInfoProvider I_MOVIE_INFO_PROVIDER = new OMDBIMovieInfoProvider();
 
-    private static final LoadingCache<String, List<MovieInfo>> MOVIE_INFO_LOADER =
+    @Autowired
+    private MovieInfoRepository repository;
+
+    private final LoadingCache<String, List<MovieInfo>> MOVIE_INFO_LOADER =
             CacheBuilder.newBuilder()
                     .maximumSize(250)
                     .build(
                             new CacheLoader<String, List<MovieInfo>>() {
                                 @Override
                                 public List<MovieInfo> load(String currentPath) {
-                                    List<String> currentTitles = directoryExplorer.getTitleList(currentPath);
-
-                                    return movieInfoProvider.getMovieInfo(currentTitles, currentPath);
+                                    return loadMovieInfo(currentPath);
                                 }
                             });
 
@@ -47,6 +51,7 @@ public class RestListener {
      */
     @RequestMapping(value = "/titlerequest", produces="application/json")
     public List<MovieInfo> titlerequest(@RequestParam(value = "path") String currentPath) {
+
         try {
             return MOVIE_INFO_LOADER.get(currentPath);
         }catch(ExecutionException e){
@@ -98,5 +103,23 @@ public class RestListener {
     @RequestMapping("/refresh")
     public void refresh(){
         MOVIE_INFO_LOADER.invalidateAll();
+        repository.deleteAll();
+    }
+
+    private List<MovieInfo> loadMovieInfo(String path){
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            if (repository.exists(path)) {
+                return mapper.readValue(repository.findOne(path).getData(), new TypeReference<List<MovieInfo>>(){});
+            } else {
+                List<MovieInfo> movieInfoList = I_MOVIE_INFO_PROVIDER.getMovieInfo(directoryExplorer.getTitleList(path), path);
+                repository.save(new MovieInfoEntity(path, mapper.writeValueAsString(movieInfoList)));
+
+                return movieInfoList;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 }
