@@ -134,10 +134,12 @@ public class RestListener {
             if(currentPathArray.length == 3){
                 depth = 1;
             }
+            System.out.println(depth);
             String imagePath = "";
             for(int i = 0; i < path.split("/").length - depth; i++){
                 imagePath += path.split("/")[i] + "/";
             }
+            System.out.println(imagePath);
             String image = "";
             String MetaRating = "";
             String IMDBRating = "";
