@@ -10,6 +10,7 @@ import nr.localmovies.movieinfoapi.MovieInfoRepository;
 import nr.localmovies.omdbmovieinfoprovider.OMDBIMovieInfoProvider;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
+import org.postgresql.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -128,11 +129,33 @@ public class RestListener {
                 e.printStackTrace();
             }
         } else {
+            int depth;
+            String title = currentPathArray[1];
+            if(currentPathArray.length == 3){
+                depth = 2;
+            } else {
+                depth = 3;
+            }
+            String imagePath = "/";
+            for(int i = 0; i < path.split("/").length - depth; i++){
+                imagePath += path.split("/")[i] + "/";
+            }
+            String image = "";
+            try {
+                for (MovieInfo info : (List<MovieInfo>) mapper.readValue(repository.findOne(imagePath).getData(), new TypeReference<List<MovieInfo>>() {})) {
+                    if (info.getTitle().toLowerCase().equals(title.toLowerCase())) {
+                        image = info.getImage();
+                    }
+                }
+            } catch (IOException e){
+                e.printStackTrace();
+            }
             List<String> titleList = directoryExplorer.getTitleList(path);
             List<MovieInfo> movieInfoList = new ArrayList<>();
-            for(String title : titleList){
+            for(String title1 : titleList){
                 MovieInfo info = new MovieInfo();
-                info.setTitle(title);
+                info.setTitle(title1);
+                info.setImage(image);
                 movieInfoList.add(info);
             }
             return movieInfoList;
