@@ -129,12 +129,10 @@ public class RestListener {
                 e.printStackTrace();
             }
         } else {
-            int depth;
+            int depth = 0;
             String title = currentPathArray[1];
             if(currentPathArray.length == 3){
-                depth = 2;
-            } else {
-                depth = 3;
+                depth = 1;
             }
             String imagePath = "";
             for(int i = 0; i < path.split("/").length - depth; i++){
