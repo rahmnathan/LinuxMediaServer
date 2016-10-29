@@ -20,6 +20,8 @@ import nr.linuxmedieserver.keypressexecutor.KeyPressExecutor;
 import nr.linuxmedieserver.keypressexecutor.KeyPressExecutor.Controls;
 import nr.linuxmedieserver.movieplayer.MoviePlayer;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -108,17 +110,32 @@ public class RestListener {
 
     private List<MovieInfo> loadMovieInfo(String path){
         ObjectMapper mapper = new ObjectMapper();
-        try {
-            if (repository.exists(path)) {
-                return mapper.readValue(repository.findOne(path).getData(), new TypeReference<List<MovieInfo>>(){});
-            } else {
+        String[] currentPathArray = path.toLowerCase().split("localmovies")[1].split("/");
+        if (repository.exists(path)) {
+            try {
+                return mapper.readValue(repository.findOne(path).getData(), new TypeReference<List<MovieInfo>>() {
+                });
+            } catch (IOException e){
+                e.printStackTrace();
+            }
+        } else if(currentPathArray.length == 1) {
+            try {
                 List<MovieInfo> movieInfoList = I_MOVIE_INFO_PROVIDER.getMovieInfo(directoryExplorer.getTitleList(path), path);
                 repository.save(new MovieInfoEntity(path, mapper.writeValueAsString(movieInfoList)));
 
                 return movieInfoList;
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        }catch (Exception e){
-            e.printStackTrace();
+        } else {
+            List<String> titleList = directoryExplorer.getTitleList(path);
+            List<MovieInfo> movieInfoList = new ArrayList<>();
+            for(String title : titleList){
+                MovieInfo info = new MovieInfo();
+                info.setTitle(title);
+                movieInfoList.add(info);
+            }
+            return movieInfoList;
         }
         return null;
     }
