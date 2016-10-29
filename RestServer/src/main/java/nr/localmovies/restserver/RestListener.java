@@ -131,7 +131,6 @@ public class RestListener {
         } else {
             int depth = 0;
             String title = currentPathArray[2];
-            System.out.println(title);
             if(currentPathArray.length == 3){
                 depth = 1;
             }
@@ -140,12 +139,16 @@ public class RestListener {
                 imagePath += path.split("/")[i] + "/";
             }
             String image = "";
-            System.out.println(imagePath);
+            String MetaRating = "";
+            String IMDBRating = "";
+            String year = "";
             try {
                 for (MovieInfo info : (List<MovieInfo>) mapper.readValue(repository.findOne(imagePath).getData(), new TypeReference<List<MovieInfo>>() {})) {
                     if (info.getTitle().toLowerCase().equals(title.toLowerCase())) {
                         image = info.getImage();
-                        System.out.println(info.getTitle());
+                        MetaRating = info.getMetaRating();
+                        IMDBRating = info.getIMDBRating();
+                        year = info.getReleaseYear();
                     }
                 }
             } catch (IOException e){
@@ -157,6 +160,9 @@ public class RestListener {
                 MovieInfo info = new MovieInfo();
                 info.setTitle(title1);
                 info.setImage(image);
+                info.setIMDBRating(IMDBRating);
+                info.setMetaRating(MetaRating);
+                info.setReleaseYear(year);
                 movieInfoList.add(info);
             }
             return movieInfoList;
