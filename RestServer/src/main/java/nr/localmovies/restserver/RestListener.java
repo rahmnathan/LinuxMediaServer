@@ -131,17 +131,15 @@ public class RestListener {
         } else {
             int depth = 0;
             String title = currentPathArray[2];
-            if(currentPathArray.length == 3){
+            if(currentPathArray.length == 3)
                 depth = 1;
-            } else if (currentPathArray.length == 4){
+            else if (currentPathArray.length == 4)
                 depth = 2;
-            }
-            System.out.println(depth);
+
             String imagePath = "";
             for(int i = 0; i < path.split("/").length - depth; i++){
                 imagePath += path.split("/")[i] + "/";
             }
-            System.out.println(imagePath);
             String image = "";
             String MetaRating = "";
             String IMDBRating = "";
