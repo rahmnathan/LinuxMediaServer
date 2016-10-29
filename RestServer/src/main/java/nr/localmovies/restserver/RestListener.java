@@ -131,6 +131,7 @@ public class RestListener {
         } else {
             int depth = 0;
             String title = currentPathArray[1];
+            System.out.println(title);
             if(currentPathArray.length == 3){
                 depth = 1;
             }
@@ -144,6 +145,7 @@ public class RestListener {
                 for (MovieInfo info : (List<MovieInfo>) mapper.readValue(repository.findOne(imagePath).getData(), new TypeReference<List<MovieInfo>>() {})) {
                     if (info.getTitle().toLowerCase().equals(title.toLowerCase())) {
                         image = info.getImage();
+                        System.out.println(info.getTitle());
                     }
                 }
             } catch (IOException e){
