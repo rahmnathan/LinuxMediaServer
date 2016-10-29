@@ -110,7 +110,7 @@ public class RestListener {
 
     private List<MovieInfo> loadMovieInfo(String path){
         ObjectMapper mapper = new ObjectMapper();
-        String[] currentPathArray = path.toLowerCase().split("localmovies")[1].split("/");
+        String[] currentPathArray = path.toLowerCase().split("localmedia")[1].split("/");
         if (repository.exists(path)) {
             try {
                 return mapper.readValue(repository.findOne(path).getData(), new TypeReference<List<MovieInfo>>() {
@@ -118,7 +118,7 @@ public class RestListener {
             } catch (IOException e){
                 e.printStackTrace();
             }
-        } else if(currentPathArray.length == 1) {
+        } else if(currentPathArray.length == 2) {
             try {
                 List<MovieInfo> movieInfoList = I_MOVIE_INFO_PROVIDER.getMovieInfo(directoryExplorer.getTitleList(path), path);
                 repository.save(new MovieInfoEntity(path, mapper.writeValueAsString(movieInfoList)));
