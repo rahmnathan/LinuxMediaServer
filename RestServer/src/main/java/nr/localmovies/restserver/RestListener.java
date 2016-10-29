@@ -133,6 +133,8 @@ public class RestListener {
             String title = currentPathArray[2];
             if(currentPathArray.length == 3){
                 depth = 1;
+            } else if (currentPathArray.length == 4){
+                depth = 2;
             }
             System.out.println(depth);
             String imagePath = "";
