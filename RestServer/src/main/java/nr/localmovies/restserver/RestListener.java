@@ -132,15 +132,16 @@ public class RestListener {
             int depth;
             String title = currentPathArray[1];
             if(currentPathArray.length == 3){
-                depth = 2;
+                depth = 1;
             } else {
-                depth = 3;
+                depth = 2;
             }
             String imagePath = "/";
             for(int i = 0; i < path.split("/").length - depth; i++){
                 imagePath += path.split("/")[i] + "/";
             }
             String image = "";
+            System.out.println(imagePath);
             try {
                 for (MovieInfo info : (List<MovieInfo>) mapper.readValue(repository.findOne(imagePath).getData(), new TypeReference<List<MovieInfo>>() {})) {
                     if (info.getTitle().toLowerCase().equals(title.toLowerCase())) {
