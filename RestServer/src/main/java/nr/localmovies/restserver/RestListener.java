@@ -130,7 +130,7 @@ public class RestListener {
             }
         } else {
             int depth = 0;
-            String title = currentPathArray[1];
+            String title = currentPathArray[2];
             System.out.println(title);
             if(currentPathArray.length == 3){
                 depth = 1;
