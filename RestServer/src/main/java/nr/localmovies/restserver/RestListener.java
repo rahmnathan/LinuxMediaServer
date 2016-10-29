@@ -132,11 +132,11 @@ public class RestListener {
             int depth;
             String title = currentPathArray[1];
             if(currentPathArray.length == 3){
-                depth = 1;
-            } else {
                 depth = 2;
+            } else {
+                depth = 3;
             }
-            String imagePath = "/";
+            String imagePath = "";
             for(int i = 0; i < path.split("/").length - depth; i++){
                 imagePath += path.split("/")[i] + "/";
             }
