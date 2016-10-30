@@ -111,31 +111,26 @@ public class RestListener {
     private List<MovieInfo> loadMovieInfo(String path){
         ObjectMapper mapper = new ObjectMapper();
         String[] currentPathArray = path.toLowerCase().split("localmovies")[1].split("/");
-        if (repository.exists(path)) {
-            try {
-                return mapper.readValue(repository.findOne(path).getData(), new TypeReference<List<MovieInfo>>() {
-                });
-            } catch (IOException e){
-                e.printStackTrace();
-            }
-        } else if(currentPathArray.length == 1) {
-            try {
+        try {
+            if (repository.exists(path)) {
+                return mapper.readValue(repository.findOne(path).getData(), new TypeReference<List<MovieInfo>>() {});
+
+            } else if (currentPathArray.length == 1) {
                 List<MovieInfo> movieInfoList = I_MOVIE_INFO_PROVIDER.getMovieInfo(directoryExplorer.getTitleList(path), path);
                 repository.save(new MovieInfoEntity(path, mapper.writeValueAsString(movieInfoList)));
 
                 return movieInfoList;
-            } catch (Exception e) {
-                e.printStackTrace();
+            } else {
+                List<MovieInfo> movieInfoList = new ArrayList<>();
+                for (String title : directoryExplorer.getTitleList(path)) {
+                    MovieInfo info = new MovieInfo();
+                    info.setTitle(title);
+                    movieInfoList.add(info);
+                }
+                return movieInfoList;
             }
-        } else {
-            List<String> titleList = directoryExplorer.getTitleList(path);
-            List<MovieInfo> movieInfoList = new ArrayList<>();
-            for(String title : titleList){
-                MovieInfo info = new MovieInfo();
-                info.setTitle(title);
-                movieInfoList.add(info);
-            }
-            return movieInfoList;
+        } catch (IOException e){
+            e.printStackTrace();
         }
         return null;
     }
