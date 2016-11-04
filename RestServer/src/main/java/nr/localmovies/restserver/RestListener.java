@@ -3,8 +3,8 @@ package nr.localmovies.restserver;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import nr.localmovies.movieinfoapi.MovieInfo;
 import nr.localmovies.movieinfoapi.IMovieInfoProvider;
+import nr.localmovies.movieinfoapi.MovieInfo;
 import nr.localmovies.movieinfoapi.MovieInfoEntity;
 import nr.localmovies.movieinfoapi.MovieInfoRepository;
 import nr.localmovies.omdbmovieinfoprovider.OMDBIMovieInfoProvider;
@@ -158,13 +158,13 @@ public class RestListener {
             List<String> titleList = directoryExplorer.getTitleList(path);
             List<MovieInfo> movieInfoList = new ArrayList<>();
             for(String title1 : titleList){
-                MovieInfo.Builder builder = MovieInfo.Builder.newInstace();
-                builder.setTitle(title1);
-                builder.setImage(image);
-                builder.setIMDBRating(IMDBRating);
-                builder.setMetaRating(MetaRating);
-                builder.setReleaseYear(year);
-                movieInfoList.add(builder.build());
+                MovieInfo info = new MovieInfo();
+                info.setTitle(title1);
+                info.setImage(image);
+                info.setIMDBRating(IMDBRating);
+                info.setMetaRating(MetaRating);
+                info.setReleaseYear(year);
+                movieInfoList.add(info);
             }
             return movieInfoList;
         }

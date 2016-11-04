@@ -44,6 +44,26 @@ public class MovieInfo {
         return image;
     }
 
+    public MovieInfo setIMDBRating(String IMDBRating) {
+        this.IMDBRating = IMDBRating;
+        return this;
+    }
+
+    public MovieInfo setMetaRating(String metaRating) {
+        this.metaRating = metaRating;
+        return this;
+    }
+
+    public MovieInfo setImage(String image) {
+        this.image = image;
+        return this;
+    }
+
+    public MovieInfo setReleaseYear(String releaseYear) {
+        this.releaseYear = releaseYear;
+        return this;
+    }
+
     @Override
     public String toString(){
         return title;
