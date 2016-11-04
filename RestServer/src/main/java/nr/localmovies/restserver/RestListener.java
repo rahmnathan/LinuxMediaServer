@@ -10,7 +10,6 @@ import nr.localmovies.movieinfoapi.MovieInfoRepository;
 import nr.localmovies.omdbmovieinfoprovider.OMDBIMovieInfoProvider;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
-import org.postgresql.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -159,13 +158,13 @@ public class RestListener {
             List<String> titleList = directoryExplorer.getTitleList(path);
             List<MovieInfo> movieInfoList = new ArrayList<>();
             for(String title1 : titleList){
-                MovieInfo info = new MovieInfo();
-                info.setTitle(title1);
-                info.setImage(image);
-                info.setIMDBRating(IMDBRating);
-                info.setMetaRating(MetaRating);
-                info.setReleaseYear(year);
-                movieInfoList.add(info);
+                MovieInfo.Builder builder = MovieInfo.Builder.newInstace();
+                builder.setTitle(title1);
+                builder.setImage(image);
+                builder.setIMDBRating(IMDBRating);
+                builder.setMetaRating(MetaRating);
+                builder.setReleaseYear(year);
+                movieInfoList.add(builder.build());
             }
             return movieInfoList;
         }
