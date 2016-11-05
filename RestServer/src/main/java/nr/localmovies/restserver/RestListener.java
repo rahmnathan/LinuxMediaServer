@@ -14,11 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import nr.linuxmedieserver.device.Device;
 import nr.linuxmedieserver.directoryexplorer.DirectoryExplorer;
 import nr.linuxmedieserver.keypressexecutor.KeyPressExecutor;
 import nr.linuxmedieserver.keypressexecutor.KeyPressExecutor.Controls;
-import nr.linuxmedieserver.movieplayer.MoviePlayer;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -33,6 +31,7 @@ public class RestListener {
     private static final KeyPressExecutor KEY_PRESS_EXECUTOR = new KeyPressExecutor();
     private static final IMovieInfoProvider I_MOVIE_INFO_PROVIDER = new OMDBIMovieInfoProvider();
     private static File video;
+    private static volatile boolean seek;
 
     @Autowired
     private MovieInfoRepository repository;
@@ -67,9 +66,6 @@ public class RestListener {
     /**
      *
      * @param currentPath - Path to video you wish to play
-     * @param phoneName - Unique name of connection (to avoid connection conflicts)
-     * @param computerIP - IP of your server
-     * @param chromeIP - IP of the chromecast you wish playback to start on
      */
     @RequestMapping("/playmovie")
     public void playMovie(@RequestParam(value = "path") String currentPath){
@@ -113,9 +109,18 @@ public class RestListener {
         byte[] buffer = new byte[bufferSize];
 
         while(is.read(buffer, 0, bufferSize) != -1){
+            if(seek)
+                is.skip(500);
             os.write(buffer);
         }
         os.close();
+    }
+
+    @RequestMapping("/seek")
+    public void seek() throws Exception {
+        seek = true;
+        Thread.sleep(1000);
+        seek = false;
     }
 
     private List<MovieInfo> loadMovieInfo(String path){
