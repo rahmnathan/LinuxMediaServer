@@ -20,7 +20,8 @@ import nr.linuxmedieserver.keypressexecutor.KeyPressExecutor;
 import nr.linuxmedieserver.keypressexecutor.KeyPressExecutor.Controls;
 import nr.linuxmedieserver.movieplayer.MoviePlayer;
 
-import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -31,6 +32,7 @@ public class RestListener {
     private static final DirectoryExplorer directoryExplorer = new DirectoryExplorer();
     private static final KeyPressExecutor KEY_PRESS_EXECUTOR = new KeyPressExecutor();
     private static final IMovieInfoProvider I_MOVIE_INFO_PROVIDER = new OMDBIMovieInfoProvider();
+    private static File video;
 
     @Autowired
     private MovieInfoRepository repository;
@@ -70,19 +72,9 @@ public class RestListener {
      * @param chromeIP - IP of the chromecast you wish playback to start on
      */
     @RequestMapping("/playmovie")
-    public void playMovie(@RequestParam(value = "path", defaultValue = "/Movies") String currentPath,
-                          @RequestParam(value = "phoneName") String phoneName,
-                          @RequestParam(value = "computerIP") String computerIP,
-                          @RequestParam(value = "chromeIP") String chromeIP){
+    public void playMovie(@RequestParam(value = "path") String currentPath){
 
-        Device.Builder builder = Device.Builder.newInstance();
-
-        builder .chromecastIP(chromeIP)
-                .computerIP(computerIP)
-                .currentPath(currentPath)
-                .phoneName(phoneName);
-
-        new MoviePlayer(builder.build()).run();
+        video = new File(currentPath);
     }
 
     /**
@@ -106,6 +98,24 @@ public class RestListener {
     public void refresh(){
         MOVIE_INFO_LOADER.invalidateAll();
         repository.deleteAll();
+    }
+
+    @RequestMapping("/video.mp4")
+    public void streamVideo(HttpServletResponse response) throws Exception {
+        InputStream is = new DataInputStream(new FileInputStream(video));
+        long totalLength = video.length();
+        int bufferSize = 4000;
+        response.setContentType("video/mp4");
+        response.setBufferSize(bufferSize);
+        response.setContentLengthLong(totalLength);
+        OutputStream os = response.getOutputStream();
+
+        byte[] buffer = new byte[bufferSize];
+
+        while(is.read(buffer, 0, bufferSize) != -1){
+            os.write(buffer);
+        }
+        os.close();
     }
 
     private List<MovieInfo> loadMovieInfo(String path){
