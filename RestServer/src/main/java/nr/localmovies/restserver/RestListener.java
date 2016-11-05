@@ -97,8 +97,10 @@ public class RestListener {
     }
 
     @RequestMapping("/video.mp4")
-    public void streamVideo(HttpServletResponse response) throws Exception {
+    public void streamVideo(@RequestParam("seek") long seek,
+                            HttpServletResponse response) throws Exception {
         InputStream is = new DataInputStream(new FileInputStream(video));
+        is.skip(seek);
         long totalLength = video.length();
         int bufferSize = 4000;
         response.setContentType("video/mp4");
@@ -109,19 +111,11 @@ public class RestListener {
         byte[] buffer = new byte[bufferSize];
 
         while(is.read(buffer, 0, bufferSize) != -1){
-            if(seek)
-                is.skip(500);
             os.write(buffer);
         }
         os.close();
     }
 
-    @RequestMapping("/seek")
-    public void seek() throws Exception {
-        seek = true;
-        Thread.sleep(1000);
-        seek = false;
-    }
 
     private List<MovieInfo> loadMovieInfo(String path){
         ObjectMapper mapper = new ObjectMapper();
