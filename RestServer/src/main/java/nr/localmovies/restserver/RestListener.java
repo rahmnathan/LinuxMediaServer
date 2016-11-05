@@ -97,11 +97,8 @@ public class RestListener {
     }
 
     @RequestMapping("/video.mp4")
-    public void streamVideo(@RequestParam("seek") long seek,
-                            HttpServletResponse response) throws Exception {
+    public void streamVideo(HttpServletResponse response) throws Exception {
         InputStream is = new DataInputStream(new FileInputStream(video));
-        if(seek != 0)
-            is.skip(seek);
         long totalLength = video.length();
         int bufferSize = 4000;
         response.setContentType("video/mp4");
