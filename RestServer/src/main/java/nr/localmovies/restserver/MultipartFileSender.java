@@ -26,7 +26,7 @@ public class MultipartFileSender {
 
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private static final int DEFAULT_BUFFER_SIZE = 20480; // ..bytes = 20KB.
+    private static final int DEFAULT_BUFFER_SIZE = 4000; // ..bytes = 20KB.
     private static final long DEFAULT_EXPIRE_TIME = 604800000L; // ..ms = 1 week.
     private static final String MULTIPART_BOUNDARY = "MULTIPART_BYTERANGES";
 
@@ -37,16 +37,8 @@ public class MultipartFileSender {
     public MultipartFileSender() {
     }
 
-    public static MultipartFileSender fromPath(Path path) {
-        return new MultipartFileSender().setFilepath(path);
-    }
-
-    public static MultipartFileSender fromFile(File file) {
+    static MultipartFileSender fromFile(File file) {
         return new MultipartFileSender().setFilepath(file.toPath());
-    }
-
-    public static MultipartFileSender fromURIString(String uri) {
-        return new MultipartFileSender().setFilepath(Paths.get(uri));
     }
 
     //** internal setter **//
@@ -70,24 +62,12 @@ public class MultipartFileSender {
             return;
         }
 
-        if (!Files.exists(filepath)) {
-            logger.error("File doesn't exist at URI : {}", filepath.toAbsolutePath().toString());
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
-            return;
-        }
-
         Long length = Files.size(filepath);
         String fileName = filepath.getFileName().toString();
         FileTime lastModifiedObj = Files.getLastModifiedTime(filepath);
 
-        if (lastModifiedObj == null) {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            return;
-        }
         long lastModified = LocalDateTime.ofInstant(lastModifiedObj.toInstant(), ZoneId.of(ZoneOffset.systemDefault().getId())).toEpochSecond(ZoneOffset.UTC);
         String contentType = "video/mp4";
-
-        // Validate request headers for caching ---------------------------------------------------
 
         // If-None-Match header should contain "*" or ETag. If so, then return 304.
         String ifNoneMatch = request.getHeader("If-None-Match");
