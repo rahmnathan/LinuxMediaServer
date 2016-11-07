@@ -99,20 +99,6 @@ public class RestListener {
 
     @RequestMapping("/video.mp4")
     public void streamVideo(HttpServletResponse response, HttpServletRequest request) throws Exception {
-//        InputStream is = new DataInputStream(new FileInputStream(video));
-//        long totalLength = video.length();
-//        int bufferSize = 4000;
-//        response.setContentType("video/mp4");
-//        response.setBufferSize(bufferSize);
-//        response.setContentLengthLong(totalLength);
-//        OutputStream os = response.getOutputStream();
-//
-//        byte[] buffer = new byte[bufferSize];
-//
-//        while(is.read(buffer, 0, bufferSize) != -1){
-//            os.write(buffer);
-//        }
-//        os.close();
 
         MultipartFileSender.fromFile(video)
                 .with(response)

@@ -1,15 +1,11 @@
 package nr.localmovies.restserver;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -18,13 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Created by kevin on 10/02/15.
- * See full code here : https://github.com/davinkevin/Podcast-Server/blob/d927d9b8cb9ea1268af74316cd20b7192ca92da7/src/main/java/lan/dk/podcastserver/utils/multipart/MultipartFileSender.java
- */
 public class MultipartFileSender {
-
-    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private static final int DEFAULT_BUFFER_SIZE = 4000; // ..bytes = 20KB.
     private static final long DEFAULT_EXPIRE_TIME = 604800000L; // ..ms = 1 week.
@@ -41,23 +31,22 @@ public class MultipartFileSender {
         return new MultipartFileSender().setFilepath(file.toPath());
     }
 
-    //** internal setter **//
     private MultipartFileSender setFilepath(Path filepath) {
         this.filepath = filepath;
         return this;
     }
 
-    public MultipartFileSender with(HttpServletRequest httpRequest) {
+    MultipartFileSender with(HttpServletRequest httpRequest) {
         request = httpRequest;
         return this;
     }
 
-    public MultipartFileSender with(HttpServletResponse httpResponse) {
+    MultipartFileSender with(HttpServletResponse httpResponse) {
         response = httpResponse;
         return this;
     }
 
-    public void serveResource() throws Exception {
+    void serveResource() throws Exception {
         if (response == null || request == null) {
             return;
         }
@@ -175,13 +164,11 @@ public class MultipartFileSender {
             String accept = request.getHeader("Accept");
             disposition = accept != null && HttpUtils.accepts(accept, contentType) ? "inline" : "attachment";
         }
-        logger.debug("Content-Type : {}", contentType);
         // Initialize response.
         response.reset();
         response.setBufferSize(DEFAULT_BUFFER_SIZE);
         response.setHeader("Content-Type", contentType);
         response.setHeader("Content-Disposition", disposition + ";filename=\"" + fileName + "\"");
-        logger.debug("Content-Disposition : {}", disposition);
         response.setHeader("Accept-Ranges", "bytes");
         response.setHeader("ETag", fileName);
         response.setDateHeader("Last-Modified", lastModified);
@@ -196,7 +183,6 @@ public class MultipartFileSender {
             if (ranges.isEmpty() || ranges.get(0) == full) {
 
                 // Return full file.
-                logger.info("Return full file");
                 response.setContentType(contentType);
                 response.setHeader("Content-Range", "bytes " + full.start + "-" + full.end + "/" + full.total);
                 response.setHeader("Content-Length", String.valueOf(full.length));
@@ -206,7 +192,6 @@ public class MultipartFileSender {
 
                 // Return single part of file.
                 Range r = ranges.get(0);
-                logger.info("Return 1 part of file : from ({}) to ({})", r.start, r.end);
                 response.setContentType(contentType);
                 response.setHeader("Content-Range", "bytes " + r.start + "-" + r.end + "/" + r.total);
                 response.setHeader("Content-Length", String.valueOf(r.length));
@@ -226,7 +211,6 @@ public class MultipartFileSender {
 
                 // Copy multi part range.
                 for (Range r : ranges) {
-                    logger.info("Return multi part of file : from ({}) to ({})", r.start, r.end);
                     // Add multipart boundary and header fields for every range.
                     sos.println();
                     sos.println("--" + MULTIPART_BOUNDARY);
