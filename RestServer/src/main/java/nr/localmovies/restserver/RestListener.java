@@ -29,7 +29,6 @@ public class RestListener {
 
     private static final DirectoryExplorer directoryExplorer = new DirectoryExplorer();
     private static final IMovieInfoProvider I_MOVIE_INFO_PROVIDER = new OMDBIMovieInfoProvider();
-    private static File video;
 
     @Autowired
     private MovieInfoRepository repository;
@@ -62,15 +61,6 @@ public class RestListener {
     }
 
     /**
-     *
-     * @param path - Path to video you wish to play
-     */
-    @RequestMapping("/playmovie")
-    public void playMovie(@RequestParam(value = "path") String path){
-        video = new File(path);
-    }
-
-    /**
      * This endpoint clears the cache of all movie info and retrieves updated info
      */
     @RequestMapping("/refresh")
@@ -86,8 +76,10 @@ public class RestListener {
      * @throws Exception
      */
     @RequestMapping("/video.mp4")
-    public void streamVideo(HttpServletResponse response, HttpServletRequest request) throws Exception {
-        MultipartFileSender.fromFile(video)
+    public void streamVideo(HttpServletResponse response, HttpServletRequest request,
+                            @RequestParam("path") String path) throws Exception {
+
+        MultipartFileSender.fromFile(new File(path))
                 .with(response)
                 .with(request)
                 .serveResource();
@@ -99,16 +91,10 @@ public class RestListener {
      * @throws Exception
      */
     @RequestMapping("/poster")
-    public byte[] servePoster() throws Exception {
-        String[] split = video.getAbsolutePath().split("/");
-        String output = "";
-        for(int i = 0; i < split.length - 1; i++){
-            output += split[i] + "/";
-        }
-        for(MovieInfo info : MOVIE_INFO_LOADER.get(output)){
-            if (info.getTitle().equals(split[split.length - 1])){
+    public byte[] servePoster(@RequestParam("path") String path, @RequestParam("title") String title) throws Exception {
+        for(MovieInfo info : MOVIE_INFO_LOADER.get(path)){
+            if(info.getTitle().equals(title))
                 return Base64.getDecoder().decode(info.getImage());
-            }
         }
         return null;
     }

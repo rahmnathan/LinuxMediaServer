@@ -24,8 +24,9 @@
         <processorPath useClasspath="true" />
         <module name="Device" />
         <module name="DirectoryExplorer" />
-        <module name="KeyPressExecutor" />
+        <module name="MovieInfoAPI" />
         <module name="MoviePlayer" />
+        <module name="OMDBMovieInfoProvider" />
         <module name="RestServer" />
       </profile>
     </annotationProcessing>
@@ -34,7 +35,9 @@
       <module name="DirectoryExplorer" target="1.8" />
       <module name="KeyPressExecutor" target="1.8" />
       <module name="LinuxMediaServer" target="1.8" />
+      <module name="MovieInfoAPI" target="1.8" />
       <module name="MoviePlayer" target="1.8" />
+      <module name="OMDBMovieInfoProvider" target="1.8" />
       <module name="RemoveControlListener" target="1.6" />
       <module name="RestServer" target="1.8" />
     </bytecodeTargetLevel>

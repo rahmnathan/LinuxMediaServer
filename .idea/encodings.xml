@@ -5,8 +5,9 @@
     <file url="file://$PROJECT_DIR$/Device" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/DirectoryExplorer" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/KeyPressExecutor" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/MovieInfoAPI" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/MoviePlayer" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/RemoveControlListener" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/OMDBMovieInfoProvider" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/RestServer" charset="UTF-8" />
   </component>
 </project>

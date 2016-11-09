@@ -11,6 +11,7 @@
     </option>
     <option name="ignoredFiles">
       <set>
+        <option value="$PROJECT_DIR$/KeyPressExecutor/pom.xml" />
         <option value="$PROJECT_DIR$/RemoveControlListener/pom.xml" />
       </set>
     </option>
