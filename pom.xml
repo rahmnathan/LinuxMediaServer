@@ -13,7 +13,6 @@
         <module>DirectoryExplorer</module>
         <module>Device</module>
         <module>MoviePlayer</module>
-        <module>KeyPressExecutor</module>
         <module>MovieInfoAPI</module>
         <module>OMDBMovieInfoProvider</module>
     </modules>

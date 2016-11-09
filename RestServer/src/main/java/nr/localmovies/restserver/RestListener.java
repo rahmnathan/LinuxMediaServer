@@ -16,12 +16,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import nr.linuxmedieserver.directoryexplorer.DirectoryExplorer;
 import nr.linuxmedieserver.keypressexecutor.KeyPressExecutor;
-import nr.linuxmedieserver.keypressexecutor.KeyPressExecutor.Controls;
+import nr.linuxmedieserver.keypressexecutor.KeyPressExecutor.Control;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -32,7 +33,6 @@ public class RestListener {
     private static final KeyPressExecutor KEY_PRESS_EXECUTOR = new KeyPressExecutor();
     private static final IMovieInfoProvider I_MOVIE_INFO_PROVIDER = new OMDBIMovieInfoProvider();
     private static File video;
-    private static volatile boolean seek;
 
     @Autowired
     private MovieInfoRepository repository;
@@ -66,12 +66,11 @@ public class RestListener {
 
     /**
      *
-     * @param currentPath - Path to video you wish to play
+     * @param path - Path to video you wish to play
      */
     @RequestMapping("/playmovie")
-    public void playMovie(@RequestParam(value = "path") String currentPath){
-
-        video = new File(currentPath);
+    public void playMovie(@RequestParam(value = "path") String path){
+        video = new File(path);
     }
 
     /**
@@ -82,10 +81,7 @@ public class RestListener {
     @RequestMapping("/control")
     public void start(@RequestParam("control") String control,
                       @RequestParam("name") String name) {
-
-        Controls keyPress = Controls.valueOf(control);
-
-        KEY_PRESS_EXECUTOR.executeCommand(keyPress, name);
+        KEY_PRESS_EXECUTOR.executeCommand(Control.valueOf(control), name);
     }
 
     /**
@@ -97,13 +93,38 @@ public class RestListener {
         repository.deleteAll();
     }
 
+    /**
+     *
+     * @param response
+     * @param request
+     * @throws Exception
+     */
     @RequestMapping("/video.mp4")
     public void streamVideo(HttpServletResponse response, HttpServletRequest request) throws Exception {
-
         MultipartFileSender.fromFile(video)
                 .with(response)
                 .with(request)
                 .serveResource();
+    }
+
+    /**
+     *
+     * @return - Poster image
+     * @throws Exception
+     */
+    @RequestMapping("/poster")
+    public byte[] servePoster() throws Exception {
+        String[] split = video.getAbsolutePath().split("/");
+        String output = "";
+        for(int i = 0; i < split.length - 1; i++){
+            output += split[i] + "/";
+        }
+        for(MovieInfo info : MOVIE_INFO_LOADER.get(output)){
+            if (info.getTitle().equals(split[split.length - 1])){
+                return Base64.getDecoder().decode(info.getImage());
+            }
+        }
+        return null;
     }
 
 

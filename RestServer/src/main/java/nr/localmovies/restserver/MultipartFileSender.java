@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class MultipartFileSender {
+class MultipartFileSender {
 
     private static final int DEFAULT_BUFFER_SIZE = 4000; // ..bytes = 20KB.
     private static final long DEFAULT_EXPIRE_TIME = 604800000L; // ..ms = 1 week.
@@ -24,7 +24,7 @@ public class MultipartFileSender {
     HttpServletRequest request;
     HttpServletResponse response;
 
-    public MultipartFileSender() {
+    MultipartFileSender() {
     }
 
     static MultipartFileSender fromFile(File file) {
@@ -153,9 +153,6 @@ public class MultipartFileSender {
         // Get content type by file name and set content disposition.
         String disposition = "inline";
 
-        // If content type is unknown, then set the default value.
-        // For all content types, see: http://www.w3schools.com/media/media_mimeref.asp
-        // To add new content types, add new mime-mapping entry in web.xml.
         if (contentType == null) {
             contentType = "application/octet-stream";
         } else if (!contentType.startsWith("image")) {
@@ -241,14 +238,14 @@ public class MultipartFileSender {
          * @param end End of the byte range.
          * @param total Total length of the byte source.
          */
-        public Range(long start, long end, long total) {
+        Range(long start, long end, long total) {
             this.start = start;
             this.end = end;
             this.length = end - start + 1;
             this.total = total;
         }
 
-        public static long sublong(String value, int beginIndex, int endIndex) {
+        static long sublong(String value, int beginIndex, int endIndex) {
             String substring = value.substring(beginIndex, endIndex);
             return (substring.length() > 0) ? Long.parseLong(substring) : -1;
         }
@@ -288,7 +285,7 @@ public class MultipartFileSender {
          * @param toAccept The value to be accepted.
          * @return True if the given accept header accepts the given value.
          */
-        public static boolean accepts(String acceptHeader, String toAccept) {
+        static boolean accepts(String acceptHeader, String toAccept) {
             String[] acceptValues = acceptHeader.split("\\s*(,|;)\\s*");
             Arrays.sort(acceptValues);
 
@@ -303,7 +300,7 @@ public class MultipartFileSender {
          * @param toMatch The value to be matched.
          * @return True if the given match header matches the given value.
          */
-        public static boolean matches(String matchHeader, String toMatch) {
+        static boolean matches(String matchHeader, String toMatch) {
             String[] matchValues = matchHeader.split("\\s*,\\s*");
             Arrays.sort(matchValues);
             return Arrays.binarySearch(matchValues, toMatch) > -1
