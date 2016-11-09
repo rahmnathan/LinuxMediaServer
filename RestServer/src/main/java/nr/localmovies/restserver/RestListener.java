@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import nr.linuxmedieserver.directoryexplorer.DirectoryExplorer;
-import nr.linuxmedieserver.keypressexecutor.KeyPressExecutor;
-import nr.linuxmedieserver.keypressexecutor.KeyPressExecutor.Control;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,7 +28,6 @@ import java.util.concurrent.ExecutionException;
 public class RestListener {
 
     private static final DirectoryExplorer directoryExplorer = new DirectoryExplorer();
-    private static final KeyPressExecutor KEY_PRESS_EXECUTOR = new KeyPressExecutor();
     private static final IMovieInfoProvider I_MOVIE_INFO_PROVIDER = new OMDBIMovieInfoProvider();
     private static File video;
 
@@ -71,17 +68,6 @@ public class RestListener {
     @RequestMapping("/playmovie")
     public void playMovie(@RequestParam(value = "path") String path){
         video = new File(path);
-    }
-
-    /**
-     *
-     * @param control - The desired control to execute (VOLUME_UP, VOLUME_DOWN, SEEK_FORWARD, SEEK_BACK, PLAY_PAUSE, STOP)
-     * @param name - The name of your device that you started playback with
-     */
-    @RequestMapping("/control")
-    public void start(@RequestParam("control") String control,
-                      @RequestParam("name") String name) {
-        KEY_PRESS_EXECUTOR.executeCommand(Control.valueOf(control), name);
     }
 
     /**
