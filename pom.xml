@@ -12,7 +12,6 @@
         <module>RestServer</module>
         <module>DirectoryExplorer</module>
         <module>Device</module>
-        <module>MoviePlayer</module>
         <module>MovieInfoAPI</module>
         <module>OMDBMovieInfoProvider</module>
     </modules>

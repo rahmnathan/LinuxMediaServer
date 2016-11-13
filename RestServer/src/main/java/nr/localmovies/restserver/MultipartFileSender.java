@@ -20,11 +20,11 @@ class MultipartFileSender {
     private static final long DEFAULT_EXPIRE_TIME = 604800000L; // ..ms = 1 week.
     private static final String MULTIPART_BOUNDARY = "MULTIPART_BYTERANGES";
 
-    Path filepath;
-    HttpServletRequest request;
-    HttpServletResponse response;
+    private Path filepath;
+    private HttpServletRequest request;
+    private HttpServletResponse response;
 
-    MultipartFileSender() {
+    private MultipartFileSender() {
     }
 
     static MultipartFileSender fromFile(File file) {
