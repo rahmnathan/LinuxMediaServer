@@ -26,7 +26,12 @@ class MovieInfoRetriever {
 
     List<MovieInfo> loadMovieInfo(String path){
         ObjectMapper mapper = new ObjectMapper();
-        String[] currentPathArray = path.toLowerCase().split("localmedia")[1].split("/");
+        String[] currentPathArray;
+        try {
+            currentPathArray = path.toLowerCase().split("localmedia")[1].split("/");
+        } catch (ArrayIndexOutOfBoundsException e){
+            throw new RuntimeException("Media path must contain 'localmedia' folder - View Docs for details on folder structure");
+        }
         if (repository.exists(path)) {
             try {
                 return mapper.readValue(repository.findOne(path).getData(), new TypeReference<List<MovieInfo>>() {
