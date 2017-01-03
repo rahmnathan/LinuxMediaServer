@@ -18,11 +18,8 @@ import java.util.List;
 @Component
 class MovieInfoRetriever {
 
-    @Autowired
-    private IMovieInfoProvider I_MOVIE_INFO_PROVIDER;
-
-    @Autowired
-    private DirectoryExplorer directoryExplorer;
+    private IMovieInfoProvider I_MOVIE_INFO_PROVIDER = new OMDBIMovieInfoProvider();
+    private DirectoryExplorer directoryExplorer = new DirectoryExplorer();
 
     @Autowired
     private MovieInfoRepository repository;
