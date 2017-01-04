@@ -16,6 +16,8 @@ import java.io.*;
 import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @RestController
 public class RestListener {
@@ -25,6 +27,8 @@ public class RestListener {
 
     @Autowired
     private MovieInfoRepository repository;
+
+    private static Logger logger = Logger.getLogger(RestListener.class.getName());
 
     private final LoadingCache<String, List<MovieInfo>> MOVIE_INFO_LOADER =
             CacheBuilder.newBuilder()
@@ -45,9 +49,10 @@ public class RestListener {
     @RequestMapping(value = "/titlerequest", produces="application/json")
     public List<MovieInfo> titlerequest(@RequestParam(value = "path") String currentPath) {
         try {
+            logger.log(Level.INFO, "Received request for path:" + currentPath);
             return MOVIE_INFO_LOADER.get(currentPath);
         }catch(ExecutionException e){
-            e.printStackTrace();
+            logger.log(Level.SEVERE, e.toString());
         }
         return null;
     }

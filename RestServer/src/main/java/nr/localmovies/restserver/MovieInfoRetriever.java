@@ -14,12 +14,14 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 @Component
 class MovieInfoRetriever {
 
     private IMovieInfoProvider I_MOVIE_INFO_PROVIDER = new OMDBIMovieInfoProvider();
     private DirectoryExplorer directoryExplorer = new DirectoryExplorer();
+    private static Logger logger = Logger.getLogger(MovieInfoRetriever.class.getName());
 
     @Autowired
     private MovieInfoRepository repository;
@@ -37,7 +39,7 @@ class MovieInfoRetriever {
                 return mapper.readValue(repository.findOne(path).getData(), new TypeReference<List<MovieInfo>>() {
                 });
             } catch (IOException e){
-                e.printStackTrace();
+                logger.severe(e.toString());
             }
         } else if(currentPathArray.length == 2) {
             try {
@@ -46,7 +48,7 @@ class MovieInfoRetriever {
 
                 return movieInfoList;
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.severe(e.toString());
             }
         } else {
             int depth = 0;
@@ -74,7 +76,7 @@ class MovieInfoRetriever {
                     }
                 }
             } catch (IOException e){
-                e.printStackTrace();
+                logger.severe(e.toString());
             }
             List<String> titleList = directoryExplorer.getTitleList(path);
             List<MovieInfo> movieInfoList = new ArrayList<>();

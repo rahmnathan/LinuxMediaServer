@@ -4,11 +4,7 @@ import com.google.common.io.ByteStreams;
 
 import nr.localmovies.movieinfoapi.MovieInfo;
 import nr.localmovies.movieinfoapi.IMovieInfoProvider;
-import nr.localmovies.movieinfoapi.MovieInfoEntity;
-import nr.localmovies.movieinfoapi.MovieInfoRepository;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -18,8 +14,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Base64;
+import java.util.logging.Logger;
 
 public class OMDBIMovieInfoProvider implements IMovieInfoProvider {
+
+    private static Logger logger = Logger.getLogger(OMDBIMovieInfoProvider.class.getName());
 
     @Override
     public List<MovieInfo> getMovieInfo(List<String> titleList, String currentPath){
@@ -93,7 +92,7 @@ public class OMDBIMovieInfoProvider implements IMovieInfoProvider {
             return new JSONObject(end);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.severe(e.toString());
         }
         return null;
     }
@@ -104,7 +103,7 @@ public class OMDBIMovieInfoProvider implements IMovieInfoProvider {
             InputStream is = imageURL.openConnection().getInputStream();
             return ByteStreams.toByteArray(is);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.severe(e.toString());
         }
         return null;
     }
