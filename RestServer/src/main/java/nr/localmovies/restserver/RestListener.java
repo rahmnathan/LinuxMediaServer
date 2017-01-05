@@ -1,10 +1,6 @@
 package nr.localmovies.restserver;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import nr.localmovies.movieinfoapi.MovieInfo;
-import nr.localmovies.movieinfoapi.MovieInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.Base64;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,23 +18,10 @@ import java.util.logging.Logger;
 public class RestListener {
 
     @Autowired
-    private MovieInfoRetriever movieInfoRetriever;
-
-    @Autowired
-    private MovieInfoRepository repository;
+    private MovieInfoRetriever infoRetriever;
 
     private static Logger logger = Logger.getLogger(RestListener.class.getName());
 
-    private final LoadingCache<String, List<MovieInfo>> MOVIE_INFO_LOADER =
-            CacheBuilder.newBuilder()
-                    .maximumSize(250)
-                    .build(
-                            new CacheLoader<String, List<MovieInfo>>() {
-                                @Override
-                                public List<MovieInfo> load(String currentPath) {
-                                    return movieInfoRetriever.loadMovieInfo(currentPath);
-                                }
-                            });
 
     /**
      *
@@ -48,13 +30,8 @@ public class RestListener {
      */
     @RequestMapping(value = "/titlerequest", produces="application/json")
     public List<MovieInfo> titlerequest(@RequestParam(value = "path") String currentPath) {
-        try {
-            logger.log(Level.INFO, "Received request for path:" + currentPath);
-            return MOVIE_INFO_LOADER.get(currentPath);
-        }catch(ExecutionException e){
-            logger.log(Level.SEVERE, e.toString());
-        }
-        return null;
+        logger.log(Level.INFO, "Received request for path:" + currentPath);
+        return infoRetriever.loadMovieInfo(currentPath);
     }
 
     /**
@@ -62,8 +39,7 @@ public class RestListener {
      */
     @RequestMapping("/refresh")
     public void refresh(){
-        MOVIE_INFO_LOADER.invalidateAll();
-        repository.deleteAll();
+        //MOVIE_INFO_LOADER.invalidateAll();
     }
 
     /**
@@ -81,17 +57,14 @@ public class RestListener {
                 .serveResource();
     }
 
-    /**
-     *
-     * @return - Poster image
-     * @throws Exception
-     */
-    @RequestMapping("/poster")
-    public byte[] servePoster(@RequestParam("path") String path, @RequestParam("title") String title) throws Exception {
-        for(MovieInfo info : MOVIE_INFO_LOADER.get(path)){
-            if(info.getTitle().equals(title))
-                return Base64.getDecoder().decode(info.getImage());
-        }
-        return null;
-    }
+//    /**
+//     *
+//     * @return - Poster image
+//     * @throws Exception
+//     */
+//    @RequestMapping("/poster")
+//    public byte[] servePoster(@RequestParam("path") String path, @RequestParam("title") String title) throws Exception {
+//        //MovieInfo info = MOVIE_INFO_LOADER.get(path);
+//        return Base64.getDecoder().decode(info.getImage());
+//    }
 }

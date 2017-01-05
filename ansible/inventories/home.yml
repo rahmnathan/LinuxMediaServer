@@ -1,2 +1,2 @@
 [pi]
-192.168.1.142 ansible_connection=ssh ansible_ssh_pass=raspberry ansible_ssh_user=pi
+192.168.1.149 ansible_connection=ssh ansible_ssh_pass=raspberry ansible_ssh_user=pi

@@ -21,67 +21,55 @@ public class OMDBIMovieInfoProvider implements IMovieInfoProvider {
     private static Logger logger = Logger.getLogger(OMDBIMovieInfoProvider.class.getName());
 
     @Override
-    public List<MovieInfo> getMovieInfo(List<String> titleList, String currentPath){
-
-        return getInfoFromOMDB(titleList, currentPath);
+    public MovieInfo getMovieInfo(String title, String currentPath){
+        return getInfoFromOMDB(title, currentPath);
     }
 
-    private List<MovieInfo> getInfoFromOMDB(List<String> titleList, String currentPath){
+    private MovieInfo getInfoFromOMDB(String title, String currentPath) {
 
         List<MovieInfo> movieDataList = new ArrayList<>();
 
-        for(String x : titleList) {
-
-            JSONObject jsonObject = getData(x, currentPath);
-
-            MovieInfo.Builder movieInfoBuilder = MovieInfo.Builder.newInstace();
-            movieInfoBuilder.setTitle(x);
-            try {
-                movieInfoBuilder.setImage(Base64.getEncoder().encodeToString(getImage(jsonObject)));
-            } catch (Exception e){
-                movieInfoBuilder.setImage(null);
-            }
-
-            try {
-                movieInfoBuilder.setIMDBRating(jsonObject.getString("imdbRating"));
-            } catch(Exception e){
-                movieInfoBuilder.setIMDBRating("N/A");
-            }
-            try {
-                movieInfoBuilder.setMetaRating(jsonObject.getString("Metascore"));
-            } catch (Exception e){
-                movieInfoBuilder.setMetaRating("N/A");
-            }
-            try {
-                movieInfoBuilder.setReleaseYear(jsonObject.getString("Year"));
-            } catch (Exception e){
-                movieInfoBuilder.setReleaseYear("N/A");
-            }
-
-            movieDataList.add(movieInfoBuilder.build());
+        JSONObject jsonObject = getData(title, currentPath);
+        MovieInfo.Builder movieInfoBuilder = MovieInfo.Builder.newInstace();
+        movieInfoBuilder.setTitle(title);
+        try {
+            movieInfoBuilder.setImage(Base64.getEncoder().encodeToString(getImage(jsonObject)));
+        } catch (Exception e) {
+            movieInfoBuilder.setImage(null);
+        }
+        try {
+            movieInfoBuilder.setIMDBRating(jsonObject.getString("imdbRating"));
+        } catch (Exception e) {
+            movieInfoBuilder.setIMDBRating("N/A");
+        }
+        try {
+            movieInfoBuilder.setMetaRating(jsonObject.getString("Metascore"));
+        } catch (Exception e) {
+            movieInfoBuilder.setMetaRating("N/A");
+        }
+        try {
+            movieInfoBuilder.setReleaseYear(jsonObject.getString("Year"));
+        } catch (Exception e) {
+            movieInfoBuilder.setReleaseYear("N/A");
         }
 
-        return movieDataList;
+        return movieInfoBuilder.build();
     }
 
     private JSONObject getData(String title, String currentPath) {
-
         String uri = "http://www.omdbapi.com/?t=";
         String currentPathLowerCase = currentPath.toLowerCase();
 
         if(currentPathLowerCase.contains("season") || currentPathLowerCase.contains("movies")) {
             title = title.substring(0, title.length() - 4);
         }
-
         try {
             URL url = new URL(uri + title.replace(" ", "%20"));
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
 
             String end = "";
-
             String string = br.readLine();
-
             while (!(string == null)) {
                 end = end + string;
                 string = br.readLine();
@@ -90,7 +78,6 @@ public class OMDBIMovieInfoProvider implements IMovieInfoProvider {
             urlConnection.disconnect();
 
             return new JSONObject(end);
-
         } catch (Exception e) {
             logger.severe(e.toString());
         }
