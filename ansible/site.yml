@@ -37,3 +37,7 @@
       dest: /home/pi/LocalMovies
   - name: build project
     shell: chdir=/home/pi/LocalMovies mvn install
+  - name: stop server (if it's running)
+    shell: pkill -f 'spring'
+  - name: start server
+    shell: chdir=/home/pi/LocalMovies/RestServer mvn spring-boot:run &
