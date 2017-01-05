@@ -1,0 +1,39 @@
+---
+- hosts: pi
+  become: yes
+  vars:
+    http_port: 22
+    max_clients: 5
+  remote_user: root
+  tasks:
+  - name: update the system
+    apt:
+      upgrade: dist
+      update_cache: yes
+  - name: install postgres
+    apt:
+      name: postgresql
+      state: latest
+  - name: install git
+    apt:
+      name: git
+      state: latest
+  - name: install java
+    apt:
+      name: openjdk-8-jdk
+      state: latest
+  - name: create user
+    shell: createuser pi -s
+  - name: create database
+    shell: createdb localmovies
+  - name: install maven
+    apt:
+      name: maven
+      state: latest
+  - name: remove old files
+    shell: rm -rf /home/pi/*
+  - git:
+      repo: https://github.com/rahmnathan/LocalMovies---LinuxServer.git
+      dest: /home/pi/LocalMovies
+  - name: build project
+    shell: chdir=/home/pi/LocalMovies mvn install
