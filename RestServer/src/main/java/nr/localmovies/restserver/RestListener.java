@@ -39,7 +39,7 @@ public class RestListener {
      */
     @RequestMapping("/refresh")
     public void refresh(){
-        //MOVIE_INFO_LOADER.invalidateAll();
+        infoRetriever.MOVIE_INFO_LOADER.invalidateAll();
     }
 
     /**
@@ -57,14 +57,14 @@ public class RestListener {
                 .serveResource();
     }
 
-//    /**
-//     *
-//     * @return - Poster image
-//     * @throws Exception
-//     */
-//    @RequestMapping("/poster")
-//    public byte[] servePoster(@RequestParam("path") String path, @RequestParam("title") String title) throws Exception {
-//        //MovieInfo info = MOVIE_INFO_LOADER.get(path);
-//        return Base64.getDecoder().decode(info.getImage());
-//    }
+    /**
+     *
+     * @return - Poster image
+     * @throws Exception
+     */
+    @RequestMapping("/poster")
+    public byte[] servePoster(@RequestParam("path") String path, @RequestParam("title") String title) throws Exception {
+        MovieInfo info = infoRetriever.MOVIE_INFO_LOADER.get(path);
+        return Base64.getDecoder().decode(info.getImage());
+    }
 }

@@ -49,7 +49,6 @@ public class DatabaseConnector {
             }
         } else {
             int depth = 0;
-            String title = currentPathArray[2];
             if (currentPathArray.length == 4)
                 depth = 1;
             else if (currentPathArray.length == 5)
@@ -59,23 +58,23 @@ public class DatabaseConnector {
             for (int i = 0; i < path.split("/").length - depth; i++) {
                 imagePath += path.split("/")[i] + "/";
             }
+            imagePath = imagePath.substring(0, imagePath.length() - 1);
+            System.out.println(imagePath);
             String image = "";
             String MetaRating = "";
             String IMDBRating = "";
             String year = "";
             try {
                 MovieInfo info = mapper.readValue(repository.findOne(imagePath).getData(), MovieInfo.class);
-                if (info.getTitle().toLowerCase().equals(title.toLowerCase())) {
-                    image = info.getImage();
-                    MetaRating = info.getMetaRating();
-                    IMDBRating = info.getIMDBRating();
-                    year = info.getReleaseYear();
-                }
+                image = info.getImage();
+                MetaRating = info.getMetaRating();
+                IMDBRating = info.getIMDBRating();
+                year = info.getReleaseYear();
             } catch (IOException e) {
                 e.printStackTrace();
             }
             MovieInfo info = new MovieInfo();
-            info.setTitle(title);
+            info.setTitle(currentPathArray[currentPathArray.length - 1]);
             info.setImage(image);
             info.setIMDBRating(IMDBRating);
             info.setMetaRating(MetaRating);

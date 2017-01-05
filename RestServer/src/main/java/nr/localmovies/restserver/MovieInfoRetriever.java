@@ -32,6 +32,7 @@ class MovieInfoRetriever {
     List<MovieInfo> loadMovieInfo(String path) {
         File[] fileList = new File(path).listFiles();
         List<MovieInfo> movieInfoList = new ArrayList<>();
+        System.out.println(path);
         for (File videoFile : fileList) {
             try {
                 movieInfoList.add(MOVIE_INFO_LOADER.get(videoFile.getAbsolutePath()));
