@@ -24,9 +24,8 @@ public class DatabaseConnector {
 
     MovieInfo retrieveMovieInfo(String path) {
         String[] currentPathArray;
-        System.out.println(path);
         try {
-            currentPathArray = path.toLowerCase().split("localmedia")[1].split("/");
+            currentPathArray = path.split("LocalMedia")[1].split("/");
         } catch (ArrayIndexOutOfBoundsException e) {
             throw new RuntimeException("Media path must contain 'localmedia' folder - View Docs for details on folder structure");
         }

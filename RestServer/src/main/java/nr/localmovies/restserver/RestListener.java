@@ -22,7 +22,6 @@ public class RestListener {
 
     private static Logger logger = Logger.getLogger(RestListener.class.getName());
 
-
     /**
      *
      * @param currentPath - Path to directory you wish to list
