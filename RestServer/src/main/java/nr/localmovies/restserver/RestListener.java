@@ -9,17 +9,17 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
-import java.util.logging.Level;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
 @RestController
 public class RestListener {
 
     @Autowired
-    private MovieInfoRetriever infoRetriever;
-
+    private MovieInfoBoundary movieInfoBoundary;
     private static Logger logger = Logger.getLogger(RestListener.class.getName());
 
     /**
@@ -29,8 +29,18 @@ public class RestListener {
      */
     @RequestMapping(value = "/titlerequest", produces="application/json")
     public List<MovieInfo> titlerequest(@RequestParam(value = "path") String currentPath) {
-        logger.log(Level.INFO, "Received request for path:" + currentPath);
-        return infoRetriever.loadMovieInfo(currentPath);
+        logger.info("Received request for path:" + currentPath);
+        File[] fileArray = new File(currentPath).listFiles();
+        List<MovieInfo> movieInfoList = new ArrayList<>();
+        for (File videoFile : fileArray) {
+            try {
+                movieInfoList.add(movieInfoBoundary.MOVIE_INFO_LOADER.get(videoFile.getAbsolutePath()));
+            } catch (ExecutionException e) {
+                logger.info(e.getMessage());
+                e.printStackTrace();
+            }
+        }
+        return movieInfoList;
     }
 
     /**
@@ -38,7 +48,7 @@ public class RestListener {
      */
     @RequestMapping("/refresh")
     public void refresh(){
-        infoRetriever.MOVIE_INFO_LOADER.invalidateAll();
+        movieInfoBoundary.MOVIE_INFO_LOADER.invalidateAll();
     }
 
     /**
@@ -63,7 +73,7 @@ public class RestListener {
      */
     @RequestMapping("/poster")
     public byte[] servePoster(@RequestParam("path") String path, @RequestParam("title") String title) throws Exception {
-        MovieInfo info = infoRetriever.MOVIE_INFO_LOADER.get(path);
+        MovieInfo info = movieInfoBoundary.MOVIE_INFO_LOADER.get(path);
         return Base64.getDecoder().decode(info.getImage());
     }
 }
