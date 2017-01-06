@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 @Component
 public class MovieInfoBoundary {
@@ -37,6 +38,7 @@ public class MovieInfoBoundary {
     private MovieInfoRepository repository;
     private IMovieInfoProvider I_MOVIE_INFO_PROVIDER = new OMDBIMovieInfoProvider();
     private ObjectMapper mapper = new ObjectMapper();
+    private static Logger logger = Logger.getLogger(RestListener.class.getName());
 
     private boolean existsInDatabase(String path){
         return repository.exists(path);
@@ -46,6 +48,7 @@ public class MovieInfoBoundary {
         try {
             return mapper.readValue(repository.findOne(path).getData(), MovieInfo.class);
         } catch (IOException e) {
+            logger.info(e.getMessage());
             e.printStackTrace();
         }
         return null;
@@ -62,6 +65,7 @@ public class MovieInfoBoundary {
             saveToDatabase(new MovieInfoEntity(path, mapper.writeValueAsString(movieInfo)));
             return movieInfo;
         } catch (Exception e) {
+            logger.info(e.getMessage());
             e.printStackTrace();
         }
         return null;
@@ -72,6 +76,7 @@ public class MovieInfoBoundary {
         try {
             currentPathArray = path.split("LocalMedia")[1].split("/");
         } catch (ArrayIndexOutOfBoundsException e) {
+            logger.info(e.getMessage());
             throw new RuntimeException("Media path must contain 'LocalMedia' folder - View Docs for details on folder structure");
         }
         int depth = 0;
