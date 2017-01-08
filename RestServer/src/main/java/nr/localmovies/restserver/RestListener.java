@@ -33,13 +33,12 @@ public class RestListener {
             logger.severe("Path must contain 'LocalMedia' folder");
             throw new RuntimeException("Path must contain 'LocalMedia' folder");
         }
-
         File[] fileArray = new File(currentPath).listFiles();
         List<MovieInfo> movieInfoList = new ArrayList<>();
         if(fileArray == null || fileArray.length == 0){
-            MovieInfo blankInfo = new MovieInfo();
-            blankInfo.setTitle("No Files found in this directory");
-            movieInfoList.add(new MovieInfo());
+            movieInfoList.add(MovieInfo.Builder.newInstace()
+                    .setTitle("No Files found in this directory")
+                    .build());
             return movieInfoList;
         } else {
             for (File videoFile : fileArray) {
