@@ -26,7 +26,7 @@ public class MovieInfoBoundary {
                                 public MovieInfo load(String currentPath) {
                                     if(existsInDatabase(currentPath)){
                                         return getFromDatabase(currentPath);
-                                    } else if (currentPath.split("/").length == 3){
+                                    } else if (currentPath.split("LocalMedia")[1].split("/").length == 3){
                                         return getFromOMDB(currentPath);
                                     } else {
                                         return getParentInfo(currentPath);
@@ -36,7 +36,8 @@ public class MovieInfoBoundary {
 
     @Autowired
     private MovieInfoRepository repository;
-    private IMovieInfoProvider I_MOVIE_INFO_PROVIDER = new OMDBIMovieInfoProvider();
+    @Autowired
+    private IMovieInfoProvider I_MOVIE_INFO_PROVIDER;
     private ObjectMapper mapper = new ObjectMapper();
     private static Logger logger = Logger.getLogger(RestListener.class.getName());
 

@@ -5,6 +5,7 @@ import com.google.common.io.ByteStreams;
 import nr.localmovies.movieinfoapi.MovieInfo;
 import nr.localmovies.movieinfoapi.IMovieInfoProvider;
 import org.json.JSONObject;
+import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Base64;
 import java.util.logging.Logger;
 
+@Component
 public class OMDBIMovieInfoProvider implements IMovieInfoProvider {
 
     private static Logger logger = Logger.getLogger(OMDBIMovieInfoProvider.class.getName());
