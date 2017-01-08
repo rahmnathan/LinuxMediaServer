@@ -24,7 +24,7 @@ public class MovieInfoBoundary {
                             new CacheLoader<String, MovieInfo>() {
                                 @Override
                                 public MovieInfo load(String currentPath) {
-                                    if(existsInDatabase(currentPath)){
+                                    if(repository.exists(currentPath)){
                                         return getFromDatabase(currentPath);
                                     } else if (currentPath.split("LocalMedia")[1].split("/").length == 3){
                                         return getFromOMDB(currentPath);
@@ -40,10 +40,6 @@ public class MovieInfoBoundary {
     private IMovieInfoProvider I_MOVIE_INFO_PROVIDER;
     private ObjectMapper mapper = new ObjectMapper();
     private static Logger logger = Logger.getLogger(RestListener.class.getName());
-
-    private boolean existsInDatabase(String path){
-        return repository.exists(path);
-    }
 
     private MovieInfo getFromDatabase(String path){
         try {
