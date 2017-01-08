@@ -49,7 +49,6 @@ public class MovieInfoBoundary {
             return mapper.readValue(repository.findOne(path).getData(), MovieInfo.class);
         } catch (IOException e) {
             logger.info(e.getMessage());
-            e.printStackTrace();
         }
         return null;
     }

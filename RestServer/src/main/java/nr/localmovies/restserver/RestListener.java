@@ -32,14 +32,21 @@ public class RestListener {
         logger.info("Received request for path:" + currentPath);
         File[] fileArray = new File(currentPath).listFiles();
         List<MovieInfo> movieInfoList = new ArrayList<>();
-        for (File videoFile : fileArray) {
-            try {
-                movieInfoList.add(movieInfoBoundary.MOVIE_INFO_LOADER.get(videoFile.getAbsolutePath()));
-            } catch (ExecutionException e) {
-                logger.info(e.getMessage());
+        if(fileArray == null || fileArray.length == 0){
+            MovieInfo blankInfo = new MovieInfo();
+            blankInfo.setTitle("No Files found in this directory");
+            movieInfoList.add(new MovieInfo());
+            return movieInfoList;
+        } else {
+            for (File videoFile : fileArray) {
+                try {
+                    movieInfoList.add(movieInfoBoundary.MOVIE_INFO_LOADER.get(videoFile.getAbsolutePath()));
+                } catch (ExecutionException e) {
+                    logger.info(e.getMessage());
+                }
             }
+            return movieInfoList;
         }
-        return movieInfoList;
     }
 
     /**
