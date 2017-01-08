@@ -10,7 +10,6 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>RestServer</module>
-        <module>Device</module>
         <module>MovieInfoAPI</module>
         <module>OMDBMovieInfoProvider</module>
     </modules>
@@ -36,7 +35,16 @@
             <artifactId>slf4j-simple</artifactId>
             <version>1.7.21</version>
         </dependency>
-
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>19.0</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
 </project>
