@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 @Component
-public class MovieInfoBoundary {
+public class MovieInfoControl {
     final LoadingCache<String, MovieInfo> MOVIE_INFO_LOADER =
             CacheBuilder.newBuilder()
                     .maximumSize(250)

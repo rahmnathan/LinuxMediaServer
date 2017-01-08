@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 public class RestListener {
 
     @Autowired
-    private MovieInfoBoundary movieInfoBoundary;
+    private MovieInfoControl movieInfoControl;
     private static Logger logger = Logger.getLogger(RestListener.class.getName());
 
     /**
@@ -43,7 +43,7 @@ public class RestListener {
         } else {
             for (File videoFile : fileArray) {
                 try {
-                    movieInfoList.add(movieInfoBoundary.MOVIE_INFO_LOADER.get(videoFile.getAbsolutePath()));
+                    movieInfoList.add(movieInfoControl.MOVIE_INFO_LOADER.get(videoFile.getAbsolutePath()));
                 } catch (ExecutionException e) {
                     logger.info(e.getMessage());
                 }
@@ -57,7 +57,7 @@ public class RestListener {
      */
     @RequestMapping("/refresh")
     public void refresh(){
-        movieInfoBoundary.MOVIE_INFO_LOADER.invalidateAll();
+        movieInfoControl.MOVIE_INFO_LOADER.invalidateAll();
     }
 
     /**
@@ -82,7 +82,7 @@ public class RestListener {
      */
     @RequestMapping("/poster")
     public byte[] servePoster(@RequestParam("path") String path) throws Exception {
-        MovieInfo info = movieInfoBoundary.MOVIE_INFO_LOADER.get(path);
+        MovieInfo info = movieInfoControl.MOVIE_INFO_LOADER.get(path);
         return Base64.getDecoder().decode(info.getImage());
     }
 }
