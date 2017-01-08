@@ -21,15 +21,12 @@ public class OMDBIMovieInfoProvider implements IMovieInfoProvider {
     private static Logger logger = Logger.getLogger(OMDBIMovieInfoProvider.class.getName());
 
     @Override
-    public MovieInfo getMovieInfo(String title, String currentPath){
-        return getInfoFromOMDB(title, currentPath);
+    public MovieInfo getMovieInfo(String title){
+        return getInfoFromOMDB(title);
     }
 
-    private MovieInfo getInfoFromOMDB(String title, String currentPath) {
-
-        List<MovieInfo> movieDataList = new ArrayList<>();
-
-        JSONObject jsonObject = getData(title, currentPath);
+    private MovieInfo getInfoFromOMDB(String title) {
+        JSONObject jsonObject = getData(title);
         MovieInfo.Builder movieInfoBuilder = MovieInfo.Builder.newInstace();
         movieInfoBuilder.setTitle(title);
         try {
@@ -56,13 +53,8 @@ public class OMDBIMovieInfoProvider implements IMovieInfoProvider {
         return movieInfoBuilder.build();
     }
 
-    private JSONObject getData(String title, String currentPath) {
+    private JSONObject getData(String title) {
         String uri = "http://www.omdbapi.com/?t=";
-        String currentPathLowerCase = currentPath.toLowerCase();
-
-        if(currentPathLowerCase.contains("season") || currentPathLowerCase.contains("movies")) {
-            title = title.substring(0, title.length() - 4);
-        }
         try {
             URL url = new URL(uri + title.replace(" ", "%20"));
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();

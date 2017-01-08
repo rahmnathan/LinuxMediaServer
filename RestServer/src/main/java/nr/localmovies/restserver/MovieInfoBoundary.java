@@ -61,12 +61,15 @@ public class MovieInfoBoundary {
     private MovieInfo getFromOMDB(String path){
         try {
             String[] splitPath = path.split("/");
-            MovieInfo movieInfo = I_MOVIE_INFO_PROVIDER.getMovieInfo(splitPath[splitPath.length - 1], path);
+            String title = splitPath[splitPath.length - 1];
+            if(path.contains(".")) {
+                title = title.substring(0, title.length() - 4);
+            }
+            MovieInfo movieInfo = I_MOVIE_INFO_PROVIDER.getMovieInfo(title);
             saveToDatabase(new MovieInfoEntity(path, mapper.writeValueAsString(movieInfo)));
             return movieInfo;
         } catch (Exception e) {
             logger.info(e.getMessage());
-            e.printStackTrace();
         }
         return null;
     }

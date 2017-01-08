@@ -37,7 +37,6 @@ public class RestListener {
                 movieInfoList.add(movieInfoBoundary.MOVIE_INFO_LOADER.get(videoFile.getAbsolutePath()));
             } catch (ExecutionException e) {
                 logger.info(e.getMessage());
-                e.printStackTrace();
             }
         }
         return movieInfoList;
