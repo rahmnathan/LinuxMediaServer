@@ -53,7 +53,7 @@ public class RestListener {
     }
 
     /**
-     * This endpoint clears the cache of all movie info and retrieves updated info
+     * This endpoint clears the cache of all movie info
      */
     @RequestMapping("/refresh")
     public void refresh(){
@@ -62,7 +62,7 @@ public class RestListener {
 
     /**
      *
-     * @param path - Path to video to stream
+     * @param path - Path to video file to stream
      * @throws Exception
      */
     @RequestMapping("/video.mp4")
@@ -76,7 +76,8 @@ public class RestListener {
 
     /**
      *
-     * @return - Poster image
+     * @param path - Path to video file
+     * @return - Poster image for specified video file
      * @throws Exception
      */
     @RequestMapping("/poster")
