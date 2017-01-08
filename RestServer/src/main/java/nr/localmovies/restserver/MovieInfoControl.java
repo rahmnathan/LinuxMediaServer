@@ -50,10 +50,6 @@ public class MovieInfoControl {
         return null;
     }
 
-    private void saveToDatabase(MovieInfoEntity entity){
-        repository.save(entity);
-    }
-
     private MovieInfo getFromOMDB(String path){
         try {
             String[] splitPath = path.split("/");
@@ -62,7 +58,7 @@ public class MovieInfoControl {
                 title = title.substring(0, title.length() - 4);
             }
             MovieInfo movieInfo = I_MOVIE_INFO_PROVIDER.getMovieInfo(title);
-            saveToDatabase(new MovieInfoEntity(path, mapper.writeValueAsString(movieInfo)));
+            repository.save(new MovieInfoEntity(path, mapper.writeValueAsString(movieInfo)));
             return movieInfo;
         } catch (Exception e) {
             logger.info(e.getMessage());
