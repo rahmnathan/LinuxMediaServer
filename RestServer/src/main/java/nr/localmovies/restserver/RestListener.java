@@ -29,13 +29,13 @@ public class RestListener {
      */
     @RequestMapping(value = "/titlerequest", produces="application/json")
     public List<MovieInfo> titlerequest(@RequestParam(value = "path") String currentPath) {
-        logger.info("Received request for path:" + currentPath);
-        File[] fileArray = new File(currentPath).listFiles();
-        List<MovieInfo> movieInfoList = new ArrayList<>();
         if(!currentPath.contains("LocalMedia")) {
             logger.severe("Path must contain 'LocalMedia' folder");
             throw new RuntimeException("Path must contain 'LocalMedia' folder");
         }
+
+        File[] fileArray = new File(currentPath).listFiles();
+        List<MovieInfo> movieInfoList = new ArrayList<>();
         if(fileArray == null || fileArray.length == 0){
             MovieInfo blankInfo = new MovieInfo();
             blankInfo.setTitle("No Files found in this directory");
@@ -63,8 +63,7 @@ public class RestListener {
 
     /**
      *
-     * @param response
-     * @param request
+     * @param path - Path to video to stream
      * @throws Exception
      */
     @RequestMapping("/video.mp4")
@@ -82,7 +81,7 @@ public class RestListener {
      * @throws Exception
      */
     @RequestMapping("/poster")
-    public byte[] servePoster(@RequestParam("path") String path, @RequestParam("title") String title) throws Exception {
+    public byte[] servePoster(@RequestParam("path") String path) throws Exception {
         MovieInfo info = movieInfoBoundary.MOVIE_INFO_LOADER.get(path);
         return Base64.getDecoder().decode(info.getImage());
     }
