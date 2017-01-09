@@ -36,7 +36,7 @@ public class RestListener {
         File[] fileArray = new File(currentPath).listFiles();
         List<MovieInfo> movieInfoList = new ArrayList<>();
         if(fileArray == null || fileArray.length == 0){
-            movieInfoList.add(MovieInfo.Builder.newInstace()
+            movieInfoList.add(MovieInfo.Builder.newInstance()
                     .setTitle("No Files found in this directory")
                     .build());
             return movieInfoList;

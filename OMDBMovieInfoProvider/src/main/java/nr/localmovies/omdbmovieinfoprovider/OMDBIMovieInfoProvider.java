@@ -12,8 +12,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Base64;
 import java.util.logging.Logger;
 
@@ -29,7 +27,7 @@ public class OMDBIMovieInfoProvider implements IMovieInfoProvider {
 
     private MovieInfo getInfoFromOMDB(String title) {
         JSONObject jsonObject = getData(title);
-        MovieInfo.Builder movieInfoBuilder = MovieInfo.Builder.newInstace();
+        MovieInfo.Builder movieInfoBuilder = MovieInfo.Builder.newInstance();
         movieInfoBuilder.setTitle(title);
         try {
             movieInfoBuilder.setImage(Base64.getEncoder().encodeToString(getImage(jsonObject)));

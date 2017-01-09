@@ -29,12 +29,13 @@ public class MovieInfoTest {
         String metaRating = "TestMetaRating";
         String releaseYear = "TestReleaseYear";
 
-        MovieInfo movieInfo = new MovieInfo();
-        movieInfo.setTitle(title)
+        MovieInfo movieInfo = MovieInfo.Builder.newInstance()
+                .setTitle(title)
                 .setImage(image)
                 .setIMDBRating(IMDBRating)
                 .setMetaRating(metaRating)
-                .setReleaseYear(releaseYear);
+                .setReleaseYear(releaseYear)
+                .build();
 
         Assert.assertEquals(movieInfo.getTitle(), title);
         Assert.assertEquals(movieInfo.getImage(), image);

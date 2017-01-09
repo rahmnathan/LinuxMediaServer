@@ -7,7 +7,6 @@ import nr.localmovies.movieinfoapi.IMovieInfoProvider;
 import nr.localmovies.movieinfoapi.MovieInfo;
 import nr.localmovies.movieinfoapi.MovieInfoEntity;
 import nr.localmovies.movieinfoapi.MovieInfoRepository;
-import nr.localmovies.omdbmovieinfoprovider.OMDBIMovieInfoProvider;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -67,13 +66,7 @@ public class MovieInfoControl {
     }
 
     private MovieInfo getParentInfo(String path) {
-        String[] currentPathArray;
-        try {
-            currentPathArray = path.split("LocalMedia")[1].split("/");
-        } catch (ArrayIndexOutOfBoundsException e) {
-            logger.info(e.getMessage());
-            throw new RuntimeException("Media path must contain 'LocalMedia' folder - View Docs for details on folder structure");
-        }
+        String[] currentPathArray = path.split("LocalMedia")[1].split("/");
         int depth = 0;
         if (currentPathArray.length == 4)
             depth = 1;
@@ -86,7 +79,12 @@ public class MovieInfoControl {
         }
         parentPath = parentPath.substring(0, parentPath.length() - 1);
         MovieInfo info = getFromDatabase(parentPath);
-        info.setTitle(currentPathArray[currentPathArray.length - 1]);
-        return info;
+        return MovieInfo.Builder.newInstance()
+                .setTitle(currentPathArray[currentPathArray.length - 1])
+                .setReleaseYear(info.getReleaseYear())
+                .setMetaRating(info.getMetaRating())
+                .setIMDBRating(info.getIMDBRating())
+                .setImage(info.getImage())
+                .build();
     }
 }
