@@ -53,9 +53,6 @@ public class MovieInfoControl {
         try {
             String[] splitPath = path.split("/");
             String title = splitPath[splitPath.length - 1];
-            if(path.contains(".")) {
-                title = title.substring(0, title.length() - 4);
-            }
             MovieInfo movieInfo = I_MOVIE_INFO_PROVIDER.getMovieInfo(title);
             repository.save(new MovieInfoEntity(path, mapper.writeValueAsString(movieInfo)));
             return movieInfo;

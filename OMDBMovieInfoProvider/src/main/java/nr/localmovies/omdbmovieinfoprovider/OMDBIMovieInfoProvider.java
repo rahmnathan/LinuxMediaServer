@@ -26,11 +26,11 @@ public class OMDBIMovieInfoProvider implements IMovieInfoProvider {
     }
 
     private MovieInfo getInfoFromOMDB(String title) {
-        JSONObject jsonObject = getData(title);
         MovieInfo.Builder movieInfoBuilder = MovieInfo.Builder.newInstance();
+        movieInfoBuilder.setTitle(title);
         if(title.contains("."))
             title = title.substring(0, title.length()-4);
-        movieInfoBuilder.setTitle(title);
+        JSONObject jsonObject = getData(title);
         try {
             movieInfoBuilder.setImage(Base64.getEncoder().encodeToString(getImage(jsonObject)));
         } catch (Exception e) {
