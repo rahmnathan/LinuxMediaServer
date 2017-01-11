@@ -46,7 +46,6 @@ public class RestListener {
                     logger.info(e.getMessage());
                 }
             }
-            movieInfoList.sort(Comparator.comparing(MovieInfo::getTitle));
             return movieInfoList;
         }
     }
