@@ -23,9 +23,9 @@
       name: openjdk-8-jdk
       state: latest
   - name: create user
-    shell: createuser pi -s
+    shell: sudo -u postgresql createuser pi -s
   - name: create database
-    shell: createdb localmovies
+    shell: sudo -u postgresql createdb localmovies
   - name: install maven
     apt:
       name: maven
