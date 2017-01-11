@@ -9,9 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
@@ -48,6 +46,7 @@ public class RestListener {
                     logger.info(e.getMessage());
                 }
             }
+            movieInfoList.sort(Comparator.comparing(MovieInfo::getTitle));
             return movieInfoList;
         }
     }
