@@ -69,7 +69,7 @@ public class RestListener {
      */
     @RequestMapping("/video.mp4")
     public void streamVideo(HttpServletResponse response, HttpServletRequest request,
-                            @RequestParam("path") String path) throws Exception {
+                            @RequestParam("path") String path) throws IOException {
         MultipartFileSender.fromFile(new File(path))
                 .with(response)
                 .with(request)
