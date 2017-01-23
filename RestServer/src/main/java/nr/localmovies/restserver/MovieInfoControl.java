@@ -74,7 +74,8 @@ public class MovieInfoControl {
         StringBuilder stringBuilder = new StringBuilder();
         String[] directoryArray = path.split("/");
         for (int i = 0; i < directoryArray.length - depth; i++) {
-            stringBuilder.append(directoryArray[i] + "/");
+            stringBuilder.append(directoryArray[i]);
+            stringBuilder.append("/");
         }
         String parentPath = stringBuilder.toString().substring(0, stringBuilder.length() - 1);
         MovieInfo info = getFromDatabase(parentPath);
