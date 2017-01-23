@@ -6,6 +6,14 @@ import javax.persistence.*;
 @Table(name = "Movies")
 public class MovieInfoEntity {
 
+    @Id
+    private String id;
+
+    @Lob
+    @Basic
+    @Column(name = "data")
+    private String data;
+
     public MovieInfoEntity(String id, String data) {
         this.id = id;
         this.data = data;
@@ -14,14 +22,6 @@ public class MovieInfoEntity {
     public MovieInfoEntity() {
         // Default constructor
     }
-
-    @Id
-    private String id;
-
-    @Lob
-    @Basic
-    @Column(name = "data")
-    private String data;
 
     public String getId() {
         return id;
