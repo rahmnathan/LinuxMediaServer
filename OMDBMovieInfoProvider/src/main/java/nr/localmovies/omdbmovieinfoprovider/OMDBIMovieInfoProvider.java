@@ -71,16 +71,15 @@ public class OMDBIMovieInfoProvider implements IMovieInfoProvider {
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
 
-            String end = "";
+            StringBuilder stringBuilder = new StringBuilder();
             String string = br.readLine();
             while (!(string == null)) {
-                end = end + string;
+                stringBuilder.append(string);
                 string = br.readLine();
             }
             br.close();
             urlConnection.disconnect();
-
-            return new JSONObject(end);
+            return new JSONObject(stringBuilder);
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.toString(), e);
         }

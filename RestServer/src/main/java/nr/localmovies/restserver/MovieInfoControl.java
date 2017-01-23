@@ -71,11 +71,12 @@ public class MovieInfoControl {
         else if (currentPathArray.length == 5)
             depth = 2;
 
-        String parentPath = "";
-        for (int i = 0; i < path.split("/").length - depth; i++) {
-            parentPath += path.split("/")[i] + "/";
+        StringBuilder stringBuilder = new StringBuilder();
+        String[] directoryArray = path.split("/");
+        for (int i = 0; i < directoryArray.length - depth; i++) {
+            stringBuilder.append(directoryArray[i] + "/");
         }
-        parentPath = parentPath.substring(0, parentPath.length() - 1);
+        String parentPath = stringBuilder.toString().substring(0, stringBuilder.length() - 1);
         MovieInfo info = getFromDatabase(parentPath);
         MovieInfo.Builder builder = MovieInfo.Builder.newInstance();
 

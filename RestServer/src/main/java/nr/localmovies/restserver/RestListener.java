@@ -30,7 +30,7 @@ public class RestListener {
     public List<MovieInfo> titlerequest(@RequestParam(value = "path") String currentPath) {
         if(!currentPath.contains("LocalMedia")) {
             logger.severe("Path must contain 'LocalMedia' folder");
-            throw new RuntimeException("Path must contain 'LocalMedia' folder");
+            return null;
         }
         File[] fileArray = new File(currentPath).listFiles();
         List<MovieInfo> movieInfoList = new ArrayList<>();
@@ -80,7 +80,7 @@ public class RestListener {
      * @throws Exception
      */
     @RequestMapping("/poster")
-    public byte[] servePoster(@RequestParam("path") String path) throws Exception {
+    public byte[] servePoster(@RequestParam("path") String path) throws ExecutionException {
         MovieInfo info = movieInfoControl.MOVIE_INFO_LOADER.get(path);
         return Base64.getDecoder().decode(info.getImage());
     }
