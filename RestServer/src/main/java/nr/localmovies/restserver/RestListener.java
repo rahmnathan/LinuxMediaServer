@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @RestController
@@ -43,7 +44,7 @@ public class RestListener {
                 try {
                     movieInfoList.add(movieInfoControl.MOVIE_INFO_LOADER.get(videoFile.getAbsolutePath()));
                 } catch (ExecutionException e) {
-                    logger.info(e.getMessage());
+                    logger.log(Level.SEVERE, e.toString(), e);
                 }
             }
             return movieInfoList;

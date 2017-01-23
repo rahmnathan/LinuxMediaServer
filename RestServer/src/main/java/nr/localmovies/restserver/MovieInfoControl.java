@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Component
@@ -44,7 +45,7 @@ public class MovieInfoControl {
         try {
             return mapper.readValue(repository.findOne(path).getData(), MovieInfo.class);
         } catch (IOException e) {
-            logger.severe(e.getMessage());
+            logger.log(Level.SEVERE, e.toString(), e);
         }
         return null;
     }
@@ -57,7 +58,7 @@ public class MovieInfoControl {
             repository.save(new MovieInfoEntity(path, mapper.writeValueAsString(movieInfo)));
             return movieInfo;
         } catch (Exception e) {
-            logger.severe(e.getMessage());
+            logger.log(Level.SEVERE, e.toString(), e);
         }
         return null;
     }

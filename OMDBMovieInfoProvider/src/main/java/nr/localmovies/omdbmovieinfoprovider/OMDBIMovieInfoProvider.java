@@ -40,25 +40,25 @@ public class OMDBIMovieInfoProvider implements IMovieInfoProvider {
             movieInfoBuilder.setImage(Base64.getEncoder().encodeToString(getImage(jsonObject)));
         } catch (Exception e) {
             movieInfoBuilder.setImage(null);
-            logger.log(Level.WARNING, "No image for title - " + title);
+            logger.log(Level.WARNING, "No image for title - " + title, e);
         }
         try {
             movieInfoBuilder.setIMDBRating(jsonObject.getString("imdbRating"));
         } catch (Exception e) {
             movieInfoBuilder.setIMDBRating("N/A");
-            logger.log(Level.WARNING, "No IMDB rating for title - " + title);
+            logger.log(Level.WARNING, "No IMDB rating for title - " + title, e);
         }
         try {
             movieInfoBuilder.setMetaRating(jsonObject.getString("Metascore"));
         } catch (Exception e) {
             movieInfoBuilder.setMetaRating("N/A");
-            logger.log(Level.WARNING, "No MetaCritic rating for title - " + title);
+            logger.log(Level.WARNING, "No MetaCritic rating for title - " + title, e);
         }
         try {
             movieInfoBuilder.setReleaseYear(jsonObject.getString("Year"));
         } catch (Exception e) {
             movieInfoBuilder.setReleaseYear("N/A");
-            logger.log(Level.WARNING, "No release year for title - " + title);
+            logger.log(Level.WARNING, "No release year for title - " + title, e);
         }
 
         return movieInfoBuilder.build();
@@ -82,7 +82,7 @@ public class OMDBIMovieInfoProvider implements IMovieInfoProvider {
 
             return new JSONObject(end);
         } catch (Exception e) {
-            logger.severe(e.toString());
+            logger.log(Level.SEVERE, e.toString(), e);
         }
         return null;
     }
@@ -93,7 +93,7 @@ public class OMDBIMovieInfoProvider implements IMovieInfoProvider {
             InputStream is = imageURL.openConnection().getInputStream();
             return ByteStreams.toByteArray(is);
         } catch (Exception e) {
-            logger.severe(e.toString());
+            logger.log(Level.SEVERE, e.toString(), e);
         }
         return null;
     }
