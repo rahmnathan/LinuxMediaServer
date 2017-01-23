@@ -13,12 +13,15 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 class MultipartFileSender {
 
     private static final int DEFAULT_BUFFER_SIZE = 4000; // ..bytes = 20KB.
     private static final long DEFAULT_EXPIRE_TIME = 604800000L; // ..ms = 1 week.
     private static final String MULTIPART_BOUNDARY = "MULTIPART_BYTERANGES";
+    private static final Logger logger = Logger.getLogger(MultipartFileSender.class.getName());
 
     private Path filepath;
     private HttpServletRequest request;
@@ -46,7 +49,7 @@ class MultipartFileSender {
         return this;
     }
 
-    void serveResource() throws Exception {
+    void serveResource() throws IOException {
         if (response == null || request == null) {
             return;
         }
@@ -116,6 +119,7 @@ class MultipartFileSender {
                         ranges.add(full);
                     }
                 } catch (IllegalArgumentException ignore) {
+                    logger.log(Level.FINE, "No If-Range header", ignore);
                     ranges.add(full);
                 }
             }
@@ -125,8 +129,8 @@ class MultipartFileSender {
                 for (String part : range.substring(6).split(",")) {
                     // Assuming a file with length of 100, the following examples returns bytes at:
                     // 50-80 (50 to 80), 40- (40 to length=100), -20 (length-20=80 to length=100).
-                    long start = Range.sublong(part, 0, part.indexOf("-"));
-                    long end = Range.sublong(part, part.indexOf("-") + 1, part.length());
+                    long start = Range.sublong(part, 0, part.indexOf('-'));
+                    long end = Range.sublong(part, part.indexOf('-') + 1, part.length());
 
                     if (start == -1) {
                         start = length - end;
