@@ -5,6 +5,10 @@
     http_port: 22
     max_clients: 5
   remote_user: root
+  gather_facts: no
+  pre_tasks:
+    - name: 'install python2'
+      raw: sudo apt-get -y install python-simplejson
   tasks:
   - name: update the system
     apt:
@@ -23,9 +27,13 @@
       name: openjdk-8-jdk
       state: latest
   - name: create user
-    shell: sudo -u postgresql createuser pi -s
+    shell: createuser root -s
+    become_user: postgres
+    ignore_errors: true
   - name: create database
-    shell: sudo -u postgresql createdb localmovies
+    shell: createdb localmovies
+    become_user: postgres
+    ignore_errors: true
   - name: install maven
     apt:
       name: maven
@@ -39,5 +47,6 @@
     shell: chdir=/home/pi/LocalMovies mvn install
   - name: stop server (if it's running)
     shell: pkill -f 'spring'
+    ignore_errors: yes
   - name: start server
     shell: chdir=/home/pi/LocalMovies/RestServer mvn spring-boot:run &

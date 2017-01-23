@@ -44,7 +44,7 @@ public class MovieInfoControl {
         try {
             return mapper.readValue(repository.findOne(path).getData(), MovieInfo.class);
         } catch (IOException e) {
-            logger.info(e.getMessage());
+            logger.severe(e.getMessage());
         }
         return null;
     }
@@ -57,7 +57,7 @@ public class MovieInfoControl {
             repository.save(new MovieInfoEntity(path, mapper.writeValueAsString(movieInfo)));
             return movieInfo;
         } catch (Exception e) {
-            logger.info(e.getMessage());
+            logger.severe(e.getMessage());
         }
         return null;
     }
@@ -76,7 +76,12 @@ public class MovieInfoControl {
         }
         parentPath = parentPath.substring(0, parentPath.length() - 1);
         MovieInfo info = getFromDatabase(parentPath);
-        return MovieInfo.Builder.newInstance()
+        MovieInfo.Builder builder = MovieInfo.Builder.newInstance();
+
+        if(info == null)
+            return builder.build();
+
+        return builder
                 .setTitle(currentPathArray[currentPathArray.length - 1])
                 .setReleaseYear(info.getReleaseYear())
                 .setMetaRating(info.getMetaRating())

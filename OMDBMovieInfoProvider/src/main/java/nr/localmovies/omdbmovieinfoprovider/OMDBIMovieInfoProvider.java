@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Base64;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Component
@@ -31,25 +32,33 @@ public class OMDBIMovieInfoProvider implements IMovieInfoProvider {
         if(title.contains("."))
             title = title.substring(0, title.length()-4);
         JSONObject jsonObject = getData(title);
+
+        if(jsonObject == null)
+            return movieInfoBuilder.build();
+
         try {
             movieInfoBuilder.setImage(Base64.getEncoder().encodeToString(getImage(jsonObject)));
         } catch (Exception e) {
             movieInfoBuilder.setImage(null);
+            logger.log(Level.WARNING, "No image for title - " + title);
         }
         try {
             movieInfoBuilder.setIMDBRating(jsonObject.getString("imdbRating"));
         } catch (Exception e) {
             movieInfoBuilder.setIMDBRating("N/A");
+            logger.log(Level.WARNING, "No IMDB rating for title - " + title);
         }
         try {
             movieInfoBuilder.setMetaRating(jsonObject.getString("Metascore"));
         } catch (Exception e) {
             movieInfoBuilder.setMetaRating("N/A");
+            logger.log(Level.WARNING, "No MetaCritic rating for title - " + title);
         }
         try {
             movieInfoBuilder.setReleaseYear(jsonObject.getString("Year"));
         } catch (Exception e) {
             movieInfoBuilder.setReleaseYear("N/A");
+            logger.log(Level.WARNING, "No release year for title - " + title);
         }
 
         return movieInfoBuilder.build();
