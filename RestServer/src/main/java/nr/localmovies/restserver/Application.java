@@ -12,6 +12,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @ComponentScan(basePackages = "nr")
 public class Application {
 
+    private Application(){
+        // Privatizing the constructor
+    }
+
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }

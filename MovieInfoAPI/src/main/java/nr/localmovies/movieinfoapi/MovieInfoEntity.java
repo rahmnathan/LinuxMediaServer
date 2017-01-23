@@ -12,6 +12,7 @@ public class MovieInfoEntity {
     }
 
     public MovieInfoEntity() {
+        // Default constructor
     }
 
     @Id

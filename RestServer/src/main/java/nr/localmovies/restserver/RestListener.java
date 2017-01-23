@@ -28,12 +28,15 @@ public class RestListener {
      */
     @RequestMapping(value = "/titlerequest", produces="application/json")
     public List<MovieInfo> titlerequest(@RequestParam(value = "path") String currentPath) {
+        List<MovieInfo> movieInfoList = new ArrayList<>();
         if(!currentPath.contains("LocalMedia")) {
             logger.severe("Path must contain 'LocalMedia' folder");
-            return null;
+            movieInfoList.add(MovieInfo.Builder.newInstance()
+                    .setTitle("Media path must contain 'LocalMedia' directory")
+                    .build());
+            return movieInfoList;
         }
         File[] fileArray = new File(currentPath).listFiles();
-        List<MovieInfo> movieInfoList = new ArrayList<>();
         if(fileArray == null || fileArray.length == 0){
             movieInfoList.add(MovieInfo.Builder.newInstance()
                     .setTitle("No Files found in this directory")

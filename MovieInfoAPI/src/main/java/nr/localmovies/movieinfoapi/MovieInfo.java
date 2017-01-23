@@ -17,7 +17,7 @@ public class MovieInfo {
     }
 
     public MovieInfo(){
-        ;
+        // Default constructor
     }
 
     public String getReleaseYear(){

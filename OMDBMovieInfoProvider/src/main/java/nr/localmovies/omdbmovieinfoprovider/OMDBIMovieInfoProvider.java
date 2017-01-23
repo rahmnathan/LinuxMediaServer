@@ -73,7 +73,7 @@ public class OMDBIMovieInfoProvider implements IMovieInfoProvider {
 
             StringBuilder stringBuilder = new StringBuilder();
             String string = br.readLine();
-            while (!(string == null)) {
+            while (string != null) {
                 stringBuilder.append(string);
                 string = br.readLine();
             }
@@ -94,6 +94,6 @@ public class OMDBIMovieInfoProvider implements IMovieInfoProvider {
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.toString(), e);
         }
-        return null;
+        return new byte[0];
     }
 }
