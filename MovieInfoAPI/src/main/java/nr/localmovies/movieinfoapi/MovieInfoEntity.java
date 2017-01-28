@@ -9,8 +9,6 @@ public class MovieInfoEntity {
     @Id
     private String id;
 
-    @Lob
-    @Basic
     @Column(name = "data")
     private String data;
 

@@ -11,6 +11,11 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,7 +29,7 @@ public class MovieInfoControl {
                             new CacheLoader<String, MovieInfo>() {
                                 @Override
                                 public MovieInfo load(String currentPath) {
-                                    if(repository.exists(currentPath)){
+                                    if(em.contains(new MovieInfoEntity(currentPath, ""))){
                                         return getFromDatabase(currentPath);
                                     } else if (currentPath.split("LocalMedia")[1].split("/").length == 3){
                                         return getFromOMDB(currentPath);
@@ -34,8 +39,7 @@ public class MovieInfoControl {
                                 }
                             });
 
-    @Autowired
-    private MovieInfoRepository repository;
+    EntityManager em = Persistence.createEntityManagerFactory("localmovies").createEntityManager();
     @Autowired
     private IMovieInfoProvider I_MOVIE_INFO_PROVIDER;
     private ObjectMapper mapper = new ObjectMapper();
@@ -43,7 +47,8 @@ public class MovieInfoControl {
 
     private MovieInfo getFromDatabase(String path){
         try {
-            return mapper.readValue(repository.findOne(path).getData(), MovieInfo.class);
+            return mapper.readValue(em.find(MovieInfoEntity.class, path).getData(), MovieInfo.class);
+            //return mapper.readValue(repository.findOne(path).getData(), MovieInfo.class);
         } catch (IOException e) {
             logger.log(Level.SEVERE, e.toString(), e);
         }
@@ -55,7 +60,7 @@ public class MovieInfoControl {
             String[] splitPath = path.split("/");
             String title = splitPath[splitPath.length - 1];
             MovieInfo movieInfo = I_MOVIE_INFO_PROVIDER.getMovieInfo(title);
-            repository.save(new MovieInfoEntity(path, mapper.writeValueAsString(movieInfo)));
+            em.persist(new MovieInfoEntity(path, mapper.writeValueAsString(movieInfo)));
             return movieInfo;
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.toString(), e);

@@ -79,7 +79,7 @@ public class OMDBIMovieInfoProvider implements IMovieInfoProvider {
             }
             br.close();
             urlConnection.disconnect();
-            return new JSONObject(stringBuilder);
+            return new JSONObject(stringBuilder.toString());
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.toString(), e);
         }
