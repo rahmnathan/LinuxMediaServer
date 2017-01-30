@@ -12,6 +12,16 @@
     <artifactId>RestServer</artifactId>
 
     <dependencies>
+        <!--<dependency>-->
+            <!--<groupId>org.keycloak</groupId>-->
+            <!--<artifactId>keycloak-spring-boot-adapter</artifactId>-->
+            <!--<version>2.5.1.Final</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.keycloak</groupId>-->
+            <!--<artifactId>keycloak-tomcat8-adapter</artifactId>-->
+            <!--<version>2.5.1.Final</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
