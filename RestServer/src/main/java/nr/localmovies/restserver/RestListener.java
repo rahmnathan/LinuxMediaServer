@@ -27,7 +27,7 @@ public class RestListener {
      * @return - List of files in specified directory
      */
     @RequestMapping(value = "/titlerequest", produces="application/json")
-    public List<MovieInfo> titlerequest(@RequestParam(value = "path") String currentPath) {
+    public List<MovieInfo> titleRequest(@RequestParam(value = "path") String currentPath) {
         List<MovieInfo> movieInfoList = new ArrayList<>();
         if(!currentPath.contains("LocalMedia")) {
             logger.severe("Path must contain 'LocalMedia' folder");
@@ -70,10 +70,12 @@ public class RestListener {
     @RequestMapping("/video.mp4")
     public void streamVideo(HttpServletResponse response, HttpServletRequest request,
                             @RequestParam("path") String path) throws IOException {
-        MultipartFileSender.fromFile(new File(path))
-                .with(response)
-                .with(request)
-                .serveResource();
+        if(path.contains("LocalMedia")) {
+            MultipartFileSender.fromFile(new File(path))
+                    .with(response)
+                    .with(request)
+                    .serveResource();
+        }
     }
 
     /**
@@ -84,6 +86,9 @@ public class RestListener {
      */
     @RequestMapping("/poster")
     public byte[] servePoster(@RequestParam("path") String path) throws ExecutionException {
+        if(!path.contains("LocalMedia"))
+            return null;
+
         MovieInfo info = movieInfoControl.MOVIE_INFO_LOADER.get(path);
         return Base64.getDecoder().decode(info.getImage());
     }
