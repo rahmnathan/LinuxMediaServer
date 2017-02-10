@@ -22,15 +22,16 @@ public class RestListener {
     private static Logger logger = Logger.getLogger(RestListener.class.getName());
 
     /**
-     *
      * @param currentPath - Path to directory you wish to list
      * @return - List of files in specified directory
      */
     @RequestMapping(value = "/titlerequest", produces="application/json")
-    public List<MovieInfo> titleRequest(@RequestParam(value = "path") String currentPath) {
+    public List<MovieInfo> titleRequest(
+            @RequestParam(value = "path") String currentPath, HttpServletRequest request) {
+
+        logger.log(Level.INFO, "Received request for - " + currentPath + " from " + request.getRemoteAddr());
         List<MovieInfo> movieInfoList = new ArrayList<>();
         if(!currentPath.contains("LocalMedia")) {
-            logger.severe("Path must contain 'LocalMedia' folder");
             movieInfoList.add(MovieInfo.Builder.newInstance()
                     .setTitle("Media path must contain 'LocalMedia' directory")
                     .build());
@@ -70,6 +71,7 @@ public class RestListener {
     @RequestMapping("/video.mp4")
     public void streamVideo(HttpServletResponse response, HttpServletRequest request,
                             @RequestParam("path") String path) throws IOException {
+        logger.info("Steaming - " + path + " to " + request.getRemoteAddr());
         if(path.contains("LocalMedia")) {
             MultipartFileSender.fromFile(new File(path))
                     .with(response)

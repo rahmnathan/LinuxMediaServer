@@ -22,10 +22,13 @@ public class MovieInfoControl {
                                 @Override
                                 public MovieInfo load(String currentPath) {
                                     if(repository.exists(currentPath)){
+                                        logger.info("Getting from database - " + currentPath);
                                         return getFromDatabase(currentPath);
                                     } else if (currentPath.split("LocalMedia")[1].split("/").length == 3){
+                                        logger.info("Getting from OMDB - " + currentPath);
                                         return getFromOMDB(currentPath);
                                     } else {
+                                        logger.info("Getting info from parent - " + currentPath);
                                         return getParentInfo(currentPath);
                                     }
                                 }

@@ -68,6 +68,7 @@ public class OMDBIMovieInfoProvider implements IMovieInfoProvider {
         String uri = "http://www.omdbapi.com/?t=";
         try {
             URL url = new URL(uri + title.replace(" ", "%20"));
+            logger.info("Getting info from OMDB - " + url.toString());
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
 
