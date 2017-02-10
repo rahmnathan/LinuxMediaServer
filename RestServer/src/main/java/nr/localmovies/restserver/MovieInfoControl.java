@@ -9,7 +9,6 @@ import nr.localmovies.movieinfoapi.MovieInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,8 +16,7 @@ import java.util.logging.Logger;
 public class MovieInfoControl {
     final LoadingCache<String, MovieInfo> MOVIE_INFO_LOADER =
             CacheBuilder.newBuilder()
-                    .maximumSize(250)
-                    .expireAfterAccess(30, TimeUnit.MINUTES)
+                    .maximumSize(400)
                     .build(
                             new CacheLoader<String, MovieInfo>() {
                                 @Override
