@@ -12,13 +12,21 @@ public class MovieInfoTest {
     public void movieInfoEntityTest(){
         EntityManager entityManager = Persistence.createEntityManagerFactory("localmoviestest").createEntityManager();
 
-        MovieInfoEntity originalEntity = new MovieInfoEntity("TestId", "TestData");
-        entityManager.persist(originalEntity);
+        MovieInfo originalMovieInfo = MovieInfo.Builder.newInstance()
+                .setImage("TestImage")
+                .setIMDBRating("5")
+                .setMetaRating("5")
+                .setTitle("TestTitle")
+                .setReleaseYear("ReleaseYear")
+                .setPath("TestPath")
+                .build();
 
-        MovieInfoEntity entityFromDatabase = entityManager.find(MovieInfoEntity.class, "TestId");
+        entityManager.persist(originalMovieInfo);
 
-        Assert.assertEquals(entityFromDatabase.getData(), originalEntity.getData());
-        Assert.assertEquals(entityFromDatabase.getId(), originalEntity.getId());
+        MovieInfo entityFromDatabase = entityManager.find(MovieInfo.class, "TestPath");
+
+        Assert.assertEquals(entityFromDatabase.getPath(), originalMovieInfo.getPath());
+        Assert.assertEquals(entityFromDatabase.getTitle(), originalMovieInfo.getTitle());
     }
 
     @Test

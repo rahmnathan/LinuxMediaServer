@@ -1,19 +1,29 @@
 package nr.localmovies.movieinfoapi;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+
+@Entity(name = "movies")
 public class MovieInfo {
 
+    @Id
+    private String path;
     private String title;
     private String IMDBRating;
     private String metaRating;
+
+    @Lob
     private String image;
     private String releaseYear;
 
-    private MovieInfo(String title, String IMDBRating, String metaRating, String image, String releaseYear) {
+    private MovieInfo(String title, String IMDBRating, String metaRating, String image, String releaseYear, String path) {
         this.title = title;
         this.IMDBRating = IMDBRating;
         this.metaRating = metaRating;
         this.image = image;
         this.releaseYear = releaseYear;
+        this.path = path;
     }
 
     public MovieInfo(){
@@ -38,6 +48,14 @@ public class MovieInfo {
 
     public String getImage() {
         return image;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 
     public void setTitle(String title) {
@@ -72,6 +90,7 @@ public class MovieInfo {
         private String metaRating;
         private String image;
         private String releaseYear;
+        private String path;
 
         public static Builder newInstance(){
             return new Builder();
@@ -101,8 +120,14 @@ public class MovieInfo {
             this.releaseYear = releaseYear;
             return this;
         }
+
+        public Builder setPath(String path){
+            this.path = path;
+            return this;
+        }
+
         public MovieInfo build(){
-            return new MovieInfo(title, IMDBRating, metaRating, image, releaseYear);
+            return new MovieInfo(title, IMDBRating, metaRating, image, releaseYear, path);
         }
     }
 }

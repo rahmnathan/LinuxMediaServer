@@ -5,13 +5,10 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import nr.localmovies.movieinfoapi.IMovieInfoProvider;
 import nr.localmovies.movieinfoapi.MovieInfo;
-import nr.localmovies.movieinfoapi.MovieInfoEntity;
 import nr.localmovies.movieinfoapi.MovieInfoRepository;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,16 +37,10 @@ public class MovieInfoControl {
     private MovieInfoRepository repository;
     @Autowired
     private IMovieInfoProvider I_MOVIE_INFO_PROVIDER;
-    private ObjectMapper mapper = new ObjectMapper();
     private static Logger logger = Logger.getLogger(RestListener.class.getName());
 
     private MovieInfo getFromDatabase(String path){
-        try {
-            return mapper.readValue(repository.findOne(path).getData(), MovieInfo.class);
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, e.toString(), e);
-        }
-        return null;
+        return repository.findOne(path);
     }
 
     private MovieInfo getFromOMDB(String path){
@@ -57,7 +48,8 @@ public class MovieInfoControl {
             String[] splitPath = path.split("/");
             String title = splitPath[splitPath.length - 1];
             MovieInfo movieInfo = I_MOVIE_INFO_PROVIDER.getMovieInfo(title);
-            repository.save(new MovieInfoEntity(path, mapper.writeValueAsString(movieInfo)));
+            movieInfo.setPath(path);
+            repository.save(movieInfo);
             return movieInfo;
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.toString(), e);
