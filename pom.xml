@@ -44,4 +44,17 @@
         </dependencies>
     </dependencyManagement>
 
+    <distributionManagement>
+        <repository>
+            <id>central</id>
+            <name>nathan-Satellite-L955-releases</name>
+            <url>http://192.168.1.110:8081/artifactory/snapshot-local</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>nathan-Satellite-L955-snapshots</name>
+            <url>http://192.168.1.110:8081/artifactory/snapshot-local</url>
+        </snapshotRepository>
+    </distributionManagement>
+
 </project>
