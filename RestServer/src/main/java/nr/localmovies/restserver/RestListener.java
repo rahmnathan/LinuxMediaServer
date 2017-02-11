@@ -27,7 +27,9 @@ public class RestListener {
      */
     @RequestMapping(value = "/titlerequest", produces="application/json")
     public List<MovieInfo> titleRequest(
-            @RequestParam(value = "path") String currentPath, HttpServletRequest request) {
+            @RequestParam(value = "path") String currentPath,
+            @RequestParam(value = "webRequest", required = false) boolean webRequest,
+            HttpServletRequest request, HttpServletResponse response) {
 
         logger.log(Level.INFO, "Received request for - " + currentPath + " from " + request.getRemoteAddr());
         List<MovieInfo> movieInfoList = new ArrayList<>();
@@ -46,11 +48,16 @@ public class RestListener {
         } else {
             for (File videoFile : fileArray) {
                 try {
-                    movieInfoList.add(movieInfoControl.MOVIE_INFO_LOADER.get(videoFile.getAbsolutePath()));
+                    MovieInfo info = movieInfoControl.MOVIE_INFO_LOADER.get(videoFile.getAbsolutePath());
+                    if(webRequest)
+                        info.setImage(null);
+
+                    movieInfoList.add(info);
                 } catch (ExecutionException e) {
                     logger.log(Level.SEVERE, e.toString(), e);
                 }
             }
+            response.addHeader("Access-Control-Allow-Origin", "*");
             return movieInfoList;
         }
     }
@@ -59,7 +66,8 @@ public class RestListener {
      * This endpoint clears the cache of all movie info
      */
     @RequestMapping("/refresh")
-    public void refresh(){
+    public void refresh(HttpServletResponse response){
+        response.addHeader("Access-Control-Allow-Origin", "*");
         movieInfoControl.MOVIE_INFO_LOADER.invalidateAll();
     }
 
@@ -73,6 +81,7 @@ public class RestListener {
                             @RequestParam("path") String path) throws IOException {
         logger.info("Steaming - " + path + " to " + request.getRemoteAddr());
         if(path.contains("LocalMedia")) {
+            response.addHeader("Access-Control-Allow-Origin", "*");
             MultipartFileSender.fromFile(new File(path))
                     .with(response)
                     .with(request)
@@ -87,11 +96,12 @@ public class RestListener {
      * @throws Exception
      */
     @RequestMapping("/poster")
-    public byte[] servePoster(@RequestParam("path") String path) throws ExecutionException {
+    public byte[] servePoster(@RequestParam("path") String path, HttpServletResponse response) throws ExecutionException {
         if(!path.contains("LocalMedia"))
             return null;
 
         MovieInfo info = movieInfoControl.MOVIE_INFO_LOADER.get(path);
+        response.addHeader("Access-Control-Allow-Origin", "*");
         return Base64.getDecoder().decode(info.getImage());
     }
 }
