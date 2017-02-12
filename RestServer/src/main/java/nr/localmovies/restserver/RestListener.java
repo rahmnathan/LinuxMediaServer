@@ -19,15 +19,14 @@ public class RestListener {
 
     @Autowired
     private MovieInfoControl movieInfoControl;
-    private static Logger logger = Logger.getLogger(RestListener.class.getName());
+    private static final Logger logger = Logger.getLogger(RestListener.class.getName());
 
     /**
      * @param currentPath - Path to directory you wish to list
      * @return - List of files in specified directory
      */
     @RequestMapping(value = "/titlerequest", produces="application/json")
-    public List<MovieInfo> titleRequest(
-            @RequestParam(value = "path") String currentPath,
+    public List<MovieInfo> titleRequest(@RequestParam(value = "path") String currentPath,
             HttpServletRequest request, HttpServletResponse response) {
 
         logger.log(Level.INFO, "Received request for - " + currentPath + " from " + request.getRemoteAddr());
@@ -44,18 +43,18 @@ public class RestListener {
                     .setTitle("No Files found in this directory")
                     .build());
             return movieInfoList;
-        } else {
-            for (File videoFile : fileArray) {
-                try {
-                    MovieInfo info = movieInfoControl.MOVIE_INFO_LOADER.get(videoFile.getAbsolutePath());
-                    movieInfoList.add(info);
-                } catch (ExecutionException e) {
-                    logger.log(Level.SEVERE, e.toString(), e);
-                }
-            }
-            response.addHeader("Access-Control-Allow-Origin", "*");
-            return movieInfoList;
         }
+
+        for (File videoFile : fileArray) {
+            try {
+                MovieInfo info = movieInfoControl.MOVIE_INFO_LOADER.get(videoFile.getAbsolutePath());
+                movieInfoList.add(info);
+            } catch (ExecutionException e) {
+                logger.log(Level.SEVERE, e.toString(), e);
+            }
+        }
+        response.addHeader("Access-Control-Allow-Origin", "*");
+        return movieInfoList;
     }
 
     /**
@@ -68,14 +67,13 @@ public class RestListener {
     }
 
     /**
-     *
      * @param path - Path to video file to stream
-     * @throws Exception
+     * throws Exception
      */
     @RequestMapping("/video.mp4")
     public void streamVideo(HttpServletResponse response, HttpServletRequest request,
                             @RequestParam("path") String path) throws IOException {
-        logger.info("Steaming - " + path + " to " + request.getRemoteAddr());
+        logger.info("Streaming - " + path + " to " + request.getRemoteAddr());
         if(path.contains("LocalMedia")) {
             response.addHeader("Access-Control-Allow-Origin", "*");
             MultipartFileSender.fromFile(new File(path))
@@ -86,10 +84,9 @@ public class RestListener {
     }
 
     /**
-     *
      * @param path - Path to video file
      * @return - Poster image for specified video file
-     * @throws Exception
+     * throws Exception
      */
     @RequestMapping("/poster")
     public byte[] servePoster(@RequestParam("path") String path, HttpServletResponse response) throws ExecutionException {
@@ -98,6 +95,10 @@ public class RestListener {
 
         MovieInfo info = movieInfoControl.MOVIE_INFO_LOADER.get(path);
         response.addHeader("Access-Control-Allow-Origin", "*");
-        return Base64.getDecoder().decode(info.getImage());
+        String image = info.getImage();
+        if(image == null)
+            return null;
+
+        return Base64.getDecoder().decode(image);
     }
 }

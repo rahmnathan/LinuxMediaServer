@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 @Component
 public class OMDBIMovieInfoProvider implements IMovieInfoProvider {
 
-    private static Logger logger = Logger.getLogger(OMDBIMovieInfoProvider.class.getName());
+    private static final Logger logger = Logger.getLogger(OMDBIMovieInfoProvider.class.getName());
 
     @Override
     public MovieInfo getMovieInfo(String title){

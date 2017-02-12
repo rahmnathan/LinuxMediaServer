@@ -38,7 +38,7 @@ public class MovieInfoControl {
     private MovieInfoRepository repository;
     @Autowired
     private IMovieInfoProvider I_MOVIE_INFO_PROVIDER;
-    private static Logger logger = Logger.getLogger(RestListener.class.getName());
+    private static final Logger logger = Logger.getLogger(RestListener.class.getName());
 
     private MovieInfo getFromDatabase(String path){
         return repository.findOne(path);

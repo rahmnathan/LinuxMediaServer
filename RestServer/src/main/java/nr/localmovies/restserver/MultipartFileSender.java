@@ -61,41 +61,6 @@ class MultipartFileSender {
         long lastModified = LocalDateTime.ofInstant(lastModifiedObj.toInstant(), ZoneId.of(ZoneOffset.systemDefault().getId())).toEpochSecond(ZoneOffset.UTC);
         String contentType = "video/mp4";
 
-        // If-None-Match header should contain "*" or ETag. If so, then return 304.
-        String ifNoneMatch = request.getHeader("If-None-Match");
-        if (ifNoneMatch != null && HttpUtils.matches(ifNoneMatch, fileName)) {
-            response.setHeader("ETag", fileName); // Required in 304.
-            response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
-            return;
-        }
-
-        // If-Modified-Since header should be greater than LastModified. If so, then return 304.
-        // This header is ignored if any If-None-Match header is specified.
-        long ifModifiedSince = request.getDateHeader("If-Modified-Since");
-        if (ifNoneMatch == null && ifModifiedSince != -1 && ifModifiedSince + 1000 > lastModified) {
-            response.setHeader("ETag", fileName); // Required in 304.
-            response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
-            return;
-        }
-
-        // Validate request headers for resume ----------------------------------------------------
-
-        // If-Match header should contain "*" or ETag. If not, then return 412.
-        String ifMatch = request.getHeader("If-Match");
-        if (ifMatch != null && !HttpUtils.matches(ifMatch, fileName)) {
-            response.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
-            return;
-        }
-
-        // If-Unmodified-Since header should be greater than LastModified. If not, then return 412.
-        long ifUnmodifiedSince = request.getDateHeader("If-Unmodified-Since");
-        if (ifUnmodifiedSince != -1 && ifUnmodifiedSince + 1000 <= lastModified) {
-            response.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
-            return;
-        }
-
-        // Validate and process range -------------------------------------------------------------
-
         // Prepare some variables. The full Range represents the complete file.
         Range full = new Range(0, length - 1, length);
         List<Range> ranges = new ArrayList<>();
@@ -157,9 +122,7 @@ class MultipartFileSender {
         // Get content type by file name and set content disposition.
         String disposition = "inline";
 
-        if (contentType == null) {
-            contentType = "application/octet-stream";
-        } else if (!contentType.startsWith("image")) {
+        if (!contentType.startsWith("image")) {
             // Else, expect for images, determine content disposition. If content type is supported by
             // the browser, then set to inline, else attachment which will pop a 'save as' dialogue.
             String accept = request.getHeader("Accept");
@@ -202,15 +165,11 @@ class MultipartFileSender {
                 Range.copy(input, output, length, r.start, r.length);
 
             } else {
-
-                // Return multiple parts of file.
                 response.setContentType("multipart/byteranges; boundary=" + MULTIPART_BOUNDARY);
                 response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT); // 206.
 
-                // Cast back to ServletOutputStream to get the easy println methods.
                 ServletOutputStream sos = (ServletOutputStream) output;
 
-                // Copy multi part range.
                 for (Range r : ranges) {
                     // Add multipart boundary and header fields for every range.
                     sos.println();
@@ -282,7 +241,6 @@ class MultipartFileSender {
         }
     }
     private static class HttpUtils {
-
         /**
          * Returns true if the given accept header accepts the given value.
          * @param acceptHeader The accept header.
@@ -296,19 +254,6 @@ class MultipartFileSender {
             return Arrays.binarySearch(acceptValues, toAccept) > -1
                     || Arrays.binarySearch(acceptValues, toAccept.replaceAll("/.*$", "/*")) > -1
                     || Arrays.binarySearch(acceptValues, "*/*") > -1;
-        }
-
-        /**
-         * Returns true if the given match header matches the given value.
-         * @param matchHeader The match header.
-         * @param toMatch The value to be matched.
-         * @return True if the given match header matches the given value.
-         */
-        static boolean matches(String matchHeader, String toMatch) {
-            String[] matchValues = matchHeader.split("\\s*,\\s*");
-            Arrays.sort(matchValues);
-            return Arrays.binarySearch(matchValues, toMatch) > -1
-                    || Arrays.binarySearch(matchValues, "*") > -1;
         }
     }
 }
