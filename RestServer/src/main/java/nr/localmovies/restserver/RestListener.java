@@ -28,7 +28,6 @@ public class RestListener {
     @RequestMapping(value = "/titlerequest", produces="application/json")
     public List<MovieInfo> titleRequest(
             @RequestParam(value = "path") String currentPath,
-            @RequestParam(value = "webRequest", required = false) boolean webRequest,
             HttpServletRequest request, HttpServletResponse response) {
 
         logger.log(Level.INFO, "Received request for - " + currentPath + " from " + request.getRemoteAddr());
@@ -49,9 +48,6 @@ public class RestListener {
             for (File videoFile : fileArray) {
                 try {
                     MovieInfo info = movieInfoControl.MOVIE_INFO_LOADER.get(videoFile.getAbsolutePath());
-                    if(webRequest)
-                        info.setImage(null);
-
                     movieInfoList.add(info);
                 } catch (ExecutionException e) {
                     logger.log(Level.SEVERE, e.toString(), e);
