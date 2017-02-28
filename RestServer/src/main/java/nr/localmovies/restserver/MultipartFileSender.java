@@ -21,8 +21,8 @@ import java.util.logging.Logger;
 @Component
 class MultipartFileSender {
 
-    private static final int DEFAULT_BUFFER_SIZE = 800000; // ..bytes - .8mb
-    private static final long DEFAULT_EXPIRE_TIME = 6048000L; // ..ms - 1.6hr
+    private static final int DEFAULT_BUFFER_SIZE = 80000; // ..bytes - .8mb
+    private static final long DEFAULT_EXPIRE_TIME = 60480000L; // ..ms - 1.6hr
     private static final String MULTIPART_BOUNDARY = "MULTIPART_BYTERANGES";
     private static final Logger logger = Logger.getLogger(MultipartFileSender.class.getName());
 
