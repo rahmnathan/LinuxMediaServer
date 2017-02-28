@@ -14,7 +14,11 @@ import java.util.logging.Logger;
 
 @Component
 public class MovieInfoControl {
-    final LoadingCache<String, MovieInfo> MOVIE_INFO_LOADER =
+    private MovieInfoRepository repository;
+    private IMovieInfoProvider movieInfoProvider;
+    private static final Logger logger = Logger.getLogger(RestListener.class.getName());
+
+    final LoadingCache<String, MovieInfo> movieInfoCache =
             CacheBuilder.newBuilder()
                     .maximumSize(400)
                     .build(
@@ -35,10 +39,10 @@ public class MovieInfoControl {
                             });
 
     @Autowired
-    private MovieInfoRepository repository;
-    @Autowired
-    private IMovieInfoProvider I_MOVIE_INFO_PROVIDER;
-    private static final Logger logger = Logger.getLogger(RestListener.class.getName());
+    public MovieInfoControl(MovieInfoRepository repository, IMovieInfoProvider movieInfoProvider){
+        this.repository = repository;
+        this.movieInfoProvider = movieInfoProvider;
+    }
 
     private MovieInfo getFromDatabase(String path){
         return repository.findOne(path);
@@ -48,7 +52,7 @@ public class MovieInfoControl {
         try {
             String[] splitPath = path.split("/");
             String title = splitPath[splitPath.length - 1];
-            MovieInfo movieInfo = I_MOVIE_INFO_PROVIDER.getMovieInfo(title);
+            MovieInfo movieInfo = movieInfoProvider.getMovieInfo(title);
             movieInfo.setPath(path);
             repository.save(movieInfo);
             return movieInfo;

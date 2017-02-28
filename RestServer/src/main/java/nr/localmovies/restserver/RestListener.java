@@ -18,11 +18,15 @@ import java.util.logging.Logger;
 @RestController
 public class RestListener {
 
-    @Autowired
     private MovieInfoControl movieInfoControl;
-    @Autowired
     private MultipartFileSender fileSender;
     private static final Logger logger = Logger.getLogger(RestListener.class.getName());
+
+    @Autowired
+    public RestListener(MovieInfoControl movieInfoControl, MultipartFileSender fileSender){
+        this.movieInfoControl = movieInfoControl;
+        this.fileSender = fileSender;
+    }
 
     /**
      * @param currentPath - Path to directory you wish to list
@@ -50,7 +54,7 @@ public class RestListener {
 
         for (File videoFile : fileArray) {
             try {
-                MovieInfo info = movieInfoControl.MOVIE_INFO_LOADER.get(videoFile.getAbsolutePath());
+                MovieInfo info = movieInfoControl.movieInfoCache.get(videoFile.getAbsolutePath());
                 movieInfoList.add(info);
             } catch (ExecutionException e) {
                 logger.log(Level.SEVERE, e.toString(), e);
@@ -66,7 +70,7 @@ public class RestListener {
     @RequestMapping("/refresh")
     public void refresh(HttpServletResponse response){
         response.addHeader("Access-Control-Allow-Origin", "*");
-        movieInfoControl.MOVIE_INFO_LOADER.invalidateAll();
+        movieInfoControl.movieInfoCache.invalidateAll();
     }
 
     /**
@@ -93,7 +97,7 @@ public class RestListener {
         if(!path.contains("LocalMedia"))
             return null;
 
-        MovieInfo info = movieInfoControl.MOVIE_INFO_LOADER.get(path);
+        MovieInfo info = movieInfoControl.movieInfoCache.get(path);
         response.addHeader("Access-Control-Allow-Origin", "*");
         String image = info.getImage();
         if(image == null)
