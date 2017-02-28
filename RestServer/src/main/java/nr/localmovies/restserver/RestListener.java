@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
@@ -19,6 +20,8 @@ public class RestListener {
 
     @Autowired
     private MovieInfoControl movieInfoControl;
+    @Autowired
+    private MultipartFileSender fileSender;
     private static final Logger logger = Logger.getLogger(RestListener.class.getName());
 
     /**
@@ -76,10 +79,7 @@ public class RestListener {
         logger.info("Streaming - " + path + " to " + request.getRemoteAddr());
         if(path.contains("LocalMedia")) {
             response.addHeader("Access-Control-Allow-Origin", "*");
-            MultipartFileSender.fromFile(new File(path))
-                    .with(response)
-                    .with(request)
-                    .serveResource();
+            fileSender.serveResource(Paths.get(path), request, response);
         }
     }
 

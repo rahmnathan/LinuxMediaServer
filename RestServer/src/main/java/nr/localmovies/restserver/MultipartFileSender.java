@@ -1,5 +1,7 @@
 package nr.localmovies.restserver;
 
+import org.springframework.stereotype.Component;
+
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,40 +18,15 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@Component
 class MultipartFileSender {
 
-    private static final int DEFAULT_BUFFER_SIZE = 4000; // ..bytes = 20KB.
-    private static final long DEFAULT_EXPIRE_TIME = 604800000L; // ..ms = 1 week.
+    private static final int DEFAULT_BUFFER_SIZE = 800000; // ..bytes - .8mb
+    private static final long DEFAULT_EXPIRE_TIME = 6048000L; // ..ms - 1.6hr
     private static final String MULTIPART_BOUNDARY = "MULTIPART_BYTERANGES";
     private static final Logger logger = Logger.getLogger(MultipartFileSender.class.getName());
 
-    private Path filepath;
-    private HttpServletRequest request;
-    private HttpServletResponse response;
-
-    private MultipartFileSender() {
-    }
-
-    static MultipartFileSender fromFile(File file) {
-        return new MultipartFileSender().setFilepath(file.toPath());
-    }
-
-    private MultipartFileSender setFilepath(Path filepath) {
-        this.filepath = filepath;
-        return this;
-    }
-
-    MultipartFileSender with(HttpServletRequest httpRequest) {
-        request = httpRequest;
-        return this;
-    }
-
-    MultipartFileSender with(HttpServletResponse httpResponse) {
-        response = httpResponse;
-        return this;
-    }
-
-    void serveResource() throws IOException {
+    void serveResource(Path filepath, HttpServletRequest request, HttpServletResponse response) throws IOException {
         if (response == null || request == null) {
             return;
         }
@@ -68,13 +45,6 @@ class MultipartFileSender {
         // Validate and process Range and If-Range headers.
         String range = request.getHeader("Range");
         if (range != null) {
-
-            // Range header should match format "bytes=n-n,n-n,n-n...". If not, then return 416.
-            if (!range.matches("^bytes=\\d*-\\d*(,\\d*-\\d*)*$")) {
-                response.setHeader("Content-Range", "bytes */" + length); // Required in 416.
-                response.sendError(HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE);
-                return;
-            }
 
             String ifRange = request.getHeader("If-Range");
             if (ifRange != null && !ifRange.equals(fileName)) {
