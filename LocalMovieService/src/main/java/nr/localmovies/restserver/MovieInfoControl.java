@@ -3,12 +3,15 @@ package nr.localmovies.restserver;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import nr.localmovies.exception.EmptyDirectoryException;
+import nr.localmovies.exception.UnauthorizedFolderException;
 import nr.localmovies.movieinfoapi.IMovieInfoProvider;
 import nr.localmovies.movieinfoapi.MovieInfo;
 import nr.localmovies.movieinfoapi.MovieInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -88,5 +91,16 @@ public class MovieInfoControl {
                 .setIMDBRating(info.getIMDBRating())
                 .setImage(info.getImage())
                 .build();
+    }
+
+    File[] listMovies(String path) throws UnauthorizedFolderException, EmptyDirectoryException {
+        File[] fileArray = new File(path).listFiles();
+        if(fileArray == null || fileArray.length == 0){
+            throw new EmptyDirectoryException();
+        }
+        if(!path.contains("LocalMedia")) {
+            throw new UnauthorizedFolderException();
+        }
+        return fileArray;
     }
 }

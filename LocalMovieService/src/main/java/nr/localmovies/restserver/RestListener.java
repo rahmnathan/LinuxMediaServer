@@ -1,5 +1,7 @@
 package nr.localmovies.restserver;
 
+import nr.localmovies.exception.EmptyDirectoryException;
+import nr.localmovies.exception.UnauthorizedFolderException;
 import nr.localmovies.movieinfoapi.MovieInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,25 +39,17 @@ public class RestListener {
             HttpServletRequest request, HttpServletResponse response) {
         logger.log(Level.INFO, "Received request for - " + currentPath + " from " + request.getRemoteAddr());
         List<MovieInfo> movieInfoList = new ArrayList<>();
-        if(!currentPath.contains("LocalMedia")) {
-            movieInfoList.add(MovieInfo.Builder.newInstance()
-                    .setTitle("Media path must contain 'LocalMedia' directory")
-                    .build());
-            return movieInfoList;
-        }
-        File[] fileArray = new File(currentPath).listFiles();
-        if(fileArray == null || fileArray.length == 0){
-            movieInfoList.add(MovieInfo.Builder.newInstance()
-                    .setTitle("No Files found in this directory")
-                    .build());
-            return movieInfoList;
-        }
-        for (File videoFile : fileArray) {
-            try {
-                movieInfoList.add(movieInfoControl.movieInfoCache.get(videoFile.getAbsolutePath()));
-            } catch (ExecutionException e) {
-                logger.log(Level.SEVERE, e.toString(), e);
+        try {
+            for (File videoFile : movieInfoControl.listMovies(currentPath)) {
+                try {
+                    movieInfoList.add(movieInfoControl.movieInfoCache.get(videoFile.getAbsolutePath()));
+                } catch (ExecutionException e) {
+                    logger.log(Level.SEVERE, e.toString(), e);
+                }
             }
+        } catch (UnauthorizedFolderException | EmptyDirectoryException e){
+            movieInfoList.add(MovieInfo.Builder.newInstance()
+                    .setTitle("Path must contain 'LocalMedia' directory and not be empty").build());
         }
         response.addHeader("Access-Control-Allow-Origin", "*");
         return movieInfoList;
