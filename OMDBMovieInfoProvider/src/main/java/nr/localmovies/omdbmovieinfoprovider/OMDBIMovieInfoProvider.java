@@ -34,7 +34,7 @@ public class OMDBIMovieInfoProvider implements IMovieInfoProvider {
         try {
             URL url = new URL(jsonMovieInfo.get("Poster").toString());
             poster = dataProvider.getImage(url);
-        }catch (MalformedURLException e){
+        }catch (Exception e){
             logger.log(Level.WARNING, "Unable to get poster for movie - " + title);
         }
 

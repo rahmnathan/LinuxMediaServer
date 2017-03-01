@@ -64,10 +64,13 @@ public class MovieInfoControl {
     private MovieInfo getParentInfo(String path) {
         logger.info("Getting info from parent - " + path);
         String[] currentPathArray = path.split("LocalMedia")[1].split("/");
+        int depth = 0;
+        if (currentPathArray.length == 4 || currentPathArray.length == 5)
+            depth = currentPathArray.length - 3;
 
         StringBuilder sb = new StringBuilder();
         String[] directoryArray = path.split("/");
-        for (int i = 0; i < directoryArray.length - currentPathArray.length - 3; i++) {
+        for (int i = 0; i < directoryArray.length - depth; i++) {
             sb.append(directoryArray[i]);
             sb.append("/");
         }

@@ -14,7 +14,7 @@ public class OMDBIMovieInfoProviderTest {
         jsonObject.put("Metascore", "10");
         jsonObject.put("Year", "2000");
 
-        MovieInfo movieInfo = new JsonToMovieInfoMapper().mapJsonToMovieInfo(jsonObject, new byte[0], "TestTitle");
+        MovieInfo movieInfo = new JsonToMovieInfoMapper().mapOmdbJsonToMovieInfo(jsonObject, new byte[0], "TestTitle");
         Assert.assertEquals("10", movieInfo.getIMDBRating());
         Assert.assertEquals("10", movieInfo.getMetaRating());
         Assert.assertEquals("2000", movieInfo.getReleaseYear());
