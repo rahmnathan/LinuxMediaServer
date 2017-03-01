@@ -22,7 +22,7 @@ public class RestListenerTest {
     @Mock
     private HttpServletRequest request;
     @InjectMocks
-    private RestListener restListener = new RestListener(movieInfoControl, null);
+    private RestListener restListener;
 
     @Test
     public void titleRequestExceptionTest() throws Exception {
