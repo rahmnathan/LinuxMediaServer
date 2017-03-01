@@ -94,7 +94,7 @@ public class MovieInfoControl {
                 .build();
     }
 
-    public File[] listMovies(String path) throws UnauthorizedFolderException, EmptyDirectoryException {
+    public File[] listFiles(String path) throws UnauthorizedFolderException, EmptyDirectoryException {
         File[] fileArray = new File(path).listFiles();
         if(fileArray == null || fileArray.length == 0){
             throw new EmptyDirectoryException();

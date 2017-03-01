@@ -27,7 +27,7 @@ public class RestListenerTest {
 
     @Test
     public void titleRequestExceptionTest() throws Exception {
-        when(movieInfoControl.listMovies("TestPath")).thenThrow(new EmptyDirectoryException());
+        when(movieInfoControl.listFiles("TestPath")).thenThrow(new EmptyDirectoryException());
         when(request.getRemoteAddr()).thenReturn("LocalHost");
         Assert.assertEquals("Path must contain 'LocalMedia' directory and not be empty",
                 restListener.titleRequest("TestPath", request, response).get(0).getTitle());

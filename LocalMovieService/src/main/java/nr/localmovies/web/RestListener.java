@@ -40,7 +40,7 @@ public class RestListener {
         logger.log(Level.INFO, "Received request for - " + currentPath + " from " + request.getRemoteAddr());
         List<MovieInfo> movieInfoList = new ArrayList<>();
         try {
-            for (File videoFile : movieInfoControl.listMovies(currentPath)) {
+            for (File videoFile : movieInfoControl.listFiles(currentPath)) {
                 movieInfoList.add(movieInfoControl.movieInfoCache.get(videoFile.getAbsolutePath()));
             }
         } catch (UnauthorizedFolderException | EmptyDirectoryException e){
