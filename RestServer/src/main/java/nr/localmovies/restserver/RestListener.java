@@ -35,7 +35,6 @@ public class RestListener {
     @RequestMapping(value = "/titlerequest", produces="application/json")
     public List<MovieInfo> titleRequest(@RequestParam(value = "path") String currentPath,
             HttpServletRequest request, HttpServletResponse response) {
-
         logger.log(Level.INFO, "Received request for - " + currentPath + " from " + request.getRemoteAddr());
         List<MovieInfo> movieInfoList = new ArrayList<>();
         if(!currentPath.contains("LocalMedia")) {
@@ -51,11 +50,9 @@ public class RestListener {
                     .build());
             return movieInfoList;
         }
-
         for (File videoFile : fileArray) {
             try {
-                MovieInfo info = movieInfoControl.movieInfoCache.get(videoFile.getAbsolutePath());
-                movieInfoList.add(info);
+                movieInfoList.add(movieInfoControl.movieInfoCache.get(videoFile.getAbsolutePath()));
             } catch (ExecutionException e) {
                 logger.log(Level.SEVERE, e.toString(), e);
             }

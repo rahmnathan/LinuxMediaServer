@@ -21,8 +21,8 @@ import java.util.logging.Logger;
 @Component
 class MultipartFileSender {
 
-    private static final int DEFAULT_BUFFER_SIZE = 80000; // ..bytes - .8mb
-    private static final long DEFAULT_EXPIRE_TIME = 60480000L; // ..ms - 1.6hr
+    private static final int DEFAULT_BUFFER_SIZE = 80000;
+    private static final long DEFAULT_EXPIRE_TIME = 60480000L;
     private static final String MULTIPART_BOUNDARY = "MULTIPART_BYTERANGES";
     private static final Logger logger = Logger.getLogger(MultipartFileSender.class.getName());
 
@@ -87,14 +87,10 @@ class MultipartFileSender {
             }
         }
 
-        // Prepare and initialize response --------------------------------------------------------
-
         // Get content type by file name and set content disposition.
         String disposition = "inline";
 
         if (!contentType.startsWith("image")) {
-            // Else, expect for images, determine content disposition. If content type is supported by
-            // the browser, then set to inline, else attachment which will pop a 'save as' dialogue.
             String accept = request.getHeader("Accept");
             disposition = accept != null && HttpUtils.accepts(accept, contentType) ? "inline" : "attachment";
         }
@@ -107,8 +103,6 @@ class MultipartFileSender {
         response.setHeader("ETag", fileName);
         response.setDateHeader("Last-Modified", lastModified);
         response.setDateHeader("Expires", System.currentTimeMillis() + DEFAULT_EXPIRE_TIME);
-
-        // Send requested file (part(s)) to client ------------------------------------------------
 
         // Prepare streams.
         try (InputStream input = new BufferedInputStream(Files.newInputStream(filepath));
@@ -151,7 +145,6 @@ class MultipartFileSender {
                     Range.copy(input, output, length, r.start, r.length);
                 }
 
-                // End with multipart boundary.
                 sos.println();
                 sos.println("--" + MULTIPART_BOUNDARY + "--");
             }

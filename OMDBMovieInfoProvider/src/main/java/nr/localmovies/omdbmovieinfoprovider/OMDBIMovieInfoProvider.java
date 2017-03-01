@@ -1,100 +1,43 @@
 package nr.localmovies.omdbmovieinfoprovider;
 
-import com.google.common.io.ByteStreams;
-
 import nr.localmovies.movieinfoapi.MovieInfo;
 import nr.localmovies.movieinfoapi.IMovieInfoProvider;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Component
 public class OMDBIMovieInfoProvider implements IMovieInfoProvider {
-
     private static final Logger logger = Logger.getLogger(OMDBIMovieInfoProvider.class.getName());
+    private OmdbDataProvider dataProvider;
+    private JsonToMovieInfoMapper movieInfoMapper;
+
+    @Autowired
+    public OMDBIMovieInfoProvider(OmdbDataProvider dataProvider, JsonToMovieInfoMapper movieInfoMapper){
+        this.dataProvider = dataProvider;
+        this.movieInfoMapper = movieInfoMapper;
+    }
 
     @Override
     public MovieInfo getMovieInfo(String title){
-        return getInfoFromOMDB(title);
-    }
-
-    private MovieInfo getInfoFromOMDB(String title) {
-        MovieInfo.Builder movieInfoBuilder = MovieInfo.Builder.newInstance();
-        movieInfoBuilder.setTitle(title);
+        String fileName = title;
         if(title.contains("."))
             title = title.substring(0, title.length()-4);
-        JSONObject jsonObject = getData(title);
 
-        if(jsonObject == null)
-            return movieInfoBuilder.build();
-
+        JSONObject jsonMovieInfo = dataProvider.getData(title);
+        byte[] poster = null;
         try {
-            movieInfoBuilder.setImage(Base64.getEncoder().encodeToString(getImage(jsonObject)));
-        } catch (Exception e) {
-            movieInfoBuilder.setImage(null);
-            logger.log(Level.WARNING, "No image for title - " + title, e);
-        }
-        try {
-            movieInfoBuilder.setIMDBRating(jsonObject.getString("imdbRating"));
-        } catch (Exception e) {
-            movieInfoBuilder.setIMDBRating("N/A");
-            logger.log(Level.WARNING, "No IMDB rating for title - " + title, e);
-        }
-        try {
-            movieInfoBuilder.setMetaRating(jsonObject.getString("Metascore"));
-        } catch (Exception e) {
-            movieInfoBuilder.setMetaRating("N/A");
-            logger.log(Level.WARNING, "No MetaCritic rating for title - " + title, e);
-        }
-        try {
-            movieInfoBuilder.setReleaseYear(jsonObject.getString("Year"));
-        } catch (Exception e) {
-            movieInfoBuilder.setReleaseYear("N/A");
-            logger.log(Level.WARNING, "No release year for title - " + title, e);
+            URL url = new URL(jsonMovieInfo.get("Poster").toString());
+            poster = dataProvider.getImage(url);
+        }catch (MalformedURLException e){
+            logger.log(Level.WARNING, "Unable to get poster for movie - " + title);
         }
 
-        return movieInfoBuilder.build();
-    }
-
-    private JSONObject getData(String title) {
-        String uri = "http://www.omdbapi.com/?t=";
-        try {
-            URL url = new URL(uri + title.replace(" ", "%20"));
-            logger.info("Getting info from OMDB - " + url.toString());
-            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-
-            StringBuilder stringBuilder = new StringBuilder();
-            String string = br.readLine();
-            while (string != null) {
-                stringBuilder.append(string);
-                string = br.readLine();
-            }
-            br.close();
-            urlConnection.disconnect();
-            return new JSONObject(stringBuilder.toString());
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.toString(), e);
-        }
-        return null;
-    }
-
-    private byte[] getImage(JSONObject jsonObject) {
-        try {
-            URL imageURL = new URL(jsonObject.get("Poster").toString());
-            InputStream is = imageURL.openConnection().getInputStream();
-            return ByteStreams.toByteArray(is);
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.toString(), e);
-        }
-        return new byte[0];
+        return movieInfoMapper.mapJsonToMovieInfo(jsonMovieInfo, poster, fileName);
     }
 }

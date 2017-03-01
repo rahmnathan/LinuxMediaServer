@@ -27,6 +27,10 @@ public class MovieInfoTest {
 
         Assert.assertEquals(entityFromDatabase.getPath(), originalMovieInfo.getPath());
         Assert.assertEquals(entityFromDatabase.getTitle(), originalMovieInfo.getTitle());
+        Assert.assertEquals(entityFromDatabase.getReleaseYear(), originalMovieInfo.getReleaseYear());
+        Assert.assertEquals(entityFromDatabase.getMetaRating(), originalMovieInfo.getMetaRating());
+        Assert.assertEquals(entityFromDatabase.getIMDBRating(), originalMovieInfo.getIMDBRating());
+        Assert.assertEquals(entityFromDatabase.getImage(), originalMovieInfo.getImage());
     }
 
     @Test

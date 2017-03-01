@@ -26,13 +26,10 @@ public class MovieInfoControl {
                                 @Override
                                 public MovieInfo load(String currentPath) {
                                     if(repository.exists(currentPath)){
-                                        logger.info("Getting from database - " + currentPath);
                                         return getFromDatabase(currentPath);
                                     } else if (currentPath.split("LocalMedia")[1].split("/").length == 3){
-                                        logger.info("Getting from OMDB - " + currentPath);
                                         return getFromOMDB(currentPath);
                                     } else {
-                                        logger.info("Getting info from parent - " + currentPath);
                                         return getParentInfo(currentPath);
                                     }
                                 }
@@ -45,10 +42,12 @@ public class MovieInfoControl {
     }
 
     private MovieInfo getFromDatabase(String path){
+        logger.info("Getting from database - " + path);
         return repository.findOne(path);
     }
 
     private MovieInfo getFromOMDB(String path){
+        logger.info("Getting from OMDB - " + path);
         try {
             String[] splitPath = path.split("/");
             String title = splitPath[splitPath.length - 1];
@@ -63,20 +62,16 @@ public class MovieInfoControl {
     }
 
     private MovieInfo getParentInfo(String path) {
+        logger.info("Getting info from parent - " + path);
         String[] currentPathArray = path.split("LocalMedia")[1].split("/");
-        int depth = 0;
-        if (currentPathArray.length == 4)
-            depth = 1;
-        else if (currentPathArray.length == 5)
-            depth = 2;
 
-        StringBuilder stringBuilder = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         String[] directoryArray = path.split("/");
-        for (int i = 0; i < directoryArray.length - depth; i++) {
-            stringBuilder.append(directoryArray[i]);
-            stringBuilder.append("/");
+        for (int i = 0; i < directoryArray.length - currentPathArray.length - 3; i++) {
+            sb.append(directoryArray[i]);
+            sb.append("/");
         }
-        String parentPath = stringBuilder.toString().substring(0, stringBuilder.length() - 1);
+        String parentPath = sb.toString().substring(0, sb.length() - 1);
         MovieInfo info = getFromDatabase(parentPath);
         MovieInfo.Builder builder = MovieInfo.Builder.newInstance();
 
