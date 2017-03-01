@@ -20,8 +20,8 @@ import java.util.logging.Logger;
 @RestController
 public class RestListener {
 
-    private MovieInfoControl movieInfoControl;
-    private MultipartFileSender fileSender;
+    private final MovieInfoControl movieInfoControl;
+    private final MultipartFileSender fileSender;
     private static final Logger logger = Logger.getLogger(RestListener.class.getName());
 
     @Autowired

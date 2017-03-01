@@ -153,10 +153,10 @@ class MultipartFileSender {
     }
 
     private static class Range {
-        long start;
-        long end;
-        long length;
-        long total;
+        final long start;
+        final long end;
+        final long length;
+        final long total;
 
         /**
          * Construct a byte range.

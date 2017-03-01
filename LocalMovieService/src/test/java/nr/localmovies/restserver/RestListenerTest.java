@@ -15,19 +15,17 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RestListenerTest {
-
     @Mock
-    MovieInfoControl movieInfoControl;
+    private MovieInfoControl movieInfoControl;
     @Mock
-    HttpServletResponse response;
+    private HttpServletResponse response;
     @Mock
-    HttpServletRequest request;
-
+    private HttpServletRequest request;
     @InjectMocks
-    RestListener restListener = new RestListener(movieInfoControl, null);
+    private RestListener restListener = new RestListener(movieInfoControl, null);
 
     @Test
-    public void titleRequestTest() throws Exception {
+    public void titleRequestExceptionTest() throws Exception {
         when(movieInfoControl.listMovies("TestPath")).thenThrow(new EmptyDirectoryException());
         when(request.getRemoteAddr()).thenReturn("LocalHost");
         Assert.assertEquals("Path must contain 'LocalMedia' directory and not be empty",

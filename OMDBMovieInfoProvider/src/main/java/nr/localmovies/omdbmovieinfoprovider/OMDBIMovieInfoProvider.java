@@ -6,7 +6,6 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,8 +13,8 @@ import java.util.logging.Logger;
 @Component
 public class OMDBIMovieInfoProvider implements IMovieInfoProvider {
     private static final Logger logger = Logger.getLogger(OMDBIMovieInfoProvider.class.getName());
-    private OmdbDataProvider dataProvider;
-    private JsonToMovieInfoMapper movieInfoMapper;
+    private final OmdbDataProvider dataProvider;
+    private final JsonToMovieInfoMapper movieInfoMapper;
 
     @Autowired
     public OMDBIMovieInfoProvider(OmdbDataProvider dataProvider, JsonToMovieInfoMapper movieInfoMapper){

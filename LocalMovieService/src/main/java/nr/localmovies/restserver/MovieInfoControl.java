@@ -17,8 +17,8 @@ import java.util.logging.Logger;
 
 @Component
 public class MovieInfoControl {
-    private MovieInfoRepository repository;
-    private IMovieInfoProvider movieInfoProvider;
+    private final MovieInfoRepository repository;
+    private final IMovieInfoProvider movieInfoProvider;
     private static final Logger logger = Logger.getLogger(RestListener.class.getName());
 
     final LoadingCache<String, MovieInfo> movieInfoCache =
