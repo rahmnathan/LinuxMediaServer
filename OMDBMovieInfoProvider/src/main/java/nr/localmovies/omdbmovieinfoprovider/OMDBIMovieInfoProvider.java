@@ -38,6 +38,6 @@ public class OMDBIMovieInfoProvider implements IMovieInfoProvider {
             logger.log(Level.WARNING, "Unable to get poster for movie - " + title);
         }
 
-        return movieInfoMapper.mapJsonToMovieInfo(jsonMovieInfo, poster, fileName);
+        return movieInfoMapper.mapOmdbJsonToMovieInfo(jsonMovieInfo, poster, fileName);
     }
 }

@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 class JsonToMovieInfoMapper {
     private static final Logger logger = Logger.getLogger(JsonToMovieInfoMapper.class.getName());
 
-    MovieInfo mapJsonToMovieInfo(JSONObject jsonObject, byte[] poster, String title){
+    MovieInfo mapOmdbJsonToMovieInfo(JSONObject jsonObject, byte[] poster, String title){
         MovieInfo.Builder movieInfoBuilder = MovieInfo.Builder.newInstance();
         movieInfoBuilder.setTitle(title);
 
