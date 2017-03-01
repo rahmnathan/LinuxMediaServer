@@ -1,4 +1,4 @@
-package nr.localmovies.restserver;
+package nr.localmovies.web;
 
 import org.springframework.stereotype.Component;
 

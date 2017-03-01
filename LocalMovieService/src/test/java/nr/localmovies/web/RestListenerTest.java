@@ -1,5 +1,6 @@
-package nr.localmovies.restserver;
+package nr.localmovies.web;
 
+import nr.localmovies.control.MovieInfoControl;
 import nr.localmovies.exception.EmptyDirectoryException;
 import org.junit.Assert;
 import org.junit.Test;

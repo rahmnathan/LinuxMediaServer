@@ -1,4 +1,4 @@
-package nr.localmovies.restserver;
+package nr.localmovies.application;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

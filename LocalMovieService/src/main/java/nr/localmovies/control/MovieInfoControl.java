@@ -1,4 +1,4 @@
-package nr.localmovies.restserver;
+package nr.localmovies.control;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -8,6 +8,7 @@ import nr.localmovies.exception.UnauthorizedFolderException;
 import nr.localmovies.movieinfoapi.IMovieInfoProvider;
 import nr.localmovies.movieinfoapi.MovieInfo;
 import nr.localmovies.movieinfoapi.MovieInfoRepository;
+import nr.localmovies.web.RestListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,9 +22,9 @@ public class MovieInfoControl {
     private final IMovieInfoProvider movieInfoProvider;
     private static final Logger logger = Logger.getLogger(RestListener.class.getName());
 
-    final LoadingCache<String, MovieInfo> movieInfoCache =
+    public final LoadingCache<String, MovieInfo> movieInfoCache =
             CacheBuilder.newBuilder()
-                    .maximumSize(400)
+                    .maximumSize(500)
                     .build(
                             new CacheLoader<String, MovieInfo>() {
                                 @Override
@@ -93,7 +94,7 @@ public class MovieInfoControl {
                 .build();
     }
 
-    File[] listMovies(String path) throws UnauthorizedFolderException, EmptyDirectoryException {
+    public File[] listMovies(String path) throws UnauthorizedFolderException, EmptyDirectoryException {
         File[] fileArray = new File(path).listFiles();
         if(fileArray == null || fileArray.length == 0){
             throw new EmptyDirectoryException();

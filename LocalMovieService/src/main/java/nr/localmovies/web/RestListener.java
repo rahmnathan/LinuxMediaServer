@@ -1,5 +1,6 @@
-package nr.localmovies.restserver;
+package nr.localmovies.web;
 
+import nr.localmovies.control.MovieInfoControl;
 import nr.localmovies.exception.EmptyDirectoryException;
 import nr.localmovies.exception.UnauthorizedFolderException;
 import nr.localmovies.movieinfoapi.MovieInfo;
@@ -19,7 +20,6 @@ import java.util.logging.Logger;
 
 @RestController
 public class RestListener {
-
     private final MovieInfoControl movieInfoControl;
     private final MultipartFileSender fileSender;
     private static final Logger logger = Logger.getLogger(RestListener.class.getName());
@@ -36,16 +36,12 @@ public class RestListener {
      */
     @RequestMapping(value = "/titlerequest", produces="application/json")
     public List<MovieInfo> titleRequest(@RequestParam(value = "path") String currentPath,
-            HttpServletRequest request, HttpServletResponse response) {
+            HttpServletRequest request, HttpServletResponse response) throws ExecutionException {
         logger.log(Level.INFO, "Received request for - " + currentPath + " from " + request.getRemoteAddr());
         List<MovieInfo> movieInfoList = new ArrayList<>();
         try {
             for (File videoFile : movieInfoControl.listMovies(currentPath)) {
-                try {
-                    movieInfoList.add(movieInfoControl.movieInfoCache.get(videoFile.getAbsolutePath()));
-                } catch (ExecutionException e) {
-                    logger.log(Level.SEVERE, e.toString(), e);
-                }
+                movieInfoList.add(movieInfoControl.movieInfoCache.get(videoFile.getAbsolutePath()));
             }
         } catch (UnauthorizedFolderException | EmptyDirectoryException e){
             movieInfoList.add(MovieInfo.Builder.newInstance()
