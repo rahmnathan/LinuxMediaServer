@@ -1,8 +1,7 @@
 package nr.localmovies.web;
 
+import nr.localmovies.boundary.MovieInfoBoundary;
 import nr.localmovies.control.MovieInfoControl;
-import nr.localmovies.exception.EmptyDirectoryException;
-import nr.localmovies.exception.UnauthorizedFolderException;
 import nr.localmovies.movieinfoapi.MovieInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,44 +19,27 @@ import java.util.logging.Logger;
 
 @RestController
 public class RestListener {
-    private final MovieInfoControl movieInfoControl;
+    private final MovieInfoBoundary movieInfoBoundary;
     private final MultipartFileSender fileSender;
     private static final Logger logger = Logger.getLogger(RestListener.class.getName());
 
     @Autowired
-    public RestListener(MovieInfoControl movieInfoControl, MultipartFileSender fileSender){
-        this.movieInfoControl = movieInfoControl;
+    public RestListener(MovieInfoBoundary movieInfoControl, MultipartFileSender fileSender){
+        this.movieInfoBoundary = movieInfoControl;
         this.fileSender = fileSender;
     }
 
     /**
-     * @param currentPath - Path to directory you wish to list
+     * @param directoryPath - Path to directory you wish to list
      * @return - List of files in specified directory
      */
     @RequestMapping(value = "/titlerequest", produces="application/json")
-    public List<MovieInfo> titleRequest(@RequestParam(value = "path") String currentPath,
+    public List<MovieInfo> titleRequest(@RequestParam(value = "path") String directoryPath,
             HttpServletRequest request, HttpServletResponse response) throws ExecutionException {
-        logger.log(Level.INFO, "Received request for - " + currentPath + " from " + request.getRemoteAddr());
-        List<MovieInfo> movieInfoList = new ArrayList<>();
-        try {
-            for (File videoFile : movieInfoControl.listFiles(currentPath)) {
-                movieInfoList.add(movieInfoControl.movieInfoCache.get(videoFile.getAbsolutePath()));
-            }
-        } catch (UnauthorizedFolderException | EmptyDirectoryException e){
-            movieInfoList.add(MovieInfo.Builder.newInstance()
-                    .setTitle("Path must contain 'LocalMedia' directory and not be empty").build());
-        }
-        response.addHeader("Access-Control-Allow-Origin", "*");
-        return movieInfoList;
-    }
 
-    /**
-     * This endpoint clears the cache of all movie info
-     */
-    @RequestMapping("/refresh")
-    public void refresh(HttpServletResponse response){
+        logger.log(Level.INFO, "Received request for - " + directoryPath + " from " + request.getRemoteAddr());
         response.addHeader("Access-Control-Allow-Origin", "*");
-        movieInfoControl.movieInfoCache.invalidateAll();
+        return movieInfoBoundary.loadMovieInfoList(directoryPath);
     }
 
     /**
@@ -67,26 +49,23 @@ public class RestListener {
     @RequestMapping("/video.mp4")
     public void streamVideo(HttpServletResponse response, HttpServletRequest request,
                             @RequestParam("path") String path) throws IOException {
-        logger.info("Streaming - " + path + " to " + request.getRemoteAddr());
+
         if(path.contains("LocalMedia")) {
+            logger.info("Streaming - " + path + " to " + request.getRemoteAddr());
             response.addHeader("Access-Control-Allow-Origin", "*");
             fileSender.serveResource(Paths.get(path), request, response);
         }
     }
 
     /**
-     * @param path - Path to video file
+     * @param filePath - Path to video file
      * @return - Poster image for specified video file
      * throws Exception
      */
     @RequestMapping("/poster")
-    public byte[] servePoster(@RequestParam("path") String path, HttpServletResponse response) throws ExecutionException {
-        if(!path.contains("LocalMedia"))
-            return null;
-
-        MovieInfo info = movieInfoControl.movieInfoCache.get(path);
+    public byte[] servePoster(@RequestParam("path") String filePath, HttpServletResponse response) throws ExecutionException {
         response.addHeader("Access-Control-Allow-Origin", "*");
-        String image = info.getImage();
+        String image = movieInfoBoundary.loadMovieInfo(filePath).getImage();
         if(image == null)
             return null;
 

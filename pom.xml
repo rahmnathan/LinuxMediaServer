@@ -9,9 +9,10 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>LocalMovieService</module>
-        <module>MovieInfoAPI</module>
-        <module>OMDBMovieInfoProvider</module>
+        <module>local-movie-info-api</module>
+        <module>local-movie-info-omdb</module>
+        <module>local-movie-service</module>
+        <module>local-movie-web</module>
     </modules>
 
     <parent>
@@ -38,18 +39,4 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
-    <distributionManagement>
-        <repository>
-            <id>central</id>
-            <name>nathan-Satellite-L955-releases</name>
-            <url>http://192.168.1.110:8081/artifactory/snapshot-local</url>
-        </repository>
-        <snapshotRepository>
-            <id>snapshots</id>
-            <name>nathan-Satellite-L955-snapshots</name>
-            <url>http://192.168.1.110:8081/artifactory/snapshot-local</url>
-        </snapshotRepository>
-    </distributionManagement>
-
 </project>
