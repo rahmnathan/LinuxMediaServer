@@ -1,7 +1,6 @@
 package nr.localmovies.web;
 
 import nr.localmovies.boundary.MovieInfoBoundary;
-import nr.localmovies.control.MovieInfoControl;
 import nr.localmovies.movieinfoapi.MovieInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,33 +38,33 @@ public class RestListener {
 
         logger.log(Level.INFO, "Received request for - " + directoryPath + " from " + request.getRemoteAddr());
         response.addHeader("Access-Control-Allow-Origin", "*");
-        return movieInfoBoundary.loadMovieInfoList(directoryPath);
+        return movieInfoBoundary.loadMovieList(directoryPath);
     }
 
     /**
-     * @param path - Path to video file to stream
+     * @param moviePath - Path to video file to stream
      * throws Exception
      */
     @RequestMapping("/video.mp4")
     public void streamVideo(HttpServletResponse response, HttpServletRequest request,
-                            @RequestParam("path") String path) throws IOException {
+                            @RequestParam("path") String moviePath) throws IOException {
 
-        if(path.contains("LocalMedia")) {
-            logger.info("Streaming - " + path + " to " + request.getRemoteAddr());
+        if(moviePath.contains("LocalMedia")) {
+            logger.info("Streaming - " + moviePath + " to " + request.getRemoteAddr());
             response.addHeader("Access-Control-Allow-Origin", "*");
-            fileSender.serveResource(Paths.get(path), request, response);
+            fileSender.serveResource(Paths.get(moviePath), request, response);
         }
     }
 
     /**
-     * @param filePath - Path to video file
+     * @param moviePath - Path to video file
      * @return - Poster image for specified video file
      * throws Exception
      */
     @RequestMapping("/poster")
-    public byte[] servePoster(@RequestParam("path") String filePath, HttpServletResponse response) throws ExecutionException {
+    public byte[] servePoster(@RequestParam("path") String moviePath, HttpServletResponse response) throws ExecutionException {
         response.addHeader("Access-Control-Allow-Origin", "*");
-        String image = movieInfoBoundary.loadMovieInfo(filePath).getImage();
+        String image = movieInfoBoundary.loadSingleMovie(moviePath).getImage();
         if(image == null)
             return null;
 

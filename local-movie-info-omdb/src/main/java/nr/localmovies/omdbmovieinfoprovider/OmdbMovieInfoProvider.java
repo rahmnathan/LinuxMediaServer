@@ -16,30 +16,30 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Component
-public class OMDBIMovieInfoProvider implements IMovieInfoProvider {
-    private static final Logger logger = Logger.getLogger(OMDBIMovieInfoProvider.class.getName());
+public class OmdbMovieInfoProvider implements IMovieInfoProvider {
+    private static final Logger logger = Logger.getLogger(OmdbMovieInfoProvider.class.getName());
     private final OmdbDataProvider dataProvider;
     private final JsonToMovieInfoMapper movieInfoMapper;
 
     @Autowired
-    public OMDBIMovieInfoProvider(OmdbDataProvider dataProvider, JsonToMovieInfoMapper movieInfoMapper){
+    public OmdbMovieInfoProvider(OmdbDataProvider dataProvider, JsonToMovieInfoMapper movieInfoMapper){
         this.dataProvider = dataProvider;
         this.movieInfoMapper = movieInfoMapper;
     }
 
     @Override
-    public MovieInfo getMovieInfo(String title){
+    public MovieInfo loadMovieInfo(String title){
         String fileName = title;
         if(title.contains("."))
             title = title.substring(0, title.length()-4);
 
-        JSONObject jsonMovieInfo = dataProvider.getData(title);
+        JSONObject jsonMovieInfo = dataProvider.loadMovieInfo(title);
         byte[] poster = null;
         try {
             URL url = new URL(jsonMovieInfo.get("Poster").toString());
-            poster = dataProvider.getImage(url);
+            poster = dataProvider.loadMoviePoster(url);
             poster = scaleImage(poster);
-        }catch (Exception e){
+        } catch (Exception e){
             logger.log(Level.WARNING, "Unable to get poster for movie - " + title);
         }
 

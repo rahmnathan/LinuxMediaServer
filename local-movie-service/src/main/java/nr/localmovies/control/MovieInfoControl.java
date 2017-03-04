@@ -9,6 +9,7 @@ import nr.localmovies.movieinfoapi.MovieInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,7 +19,7 @@ public class MovieInfoControl {
     private final IMovieInfoProvider movieInfoProvider;
     private static final Logger logger = Logger.getLogger(MovieInfoControl.class.getName());
 
-    public final LoadingCache<String, MovieInfo> movieInfoCache =
+    private final LoadingCache<String, MovieInfo> movieInfoCache =
             CacheBuilder.newBuilder()
                     .maximumSize(500)
                     .build(
@@ -26,11 +27,11 @@ public class MovieInfoControl {
                                 @Override
                                 public MovieInfo load(String currentPath) {
                                     if(repository.exists(currentPath)){
-                                        return getFromDatabase(currentPath);
+                                        return loadMovieInfoFromDatabase(currentPath);
                                     } else if (currentPath.split("LocalMedia")[1].split("/").length == 3){
-                                        return getFromOMDB(currentPath);
+                                        return loadMovieInfoFromOmdb(currentPath);
                                     } else {
-                                        return getParentInfo(currentPath);
+                                        return loadSeriesParentInfo(currentPath);
                                     }
                                 }
                             });
@@ -41,17 +42,26 @@ public class MovieInfoControl {
         this.movieInfoProvider = movieInfoProvider;
     }
 
-    private MovieInfo getFromDatabase(String path){
+    public MovieInfo loadMovieInfoFromCache(String path){
+        try {
+            return movieInfoCache.get(path);
+        } catch (ExecutionException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private MovieInfo loadMovieInfoFromDatabase(String path){
         logger.info("Getting from database - " + path);
         return repository.findOne(path);
     }
 
-    private MovieInfo getFromOMDB(String path){
+    private MovieInfo loadMovieInfoFromOmdb(String path){
         logger.info("Getting from OMDB - " + path);
         try {
             String[] splitPath = path.split("/");
             String title = splitPath[splitPath.length - 1];
-            MovieInfo movieInfo = movieInfoProvider.getMovieInfo(title);
+            MovieInfo movieInfo = movieInfoProvider.loadMovieInfo(title);
             movieInfo.setPath(path);
             repository.save(movieInfo);
             return movieInfo;
@@ -61,7 +71,7 @@ public class MovieInfoControl {
         return null;
     }
 
-    private MovieInfo getParentInfo(String path) {
+    private MovieInfo loadSeriesParentInfo(String path) {
         logger.info("Getting info from parent - " + path);
         String[] currentPathArray = path.split("LocalMedia")[1].split("/");
         int depth = 0;
@@ -75,18 +85,18 @@ public class MovieInfoControl {
             sb.append("/");
         }
         String parentPath = sb.toString().substring(0, sb.length() - 1);
-        MovieInfo info = getFromDatabase(parentPath);
-        MovieInfo.Builder builder = MovieInfo.Builder.newInstance();
+        MovieInfo movieInfo = loadMovieInfoFromDatabase(parentPath);
+        MovieInfo.Builder movieInfoBuilder = MovieInfo.Builder.newInstance();
 
-        if(info == null)
-            return builder.build();
+        if(movieInfo == null)
+            return movieInfoBuilder.build();
 
-        return builder
+        return movieInfoBuilder
                 .setTitle(currentPathArray[currentPathArray.length - 1])
-                .setReleaseYear(info.getReleaseYear())
-                .setMetaRating(info.getMetaRating())
-                .setIMDBRating(info.getIMDBRating())
-                .setImage(info.getImage())
+                .setReleaseYear(movieInfo.getReleaseYear())
+                .setMetaRating(movieInfo.getMetaRating())
+                .setIMDBRating(movieInfo.getIMDBRating())
+                .setImage(movieInfo.getImage())
                 .build();
     }
 }

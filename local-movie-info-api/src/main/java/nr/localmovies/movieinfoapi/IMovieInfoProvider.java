@@ -3,5 +3,5 @@ package nr.localmovies.movieinfoapi;
 @FunctionalInterface
 public interface IMovieInfoProvider {
 
-    MovieInfo getMovieInfo(String title);
+    MovieInfo loadMovieInfo(String title);
 }

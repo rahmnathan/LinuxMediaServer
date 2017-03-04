@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 class OmdbDataProvider {
     private static final Logger logger = Logger.getLogger(OmdbDataProvider.class.getName());
 
-    JSONObject getData(String title) {
+    JSONObject loadMovieInfo(String title) {
         String uri = "http://www.omdbapi.com/?t=";
         try {
             URL url = new URL(uri + title.replace(" ", "%20"));
@@ -24,10 +24,10 @@ class OmdbDataProvider {
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
             StringBuilder stringBuilder = new StringBuilder();
-            String string = br.readLine();
-            while (string != null) {
-                stringBuilder.append(string);
-                string = br.readLine();
+            String inputString = br.readLine();
+            while (inputString != null) {
+                stringBuilder.append(inputString);
+                inputString = br.readLine();
             }
             br.close();
             urlConnection.disconnect();
@@ -38,13 +38,8 @@ class OmdbDataProvider {
         return null;
     }
 
-    byte[] getImage(URL imageURL) {
-        try {
-            InputStream is = imageURL.openConnection().getInputStream();
-            return ByteStreams.toByteArray(is);
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.toString(), e);
-        }
-        return new byte[0];
+    byte[] loadMoviePoster(URL imageURL) throws Exception {
+        InputStream is = imageURL.openConnection().getInputStream();
+        return ByteStreams.toByteArray(is);
     }
 }

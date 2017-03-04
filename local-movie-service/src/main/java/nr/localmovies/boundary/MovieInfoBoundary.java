@@ -22,34 +22,26 @@ public class MovieInfoBoundary {
         this.movieInfoControl = movieInfoControl;
     }
 
-    public List<MovieInfo> loadMovieInfoList(String directoryPath) {
+    public List<MovieInfo> loadMovieList(String directoryPath) {
         List<MovieInfo> movieInfoList = new ArrayList<>();
-        try {
-            for (File videoFile : listFiles(directoryPath)) {
-                movieInfoList.add(movieInfoControl.movieInfoCache.get(videoFile.getAbsolutePath()));
-            }
-        } catch (UnauthorizedFolderException | EmptyDirectoryException | ExecutionException e){
+        File[] files = new File(directoryPath).listFiles();
+        if(files == null || files.length == 0){
             movieInfoList.add(MovieInfo.Builder.newInstance()
-                    .setTitle("Path must contain 'LocalMedia' directory and not be empty").build());
+                    .setTitle("Path must contain 'LocalMedia' directory and not be empty")
+                    .build());
+            return movieInfoList;
+        }
+
+        for (File videoFile : files) {
+            movieInfoList.add(movieInfoControl.loadMovieInfoFromCache(videoFile.getAbsolutePath()));
         }
         return movieInfoList;
     }
 
-    public MovieInfo loadMovieInfo(String filePath) throws ExecutionException {
+    public MovieInfo loadSingleMovie(String filePath) throws ExecutionException {
         if (!filePath.contains("LocalMedia"))
             return null;
 
-        return movieInfoControl.movieInfoCache.get(filePath);
-    }
-
-    private File[] listFiles(String path) throws UnauthorizedFolderException, EmptyDirectoryException {
-        File[] fileArray = new File(path).listFiles();
-        if(fileArray == null || fileArray.length == 0){
-            throw new EmptyDirectoryException();
-        }
-        if(!path.contains("LocalMedia")) {
-            throw new UnauthorizedFolderException();
-        }
-        return fileArray;
+        return movieInfoControl.loadMovieInfoFromCache(filePath);
     }
 }

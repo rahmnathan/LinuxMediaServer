@@ -5,7 +5,7 @@ import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class OMDBIMovieInfoProviderTest {
+public class OmdbMovieInfoProviderTest {
 
     @Test
     public void jsonToMovieInfoMapperTest(){
@@ -24,8 +24,8 @@ public class OMDBIMovieInfoProviderTest {
 
     @Test
     public void omdbMovieInfoProviderTest(){
-        OMDBIMovieInfoProvider movieInfoProvider = new OMDBIMovieInfoProvider(new OmdbDataProvider(), new JsonToMovieInfoMapper());
-        MovieInfo theMatrix = movieInfoProvider.getMovieInfo("The Matrix");
+        OmdbMovieInfoProvider movieInfoProvider = new OmdbMovieInfoProvider(new OmdbDataProvider(), new JsonToMovieInfoMapper());
+        MovieInfo theMatrix = movieInfoProvider.loadMovieInfo("The Matrix");
 
         Assert.assertEquals("The Matrix", theMatrix.getTitle());
         Assert.assertEquals("73", theMatrix.getMetaRating());
