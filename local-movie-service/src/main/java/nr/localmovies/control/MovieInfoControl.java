@@ -57,8 +57,8 @@ public class MovieInfoControl {
 
     private MovieInfo loadMovieInfoFromOmdb(String path) {
         logger.info("Getting from OMDB - " + path);
-        String[] splitPath = path.split("/");
-        String title = splitPath[splitPath.length - 1];
+        String[] pathArray = path.split("/");
+        String title = pathArray[pathArray.length - 1];
         MovieInfo movieInfo = movieInfoProvider.loadMovieInfo(title);
         movieInfo.setPath(path);
         repository.save(movieInfo);
@@ -67,10 +67,10 @@ public class MovieInfoControl {
 
     private MovieInfo loadSeriesParentInfo(String path) {
         logger.info("Getting info from parent - " + path);
-        String[] currentPathArray = path.split("LocalMedia")[1].split("/");
+        String[] pathArray = path.split("LocalMedia")[1].split("/");
         int depth = 0;
-        if (currentPathArray.length == 4 || currentPathArray.length == 5)
-            depth = currentPathArray.length - 3;
+        if (pathArray.length == 4 || pathArray.length == 5)
+            depth = pathArray.length - 3;
 
         StringBuilder sb = new StringBuilder();
         String[] directoryArray = path.split("/");
@@ -86,7 +86,7 @@ public class MovieInfoControl {
             return movieInfoBuilder.build();
 
         return movieInfoBuilder
-                .setTitle(currentPathArray[currentPathArray.length - 1])
+                .setTitle(pathArray[pathArray.length - 1])
                 .setReleaseYear(movieInfo.getReleaseYear())
                 .setMetaRating(movieInfo.getMetaRating())
                 .setIMDBRating(movieInfo.getIMDBRating())
