@@ -54,8 +54,8 @@ public class RestListener {
      * throws Exception
      */
     @RequestMapping("/video.mp4")
-    public void streamVideo(HttpServletResponse response, HttpServletRequest request,
-                            @RequestParam("path") String moviePath) throws IOException {
+    public void streamVideo(@RequestParam("path") String moviePath, HttpServletResponse response,
+                            HttpServletRequest request) throws IOException {
 
         if(moviePath.toLowerCase().contains("localmedia")) {
             logger.info("Streaming - " + moviePath + " to " + request.getRemoteAddr());
