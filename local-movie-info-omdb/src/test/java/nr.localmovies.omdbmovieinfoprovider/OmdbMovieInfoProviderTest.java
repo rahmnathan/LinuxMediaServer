@@ -14,7 +14,7 @@ public class OmdbMovieInfoProviderTest {
         jsonObject.put("Metascore", "10");
         jsonObject.put("Year", "2000");
 
-        MovieInfo movieInfo = new JsonToMovieInfoMapper().mapOmdbJsonToMovieInfo(jsonObject, new byte[0], "TestTitle");
+        MovieInfo movieInfo = new MovieInfoBuilder().buildMovieInfo(jsonObject, new byte[0], "TestTitle");
         Assert.assertEquals("10", movieInfo.getIMDBRating());
         Assert.assertEquals("10", movieInfo.getMetaRating());
         Assert.assertEquals("2000", movieInfo.getReleaseYear());
@@ -24,7 +24,7 @@ public class OmdbMovieInfoProviderTest {
 
     @Test
     public void omdbMovieInfoProviderTest(){
-        OmdbMovieInfoProvider movieInfoProvider = new OmdbMovieInfoProvider(new OmdbRawDataProvider(), new JsonToMovieInfoMapper());
+        OmdbMovieInfoProvider movieInfoProvider = new OmdbMovieInfoProvider(new OmdbRawDataProvider(), new MovieInfoBuilder());
         MovieInfo theMatrix = movieInfoProvider.loadMovieInfo("The Matrix");
 
         Assert.assertEquals("The Matrix", theMatrix.getTitle());

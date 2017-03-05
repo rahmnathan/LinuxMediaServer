@@ -19,12 +19,12 @@ import java.util.logging.Logger;
 public class OmdbMovieInfoProvider implements IMovieInfoProvider {
     private final Logger logger = Logger.getLogger(OmdbMovieInfoProvider.class.getName());
     private final OmdbRawDataProvider dataProvider;
-    private final JsonToMovieInfoMapper movieInfoMapper;
+    private final MovieInfoBuilder movieInfoMapper;
 
     @Autowired
-    public OmdbMovieInfoProvider(OmdbRawDataProvider dataProvider, JsonToMovieInfoMapper movieInfoMapper){
+    public OmdbMovieInfoProvider(OmdbRawDataProvider dataProvider, MovieInfoBuilder movieInfoBuilder){
         this.dataProvider = dataProvider;
-        this.movieInfoMapper = movieInfoMapper;
+        this.movieInfoMapper = movieInfoBuilder;
     }
 
     @Override
@@ -34,15 +34,20 @@ public class OmdbMovieInfoProvider implements IMovieInfoProvider {
             title = title.substring(0, title.length()-4);
 
         JSONObject jsonMovieInfo = dataProvider.loadMovieInfo(title);
-        byte[] poster = null;
+        byte[] poster = loadPoster(jsonMovieInfo);
+        return movieInfoMapper.buildMovieInfo(jsonMovieInfo, poster, fileName);
+    }
+
+    private byte[] loadPoster(JSONObject jsonMovieInfo){
+        byte[] poster;
         try {
             URL url = new URL(jsonMovieInfo.get("Poster").toString());
             poster = scaleImage(dataProvider.loadMoviePoster(url));
         } catch (Exception e){
-            logger.log(Level.WARNING, "Unable to get poster for movie - " + title);
+            logger.log(Level.WARNING, "Unable to get poster for movie - " + jsonMovieInfo.getString("Title"));
+            poster = new byte[0];
         }
-
-        return movieInfoMapper.mapOmdbJsonToMovieInfo(jsonMovieInfo, poster, fileName);
+        return poster;
     }
 
     private byte[] scaleImage(byte[] poster) throws Exception {

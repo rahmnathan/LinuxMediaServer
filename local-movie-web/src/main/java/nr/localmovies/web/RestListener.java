@@ -1,10 +1,6 @@
 package nr.localmovies.web;
 
 import nr.localmovies.boundary.MovieInfoBoundary;
-import nr.localmovies.exception.EmptyDirectoryException;
-import nr.localmovies.exception.LocalMovieException;
-import nr.localmovies.exception.TitleRequestError;
-import nr.localmovies.exception.UnauthorizedFolderException;
 import nr.localmovies.movieinfoapi.MovieInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,11 +38,7 @@ public class RestListener {
 
         logger.log(Level.INFO, "Received request for - " + directoryPath + " from " + request.getRemoteAddr());
         response.addHeader("Access-Control-Allow-Origin", "*");
-        try {
-            return movieInfoBoundary.loadMovieList(directoryPath);
-        } catch (EmptyDirectoryException | UnauthorizedFolderException e) {
-            return movieInfoBoundary.returnErrorList(e);
-        }
+        return movieInfoBoundary.loadMovieList(directoryPath);
     }
 
     /**
@@ -80,7 +72,7 @@ public class RestListener {
         if(moviePath.toLowerCase().contains("localmedia"))
             image = movieInfoBoundary.loadSingleMovie(moviePath).getImage();
         if(image == null)
-            return null;
+            return new byte[0];
 
         return Base64.getDecoder().decode(image);
     }

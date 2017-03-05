@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Component
@@ -47,7 +46,7 @@ public class MovieInfoControl {
             return movieInfoCache.get(path);
         } catch (ExecutionException e){
             e.printStackTrace();
-            return null;
+            return MovieInfo.Builder.newInstance().build();
         }
     }
 
@@ -56,19 +55,14 @@ public class MovieInfoControl {
         return repository.findOne(path);
     }
 
-    private MovieInfo loadMovieInfoFromOmdb(String path){
+    private MovieInfo loadMovieInfoFromOmdb(String path) {
         logger.info("Getting from OMDB - " + path);
-        try {
-            String[] splitPath = path.split("/");
-            String title = splitPath[splitPath.length - 1];
-            MovieInfo movieInfo = movieInfoProvider.loadMovieInfo(title);
-            movieInfo.setPath(path);
-            repository.save(movieInfo);
-            return movieInfo;
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.toString(), e);
-        }
-        return null;
+        String[] splitPath = path.split("/");
+        String title = splitPath[splitPath.length - 1];
+        MovieInfo movieInfo = movieInfoProvider.loadMovieInfo(title);
+        movieInfo.setPath(path);
+        repository.save(movieInfo);
+        return movieInfo;
     }
 
     private MovieInfo loadSeriesParentInfo(String path) {

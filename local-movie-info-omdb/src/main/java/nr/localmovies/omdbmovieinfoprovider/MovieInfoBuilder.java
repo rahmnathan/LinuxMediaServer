@@ -9,10 +9,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Component
-class JsonToMovieInfoMapper {
-    private static final Logger logger = Logger.getLogger(JsonToMovieInfoMapper.class.getName());
+class MovieInfoBuilder {
+    private static final Logger logger = Logger.getLogger(MovieInfoBuilder.class.getName());
 
-    MovieInfo mapOmdbJsonToMovieInfo(JSONObject jsonObject, byte[] poster, String title){
+    MovieInfo buildMovieInfo(JSONObject jsonObject, byte[] poster, String title){
         MovieInfo.Builder movieInfoBuilder = MovieInfo.Builder.newInstance();
         movieInfoBuilder.setTitle(title);
 
