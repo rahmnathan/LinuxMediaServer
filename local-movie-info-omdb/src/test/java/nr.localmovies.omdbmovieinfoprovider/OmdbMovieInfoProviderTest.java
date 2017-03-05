@@ -24,7 +24,7 @@ public class OmdbMovieInfoProviderTest {
 
     @Test
     public void omdbMovieInfoProviderTest(){
-        OmdbMovieInfoProvider movieInfoProvider = new OmdbMovieInfoProvider(new OmdbDataProvider(), new JsonToMovieInfoMapper());
+        OmdbMovieInfoProvider movieInfoProvider = new OmdbMovieInfoProvider(new OmdbRawDataProvider(), new JsonToMovieInfoMapper());
         MovieInfo theMatrix = movieInfoProvider.loadMovieInfo("The Matrix");
 
         Assert.assertEquals("The Matrix", theMatrix.getTitle());

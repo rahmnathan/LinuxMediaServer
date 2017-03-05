@@ -18,11 +18,11 @@ import java.util.logging.Logger;
 @Component
 public class OmdbMovieInfoProvider implements IMovieInfoProvider {
     private final Logger logger = Logger.getLogger(OmdbMovieInfoProvider.class.getName());
-    private final OmdbDataProvider dataProvider;
+    private final OmdbRawDataProvider dataProvider;
     private final JsonToMovieInfoMapper movieInfoMapper;
 
     @Autowired
-    public OmdbMovieInfoProvider(OmdbDataProvider dataProvider, JsonToMovieInfoMapper movieInfoMapper){
+    public OmdbMovieInfoProvider(OmdbRawDataProvider dataProvider, JsonToMovieInfoMapper movieInfoMapper){
         this.dataProvider = dataProvider;
         this.movieInfoMapper = movieInfoMapper;
     }

@@ -13,8 +13,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Component
-class OmdbDataProvider {
-    private static final Logger logger = Logger.getLogger(OmdbDataProvider.class.getName());
+class OmdbRawDataProvider {
+    private final Logger logger = Logger.getLogger(OmdbRawDataProvider.class.getName());
 
     JSONObject loadMovieInfo(String title) {
         String uri = "http://www.omdbapi.com/?t=";

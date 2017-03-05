@@ -1,6 +1,10 @@
 package nr.localmovies.web;
 
 import nr.localmovies.boundary.MovieInfoBoundary;
+import nr.localmovies.exception.EmptyDirectoryException;
+import nr.localmovies.exception.LocalMovieException;
+import nr.localmovies.exception.TitleRequestError;
+import nr.localmovies.exception.UnauthorizedFolderException;
 import nr.localmovies.movieinfoapi.MovieInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +24,7 @@ import java.util.logging.Logger;
 public class RestListener {
     private final MovieInfoBoundary movieInfoBoundary;
     private final MultipartFileSender fileSender;
-    private static final Logger logger = Logger.getLogger(RestListener.class.getName());
+    private final Logger logger = Logger.getLogger(RestListener.class.getName());
 
     @Autowired
     public RestListener(MovieInfoBoundary movieInfoControl, MultipartFileSender fileSender){
@@ -38,7 +42,11 @@ public class RestListener {
 
         logger.log(Level.INFO, "Received request for - " + directoryPath + " from " + request.getRemoteAddr());
         response.addHeader("Access-Control-Allow-Origin", "*");
-        return movieInfoBoundary.loadMovieList(directoryPath);
+        try {
+            return movieInfoBoundary.loadMovieList(directoryPath);
+        } catch (EmptyDirectoryException | UnauthorizedFolderException e) {
+            return movieInfoBoundary.returnErrorList(e);
+        }
     }
 
     /**
@@ -49,7 +57,7 @@ public class RestListener {
     public void streamVideo(HttpServletResponse response, HttpServletRequest request,
                             @RequestParam("path") String moviePath) throws IOException {
 
-        if(moviePath.contains("LocalMedia")) {
+        if(moviePath.toLowerCase().contains("localmedia")) {
             logger.info("Streaming - " + moviePath + " to " + request.getRemoteAddr());
             response.addHeader("Access-Control-Allow-Origin", "*");
             fileSender.serveResource(Paths.get(moviePath), request, response);
@@ -62,12 +70,18 @@ public class RestListener {
      * throws Exception
      */
     @RequestMapping("/poster")
-    public byte[] servePoster(@RequestParam("path") String moviePath, HttpServletResponse response) throws ExecutionException {
-        response.addHeader("Access-Control-Allow-Origin", "*");
-        String image = movieInfoBoundary.loadSingleMovie(moviePath).getImage();
-        if(image == null)
-            return null;
+    public byte[] servePoster(@RequestParam("path") String moviePath, HttpServletResponse response,
+                              HttpServletRequest request) throws ExecutionException {
 
+        logger.info("Streaming poster " + moviePath + " to " + request.getRemoteAddr());
+        response.addHeader("Access-Control-Allow-Origin", "*");
+        String image = null;
+        if(moviePath.toLowerCase().contains("localmedia")) {
+            image = movieInfoBoundary.loadSingleMovie(moviePath).getImage();
+        }
+        if(image == null){
+            return null;
+        }
         return Base64.getDecoder().decode(image);
     }
 }
