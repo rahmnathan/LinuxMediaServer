@@ -1,8 +1,6 @@
 package nr.localmovies.boundary;
 
 import nr.localmovies.control.MovieInfoControl;
-import nr.localmovies.exception.EmptyDirectoryException;
-import nr.localmovies.exception.UnauthorizedFolderException;
 import nr.localmovies.movieinfoapi.MovieInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,7 +23,7 @@ public class MovieInfoBoundary {
     public List<MovieInfo> loadMovieList(String directoryPath) {
         List<MovieInfo> movieInfoList = new ArrayList<>();
         File[] files = new File(directoryPath).listFiles();
-        if(files == null || files.length == 0){
+        if(files == null || files.length == 0 || !directoryPath.toLowerCase().contains("localmedia")){
             movieInfoList.add(MovieInfo.Builder.newInstance()
                     .setTitle("Path must contain 'LocalMedia' directory and not be empty")
                     .build());
