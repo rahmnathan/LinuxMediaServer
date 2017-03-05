@@ -76,12 +76,12 @@ public class RestListener {
         logger.info("Streaming poster " + moviePath + " to " + request.getRemoteAddr());
         response.addHeader("Access-Control-Allow-Origin", "*");
         String image = null;
-        if(moviePath.toLowerCase().contains("localmedia")) {
+
+        if(moviePath.toLowerCase().contains("localmedia"))
             image = movieInfoBoundary.loadSingleMovie(moviePath).getImage();
-        }
-        if(image == null){
+        if(image == null)
             return null;
-        }
+
         return Base64.getDecoder().decode(image);
     }
 }
