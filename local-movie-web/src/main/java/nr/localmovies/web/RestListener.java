@@ -5,6 +5,7 @@ import nr.localmovies.movieinfoapi.MovieInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,11 +35,26 @@ public class RestListener {
      */
     @RequestMapping(value = "/titlerequest", produces="application/json")
     public List<MovieInfo> titleRequest(@RequestParam(value = "path") String directoryPath,
-            HttpServletRequest request, HttpServletResponse response) throws ExecutionException {
+                                        @RequestParam(value =  "page") int page,
+                                        @RequestParam(value = "resultsPerPage") int itemsPerPage,
+                                        HttpServletRequest request,
+                                        HttpServletResponse response) throws ExecutionException {
 
         logger.log(Level.INFO, "Received request for - " + directoryPath + " from " + request.getRemoteAddr());
         response.addHeader("Access-Control-Allow-Origin", "*");
-        return movieInfoBoundary.loadMovieList(directoryPath);
+
+        return movieInfoBoundary.loadMovieList(directoryPath, page, itemsPerPage);
+    }
+
+    /**
+     *
+     * @param path - Path to directory you wish to count files from
+     * @return
+     */
+    @RequestMapping(value = "/movieinfocount")
+    public void movieInfoCount(@RequestParam(value = "path") String path, HttpServletResponse response, HttpServletRequest request){
+        logger.log(Level.INFO, "Received request for count for - " + path + " from - " + request.getRemoteAddr());
+        response.setHeader("Count", String.valueOf(movieInfoBoundary.loadMovieListLength(path)));
     }
 
     /**
