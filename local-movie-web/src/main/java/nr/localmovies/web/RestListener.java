@@ -57,7 +57,9 @@ public class RestListener {
     @RequestMapping(value = "/movieinfocount")
     public void movieInfoCount(@RequestParam(value = "path") String path, HttpServletResponse response, HttpServletRequest request){
         logger.log(Level.INFO, "Received request for count for - " + path + " from - " + request.getRemoteAddr());
-        response.setHeader("Count", String.valueOf(movieInfoBoundary.loadMovieListLength(path)));
+        int count = movieInfoBoundary.loadMovieListLength(path);
+        logger.log(Level.INFO, "Returning count of - " + count);
+        response.setHeader("Count", String.valueOf(count));
     }
 
     /**
