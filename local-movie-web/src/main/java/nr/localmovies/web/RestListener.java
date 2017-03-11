@@ -40,8 +40,11 @@ public class RestListener {
                                         HttpServletRequest request,
                                         HttpServletResponse response) throws ExecutionException {
 
-        logger.log(Level.INFO, "Received request for - " + directoryPath + " from " + request.getRemoteAddr());
+        logger.log(Level.INFO, "Received request for - " + directoryPath + " page - " + page + " itemsPerPage - "
+                + itemsPerPage + " from " + request.getRemoteAddr());
         response.addHeader("Access-Control-Allow-Origin", "*");
+        if(0 == page)
+            response.addHeader("Count", String.valueOf(movieInfoBoundary.loadMovieListLength(directoryPath)));
 
         return movieInfoBoundary.loadMovieList(directoryPath, page, itemsPerPage);
     }
