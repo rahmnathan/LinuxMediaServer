@@ -32,7 +32,7 @@ public class MovieInfoBoundary {
         if(page != null && itemsPerPage != null){
             int currentPosition = MOVIES_PER_PAGE * page;
             int listEnd = currentPosition + itemsPerPage;
-            files.subList(currentPosition, listEnd);
+            files = files.subList(currentPosition, listEnd);
         }
 
         List<MovieInfo> movieInfoList = new ArrayList<>();
