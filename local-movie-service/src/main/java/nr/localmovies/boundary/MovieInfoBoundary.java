@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 @Component
 public class MovieInfoBoundary {
     private MovieInfoControl movieInfoControl;
-    private final int MOVIES_PER_PAGE = 30;
 
     @Autowired
     public MovieInfoBoundary(MovieInfoControl movieInfoControl){
@@ -33,7 +32,7 @@ public class MovieInfoBoundary {
                 .sorted()
                 .collect(Collectors.toList());
         if(page != null && itemsPerPage != null){
-            int currentPosition = MOVIES_PER_PAGE * page;
+            int currentPosition = itemsPerPage * page;
             int listEnd = currentPosition + itemsPerPage;
             if(listEnd > files.size())
                 listEnd = files.size();
