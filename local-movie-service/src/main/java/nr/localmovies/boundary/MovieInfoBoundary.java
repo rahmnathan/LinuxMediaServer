@@ -38,9 +38,8 @@ public class MovieInfoBoundary {
         }
 
         List<MovieInfo> movieInfoList = new ArrayList<>();
-        for(File file : files){
-            movieInfoList.add(movieInfoControl.loadMovieInfoFromCache(file.getAbsolutePath()));
-        }
+        files.parallelStream()
+                .forEachOrdered((file) -> movieInfoList.add(movieInfoControl.loadMovieInfoFromCache(file.getAbsolutePath())));
         return movieInfoList;
     }
 
