@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 @Component
 public class MovieInfoBoundary {
@@ -28,7 +29,9 @@ public class MovieInfoBoundary {
 
     public List<MovieInfo> loadMovieList(String directoryPath, Integer page, Integer itemsPerPage) {
         List<File> files = Arrays.asList(listFiles(directoryPath));
-        Collections.sort(files);
+        files = files.parallelStream()
+                .sorted()
+                .collect(Collectors.toList());
         if(page != null && itemsPerPage != null){
             int currentPosition = MOVIES_PER_PAGE * page;
             int listEnd = currentPosition + itemsPerPage;
