@@ -35,8 +35,8 @@ public class RestListener {
      */
     @RequestMapping(value = "/titlerequest", produces="application/json")
     public List<MovieInfo> titleRequest(@RequestParam(value = "path") String directoryPath,
-                                        @RequestParam(value =  "page") int page,
-                                        @RequestParam(value = "resultsPerPage") int itemsPerPage,
+                                        @RequestParam(value =  "page", required = false) Integer page,
+                                        @RequestParam(value = "resultsPerPage", required = false) Integer itemsPerPage,
                                         HttpServletRequest request,
                                         HttpServletResponse response) throws ExecutionException {
 

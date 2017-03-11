@@ -26,16 +26,18 @@ public class MovieInfoBoundary {
         return listFiles(directoryPath).length;
     }
 
-    public List<MovieInfo> loadMovieList(String directoryPath, int page, int itemsPerPage) {
-        int currentPosition = MOVIES_PER_PAGE * page;
-        int listEnd = currentPosition + itemsPerPage;
+    public List<MovieInfo> loadMovieList(String directoryPath, Integer page, Integer itemsPerPage) {
         List<File> files = Arrays.asList(listFiles(directoryPath));
         Collections.sort(files);
+        if(page != null && itemsPerPage != null){
+            int currentPosition = MOVIES_PER_PAGE * page;
+            int listEnd = currentPosition + itemsPerPage;
+            files.subList(currentPosition, listEnd);
+        }
 
         List<MovieInfo> movieInfoList = new ArrayList<>();
-        while(currentPosition < listEnd && currentPosition < files.size()) {
-            movieInfoList.add(movieInfoControl.loadMovieInfoFromCache(files.get(currentPosition).getAbsolutePath()));
-            currentPosition++;
+        for(File file : files){
+            movieInfoList.add(movieInfoControl.loadMovieInfoFromCache(file.getAbsolutePath()));
         }
         return movieInfoList;
     }
