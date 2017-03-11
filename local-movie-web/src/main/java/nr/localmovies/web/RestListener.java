@@ -43,8 +43,11 @@ public class RestListener {
         logger.log(Level.INFO, "Received request for - " + directoryPath + " page - " + page + " itemsPerPage - "
                 + itemsPerPage + " from " + request.getRemoteAddr());
         response.addHeader("Access-Control-Allow-Origin", "*");
-        if(0 == page)
-            response.addHeader("Count", String.valueOf(movieInfoBoundary.loadMovieListLength(directoryPath)));
+        if(0 == page) {
+            int count = movieInfoBoundary.loadMovieListLength(directoryPath);
+            logger.log(Level.INFO, "Returning count of - " + count);
+            response.addHeader("Count", String.valueOf(count));
+        }
 
         return movieInfoBoundary.loadMovieList(directoryPath, page, itemsPerPage);
     }
