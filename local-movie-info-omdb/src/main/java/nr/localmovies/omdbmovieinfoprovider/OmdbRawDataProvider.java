@@ -24,11 +24,9 @@ class OmdbRawDataProvider {
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
             StringBuilder stringBuilder = new StringBuilder();
-            String inputString = br.readLine();
-            while (inputString != null) {
-                stringBuilder.append(inputString);
-                inputString = br.readLine();
-            }
+            br.lines()
+                    .parallel()
+                    .forEachOrdered(stringBuilder::append);
             br.close();
             urlConnection.disconnect();
             return new JSONObject(stringBuilder.toString());
