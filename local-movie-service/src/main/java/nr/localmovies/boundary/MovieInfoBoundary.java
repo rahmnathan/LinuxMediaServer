@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -28,16 +27,8 @@ public class MovieInfoBoundary {
 
     public List<MovieInfo> loadMovieList(String directoryPath, Integer page, Integer itemsPerPage) {
         List<File> files = Arrays.asList(listFiles(directoryPath));
-        files = files.parallelStream()
-                .sorted()
-                .collect(Collectors.toList());
-        if(page != null && itemsPerPage != null){
-            int currentPosition = itemsPerPage * page;
-            int listEnd = currentPosition + itemsPerPage;
-            if(listEnd > files.size())
-                listEnd = files.size();
-            files = files.subList(currentPosition, listEnd);
-        }
+        files = files.parallelStream().sorted().collect(Collectors.toList());
+        files = trimListToCurrentPage(page, itemsPerPage, files);
 
         List<MovieInfo> movieInfoList = new ArrayList<>();
         files.parallelStream()
@@ -58,5 +49,16 @@ public class MovieInfoBoundary {
             files = new File[0];
 
         return files;
+    }
+
+    private List<File> trimListToCurrentPage(Integer page, Integer itemsPerPage, List<File> files) {
+        if (page == null || itemsPerPage == null)
+            return files;
+
+        int currentPosition = itemsPerPage * page;
+        int listEnd = currentPosition + itemsPerPage;
+        if (listEnd > files.size())
+            listEnd = files.size();
+        return files.subList(currentPosition, listEnd);
     }
 }

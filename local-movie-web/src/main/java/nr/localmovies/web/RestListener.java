@@ -37,8 +37,7 @@ public class RestListener {
     public List<MovieInfo> titleRequest(@RequestParam(value = "path") String directoryPath,
                                         @RequestParam(value =  "page", required = false) Integer page,
                                         @RequestParam(value = "resultsPerPage", required = false) Integer itemsPerPage,
-                                        HttpServletRequest request,
-                                        HttpServletResponse response) throws ExecutionException {
+                                        HttpServletRequest request, HttpServletResponse response) throws ExecutionException {
 
         logger.log(Level.INFO, "Received request for - " + directoryPath + " page - " + page + " itemsPerPage - "
                 + itemsPerPage + " from " + request.getRemoteAddr());
