@@ -46,9 +46,9 @@ public class MovieInfoBoundary {
     }
 
     public MovieInfo loadSingleMovie(String filePath) throws ExecutionException {
-        if (!filePath.contains("LocalMedia")) {
+        if (!filePath.contains("LocalMedia"))
             return MovieInfo.Builder.newInstance().build();
-        }
+
         return movieInfoControl.loadMovieInfoFromCache(filePath);
     }
 
