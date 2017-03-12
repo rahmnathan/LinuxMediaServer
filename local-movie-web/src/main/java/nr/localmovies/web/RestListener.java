@@ -42,7 +42,7 @@ public class RestListener {
         logger.log(Level.INFO, "Received request for - " + directoryPath + " page - " + page + " itemsPerPage - "
                 + itemsPerPage + " from " + request.getRemoteAddr());
         response.addHeader("Access-Control-Allow-Origin", "*");
-        if(page != null && 0 == page) {
+        if(page != null && page == 0) {
             int count = movieInfoBoundary.loadMovieListLength(directoryPath);
             logger.log(Level.INFO, "Returning count of - " + count);
             response.addHeader("Count", String.valueOf(count));
@@ -71,12 +71,12 @@ public class RestListener {
     @RequestMapping("/video.mp4")
     public void streamVideo(@RequestParam("path") String moviePath, HttpServletResponse response,
                             HttpServletRequest request) throws IOException {
+        if (!moviePath.toLowerCase().contains("localmedia"))
+            return;
 
-        if(moviePath.toLowerCase().contains("localmedia")) {
-            logger.info("Streaming - " + moviePath + " to " + request.getRemoteAddr());
-            response.addHeader("Access-Control-Allow-Origin", "*");
-            fileSender.serveResource(Paths.get(moviePath), request, response);
-        }
+        logger.info("Streaming - " + moviePath + " to " + request.getRemoteAddr());
+        response.addHeader("Access-Control-Allow-Origin", "*");
+        fileSender.serveResource(Paths.get(moviePath), request, response);
     }
 
     /**
