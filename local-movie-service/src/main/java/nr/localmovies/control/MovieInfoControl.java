@@ -9,6 +9,7 @@ import nr.localmovies.movieinfoapi.MovieInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
@@ -74,10 +75,13 @@ public class MovieInfoControl {
 
         StringBuilder sb = new StringBuilder();
         String[] directoryArray = path.split("/");
-        for (int i = 0; i < directoryArray.length - depth; i++) {
-            sb.append(directoryArray[i]);
-            sb.append("/");
-        }
+        Arrays.stream(directoryArray)
+                .limit(directoryArray.length - depth)
+                .forEachOrdered((directory)->{
+                    sb.append(directory);
+                    sb.append("/");
+                });
+
         String parentPath = sb.toString().substring(0, sb.length() - 1);
         MovieInfo movieInfo = loadMovieInfoFromDatabase(parentPath);
         MovieInfo.Builder movieInfoBuilder = MovieInfo.Builder.newInstance();
