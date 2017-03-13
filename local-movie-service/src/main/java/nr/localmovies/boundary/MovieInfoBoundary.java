@@ -1,6 +1,7 @@
 package nr.localmovies.boundary;
 
 import nr.localmovies.control.MovieInfoControl;
+import nr.localmovies.data.MovieSearchCriteria;
 import nr.localmovies.movieinfoapi.MovieInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,15 +26,15 @@ public class MovieInfoBoundary {
         return listFiles(directoryPath).length;
     }
 
-    public List<MovieInfo> loadMovieList(String directoryPath, Integer page, Integer itemsPerPage) {
-        List<File> files = Arrays.asList(listFiles(directoryPath));
-        files = files.parallelStream().sorted().collect(Collectors.toList());
-        files = trimListToCurrentPage(page, itemsPerPage, files);
+    public List<MovieInfo> loadMovieList(MovieSearchCriteria searchCriteria) {
+        List<File> files = Arrays.asList(listFiles(searchCriteria.getPath()));
 
-        List<MovieInfo> movieInfoList = new ArrayList<>();
-        files.parallelStream()
-                .forEachOrdered((file) -> movieInfoList.add(movieInfoControl.loadMovieInfoFromCache(file.getAbsolutePath())));
-        return movieInfoList;
+        return files.parallelStream()
+                .sorted()
+                .skip(searchCriteria.getPage() * searchCriteria.getItemsPerPage())
+                .limit(searchCriteria.getItemsPerPage())
+                .map(file -> movieInfoControl.loadMovieInfoFromCache(file.getAbsolutePath()))
+                .collect(Collectors.toList());
     }
 
     public MovieInfo loadSingleMovie(String filePath) throws ExecutionException {
@@ -49,16 +50,5 @@ public class MovieInfoBoundary {
             files = new File[0];
 
         return files;
-    }
-
-    private List<File> trimListToCurrentPage(Integer page, Integer itemsPerPage, List<File> files) {
-        if (page == null || itemsPerPage == null)
-            return files;
-
-        int currentPosition = itemsPerPage * page;
-        int listEnd = currentPosition + itemsPerPage;
-        if (listEnd > files.size())
-            listEnd = files.size();
-        return files.subList(currentPosition, listEnd);
     }
 }

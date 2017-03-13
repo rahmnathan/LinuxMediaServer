@@ -1,6 +1,7 @@
 package nr.localmovies.web;
 
 import nr.localmovies.boundary.MovieInfoBoundary;
+import nr.localmovies.data.MovieSearchCriteria;
 import nr.localmovies.movieinfoapi.MovieInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,23 +39,24 @@ public class RestListener {
                                         @RequestParam(value =  "page", required = false) Integer page,
                                         @RequestParam(value = "resultsPerPage", required = false) Integer itemsPerPage,
                                         HttpServletRequest request, HttpServletResponse response) throws ExecutionException {
-
+        response.addHeader("Access-Control-Allow-Origin", "*");
         logger.log(Level.INFO, "Received request for - " + directoryPath + " page - " + page + " itemsPerPage - "
                 + itemsPerPage + " from " + request.getRemoteAddr());
-        response.addHeader("Access-Control-Allow-Origin", "*");
-        if(page != null && page == 0) {
-            int count = movieInfoBoundary.loadMovieListLength(directoryPath);
-            logger.log(Level.INFO, "Returning count of - " + count);
-            response.addHeader("Count", String.valueOf(count));
-        }
 
-        return movieInfoBoundary.loadMovieList(directoryPath, page, itemsPerPage);
+        MovieSearchCriteria searchCriteria = MovieSearchCriteria.Builder.newInstance()
+                .setItemsPerPage(itemsPerPage)
+                .setPage(page)
+                .setPath(directoryPath)
+                .build();
+
+        if(searchCriteria.getPage() == 0)
+            movieInfoCount(directoryPath, response, request);
+
+        return movieInfoBoundary.loadMovieList(searchCriteria);
     }
 
     /**
-     *
      * @param path - Path to directory you wish to count files from
-     * @return
      */
     @RequestMapping(value = "/movieinfocount")
     public void movieInfoCount(@RequestParam(value = "path") String path, HttpServletResponse response, HttpServletRequest request){
@@ -71,11 +73,11 @@ public class RestListener {
     @RequestMapping("/video.mp4")
     public void streamVideo(@RequestParam("path") String moviePath, HttpServletResponse response,
                             HttpServletRequest request) throws IOException {
+        response.addHeader("Access-Control-Allow-Origin", "*");
         if (!moviePath.toLowerCase().contains("localmedia"))
             return;
 
         logger.info("Streaming - " + moviePath + " to " + request.getRemoteAddr());
-        response.addHeader("Access-Control-Allow-Origin", "*");
         fileSender.serveResource(Paths.get(moviePath), request, response);
     }
 
@@ -87,14 +89,11 @@ public class RestListener {
     @RequestMapping("/poster")
     public byte[] servePoster(@RequestParam("path") String moviePath, HttpServletResponse response,
                               HttpServletRequest request) throws ExecutionException {
-
-        logger.info("Streaming poster " + moviePath + " to " + request.getRemoteAddr());
         response.addHeader("Access-Control-Allow-Origin", "*");
-        String image = null;
+        logger.info("Streaming poster " + moviePath + " to " + request.getRemoteAddr());
 
-        if(moviePath.toLowerCase().contains("localmedia"))
-            image = movieInfoBoundary.loadSingleMovie(moviePath).getImage();
-        if(image == null)
+        String image = movieInfoBoundary.loadSingleMovie(moviePath).getImage();
+        if(!moviePath.toLowerCase().contains("localmedia") || image == null)
             return new byte[0];
 
         return Base64.getDecoder().decode(image);
