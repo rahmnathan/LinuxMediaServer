@@ -38,15 +38,12 @@ public class MovieInfoBoundary {
     }
 
     public MovieInfo loadSingleMovie(String filePath) throws ExecutionException {
-        if (!filePath.contains("LocalMedia"))
-            return MovieInfo.Builder.newInstance().build();
-
         return movieInfoControl.loadMovieInfoFromCache(filePath);
     }
 
     private File[] listFiles(String directoryPath) {
         File[] files = new File(directoryPath).listFiles();
-        if(!directoryPath.toLowerCase().contains("localmedia") || files == null || files.length == 0)
+        if(files == null || files.length == 0)
             files = new File[0];
 
         return files;

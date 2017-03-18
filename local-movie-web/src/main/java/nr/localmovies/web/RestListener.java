@@ -74,9 +74,6 @@ public class RestListener {
     public void streamVideo(@RequestParam("path") String moviePath, HttpServletResponse response,
                             HttpServletRequest request) throws IOException {
         response.addHeader("Access-Control-Allow-Origin", "*");
-        if (!moviePath.toLowerCase().contains("localmedia"))
-            return;
-
         logger.info("Streaming - " + moviePath + " to " + request.getRemoteAddr());
         fileSender.serveResource(Paths.get(moviePath), request, response);
     }
@@ -93,7 +90,7 @@ public class RestListener {
         logger.info("Streaming poster " + moviePath + " to " + request.getRemoteAddr());
 
         String image = movieInfoBoundary.loadSingleMovie(moviePath).getImage();
-        if(!moviePath.toLowerCase().contains("localmedia") || image == null)
+        if(image == null)
             return new byte[0];
 
         return Base64.getDecoder().decode(image);

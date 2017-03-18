@@ -17,7 +17,6 @@ import java.util.logging.Logger;
 
 @Component
 public class OmdbMovieInfoProvider implements IMovieInfoProvider {
-    private final Logger logger = Logger.getLogger(OmdbMovieInfoProvider.class.getName());
     private final OmdbRawDataProvider dataProvider;
     private final MovieInfoBuilder movieInfoMapper;
 
@@ -44,7 +43,6 @@ public class OmdbMovieInfoProvider implements IMovieInfoProvider {
             URL url = new URL(jsonMovieInfo.get("Poster").toString());
             poster = scaleImage(dataProvider.loadMoviePoster(url));
         } catch (Exception e){
-            logger.log(Level.WARNING, "Unable to get poster for movie - " + jsonMovieInfo.getString("Title"));
             poster = new byte[0];
         }
         return poster;
