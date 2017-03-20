@@ -75,7 +75,8 @@ public class RestListener {
                             HttpServletRequest request) throws IOException {
         response.addHeader("Access-Control-Allow-Origin", "*");
         logger.info("Streaming - " + moviePath + " to " + request.getRemoteAddr());
-        fileSender.serveResource(Paths.get(moviePath), request, response);
+        if(moviePath.toLowerCase().contains("localmedia"))
+            fileSender.serveResource(Paths.get(moviePath), request, response);
     }
 
     /**
