@@ -77,10 +77,7 @@ public class MovieInfoControl {
         String[] directoryArray = path.split("/");
         Arrays.stream(directoryArray)
                 .limit(directoryArray.length - depth)
-                .forEachOrdered((directory)->{
-                    sb.append(directory);
-                    sb.append("/");
-                });
+                .forEachOrdered(directory-> sb.append(directory).append("/"));
 
         String parentPath = sb.toString().substring(0, sb.length() - 1);
         MovieInfo movieInfo = loadMovieInfoFromDatabase(parentPath);
