@@ -1,5 +1,6 @@
 package nr.localmovies.boundary;
 
+import nr.localmovies.control.FileLister;
 import nr.localmovies.control.MovieInfoControl;
 import nr.localmovies.data.MovieSearchCriteria;
 import nr.localmovies.movieinfoapi.MovieInfo;
@@ -17,18 +18,20 @@ import java.util.stream.Collectors;
 @Component
 public class MovieInfoBoundary {
     private MovieInfoControl movieInfoControl;
+    private FileLister fileLister;
 
     @Autowired
-    public MovieInfoBoundary(MovieInfoControl movieInfoControl){
+    public MovieInfoBoundary(MovieInfoControl movieInfoControl, FileLister fileLister){
         this.movieInfoControl = movieInfoControl;
+        this.fileLister = fileLister;
     }
 
     public int loadMovieListLength(String directoryPath){
-        return listFiles(directoryPath).length;
+        return fileLister.listFiles(directoryPath).length;
     }
 
     public List<MovieInfo> loadMovieList(MovieSearchCriteria searchCriteria) {
-        List<File> files = Arrays.asList(listFiles(searchCriteria.getPath()));
+        List<File> files = Arrays.asList(fileLister.listFiles(searchCriteria.getPath()));
 
         return files.parallelStream()
                 .sorted()
@@ -40,14 +43,5 @@ public class MovieInfoBoundary {
 
     public MovieInfo loadSingleMovie(String filePath) throws ExecutionException {
         return movieInfoControl.loadMovieInfoFromCache(filePath);
-    }
-
-    @Cacheable("files")
-    public File[] listFiles(String directoryPath) {
-        File[] files = new File(directoryPath).listFiles();
-        if(files == null || files.length == 0)
-            files = new File[0];
-
-        return files;
     }
 }
