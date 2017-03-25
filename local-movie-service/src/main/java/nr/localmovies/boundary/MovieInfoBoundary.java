@@ -4,6 +4,7 @@ import nr.localmovies.control.MovieInfoControl;
 import nr.localmovies.data.MovieSearchCriteria;
 import nr.localmovies.movieinfoapi.MovieInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -41,7 +42,8 @@ public class MovieInfoBoundary {
         return movieInfoControl.loadMovieInfoFromCache(filePath);
     }
 
-    private File[] listFiles(String directoryPath) {
+    @Cacheable("files")
+    public File[] listFiles(String directoryPath) {
         File[] files = new File(directoryPath).listFiles();
         if(files == null || files.length == 0)
             files = new File[0];
