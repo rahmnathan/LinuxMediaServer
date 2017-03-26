@@ -11,7 +11,7 @@ import java.nio.file.Path;
 @Component
 class FileSender {
 
-    private static final int DEFAULT_BUFFER_SIZE = 8000;
+    private static final int DEFAULT_BUFFER_SIZE = 8192;
 
     void serveResource(Path filepath, HttpServletRequest request, HttpServletResponse response) throws IOException {
         if (response == null || request == null) {
