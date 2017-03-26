@@ -6,7 +6,6 @@ import nr.localmovies.movieinfoapi.MovieInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,11 +20,11 @@ import java.util.logging.Logger;
 @RestController
 public class RestListener {
     private final MovieInfoBoundary movieInfoBoundary;
-    private final MultipartFileSender fileSender;
+    private final FileSender fileSender;
     private final Logger logger = Logger.getLogger(RestListener.class.getName());
 
     @Autowired
-    public RestListener(MovieInfoBoundary movieInfoControl, MultipartFileSender fileSender){
+    public RestListener(MovieInfoBoundary movieInfoControl, FileSender fileSender){
         this.movieInfoBoundary = movieInfoControl;
         this.fileSender = fileSender;
     }

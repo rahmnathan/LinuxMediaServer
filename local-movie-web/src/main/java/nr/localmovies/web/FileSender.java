@@ -9,7 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 @Component
-class MultipartFileSender {
+class FileSender {
 
     private static final int DEFAULT_BUFFER_SIZE = 8000;
 
