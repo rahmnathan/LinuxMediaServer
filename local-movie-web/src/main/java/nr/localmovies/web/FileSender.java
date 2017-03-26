@@ -7,11 +7,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.logging.Logger;
 
 @Component
 class FileSender {
 
     private static final int DEFAULT_BUFFER_SIZE = 8192;
+    private final Logger logger = Logger.getLogger(FileSender.class.getName());
 
     void serveResource(Path filepath, HttpServletRequest request, HttpServletResponse response) {
         if (response == null || request == null)
@@ -36,7 +38,7 @@ class FileSender {
              OutputStream output = response.getOutputStream()){
             Range.copy(input, output, length, range.start, range.length);
         } catch (IOException e){
-            e.printStackTrace();
+            logger.severe(e.toString());
         }
     }
 

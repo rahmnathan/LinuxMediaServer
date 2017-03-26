@@ -3,13 +3,13 @@ package nr.localmovies.control;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import nr.localmovies.data.LocalMediaPath;
 import nr.localmovies.movieinfoapi.IMovieInfoProvider;
 import nr.localmovies.movieinfoapi.MovieInfo;
 import nr.localmovies.movieinfoapi.MovieInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
@@ -26,12 +26,13 @@ public class MovieInfoControl {
                             new CacheLoader<String, MovieInfo>() {
                                 @Override
                                 public MovieInfo load(String currentPath) {
-                                    if(repository.exists(currentPath)){
-                                        return loadMovieInfoFromDatabase(currentPath);
-                                    } else if (isViewingTopLevel(currentPath)){
-                                        return loadMovieInfoFromOmdb(currentPath);
+                                    LocalMediaPath mediaPath = new LocalMediaPath(currentPath);
+                                    if(repository.exists(mediaPath.toString())){
+                                        return loadMovieInfoFromDatabase(mediaPath);
+                                    } else if (mediaPath.isViewingTopLevel()){
+                                        return loadMovieInfoFromOmdb(mediaPath);
                                     } else {
-                                        return loadSeriesParentInfo(currentPath);
+                                        return loadSeriesParentInfo(mediaPath);
                                     }
                                 }
                             });
@@ -51,51 +52,22 @@ public class MovieInfoControl {
         }
     }
 
-    private MovieInfo loadMovieInfoFromDatabase(String path){
+    private MovieInfo loadMovieInfoFromDatabase(LocalMediaPath path){
         logger.info("Getting from database - " + path);
-        return repository.findOne(path);
+        return repository.findOne(path.toString());
     }
 
-    private MovieInfo loadMovieInfoFromOmdb(String path) {
+    private MovieInfo loadMovieInfoFromOmdb(LocalMediaPath path) {
         logger.info("Getting from OMDB - " + path);
-        String[] pathArray = path.split("/");
-        String title = pathArray[pathArray.length - 1];
-        MovieInfo movieInfo = movieInfoProvider.loadMovieInfo(title);
-        movieInfo.setPath(path);
+        MovieInfo movieInfo = movieInfoProvider.loadMovieInfo(path.peekLast());
+        movieInfo.setPath(path.toString());
         repository.save(movieInfo);
         return movieInfo;
     }
 
-    private MovieInfo loadSeriesParentInfo(String path) {
+    private MovieInfo loadSeriesParentInfo(LocalMediaPath path) {
         logger.info("Getting info from parent - " + path);
-        String[] pathArray = path.split("LocalMedia")[1].split("/");
-        int depth = 0;
-        if (pathArray.length == 4 || pathArray.length == 5)
-            depth = pathArray.length - 3;
-
-        StringBuilder sb = new StringBuilder();
-        String[] directoryArray = path.split("/");
-        Arrays.stream(directoryArray)
-                .limit(directoryArray.length - depth)
-                .forEachOrdered(directory-> sb.append(directory).append("/"));
-
-        String parentPath = sb.toString().substring(0, sb.length() - 1);
-        MovieInfo movieInfo = loadMovieInfoFromDatabase(parentPath);
-        MovieInfo.Builder movieInfoBuilder = MovieInfo.Builder.newInstance();
-
-        if(movieInfo == null)
-            return movieInfoBuilder.build();
-
-        return movieInfoBuilder
-                .setTitle(pathArray[pathArray.length - 1])
-                .setReleaseYear(movieInfo.getReleaseYear())
-                .setMetaRating(movieInfo.getMetaRating())
-                .setIMDBRating(movieInfo.getIMDBRating())
-                .setImage(movieInfo.getImage())
-                .build();
-    }
-
-    private boolean isViewingTopLevel(String currentPath){
-        return currentPath.toLowerCase().split("localmedia")[1].split("/").length == 3;
+        MovieInfo movieInfo = loadMovieInfoFromDatabase(path.getParentPath());
+        return MovieInfo.Builder.copyWithNewTitle(movieInfo, path.peekLast());
     }
 }
