@@ -18,13 +18,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @RestController
-public class RestListener {
+public class MovieResource {
     private final MovieInfoBoundary movieInfoBoundary;
     private final FileSender fileSender;
-    private final Logger logger = Logger.getLogger(RestListener.class.getName());
+    private final Logger logger = Logger.getLogger(MovieResource.class.getName());
 
     @Autowired
-    public RestListener(MovieInfoBoundary movieInfoControl, FileSender fileSender){
+    public MovieResource(MovieInfoBoundary movieInfoControl, FileSender fileSender){
         this.movieInfoBoundary = movieInfoControl;
         this.fileSender = fileSender;
     }
