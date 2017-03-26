@@ -13,25 +13,31 @@ class FileSender {
 
     private static final int DEFAULT_BUFFER_SIZE = 8192;
 
-    void serveResource(Path filepath, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        if (response == null || request == null) {
+    void serveResource(Path filepath, HttpServletRequest request, HttpServletResponse response) {
+        if (response == null || request == null)
             return;
-        }
 
-        Long length = Files.size(filepath);
+        Long length;
+        try {
+            length = Files.size(filepath);
+        } catch (IOException e) {
+            length = 0L;
+        }
         Range range = new Range(0, length - 1, length);
         String rangeHeader = request.getHeader("Range");
-        if(rangeHeader != null) {
-            long start = Long.valueOf(rangeHeader.substring(6, rangeHeader.length()-1));
+        if (rangeHeader != null) {
+            long start = Long.valueOf(rangeHeader.substring(6, rangeHeader.length() - 1));
             range = new Range(start, length - 1, length);
             response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
         }
         response.setHeader("Content-Range", "bytes " + range.start + "-" + range.end + "/" + range.total);
         response.setHeader("Content-Length", String.valueOf(range.length));
-
-        InputStream input = new BufferedInputStream(Files.newInputStream(filepath));
-        OutputStream output = response.getOutputStream();
-        Range.copy(input, output, length, range.start, range.length);
+        try (InputStream input = new BufferedInputStream(Files.newInputStream(filepath));
+             OutputStream output = response.getOutputStream()){
+            Range.copy(input, output, length, range.start, range.length);
+        } catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
     private static class Range {

@@ -71,7 +71,7 @@ public class MovieResource {
      */
     @RequestMapping(value = "/video.mp4", produces = "video/mp4")
     public void streamVideo(@RequestParam("path") String moviePath, HttpServletResponse response,
-                            HttpServletRequest request) throws IOException {
+                            HttpServletRequest request) {
         response.addHeader("Access-Control-Allow-Origin", "*");
         logger.info("Streaming - " + moviePath + " to " + request.getRemoteAddr());
         if(moviePath.toLowerCase().contains("localmedia"))
