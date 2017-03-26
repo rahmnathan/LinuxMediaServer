@@ -21,8 +21,6 @@ class MultipartFileSender {
         Long length = Files.size(filepath);
         Range range = new Range(0, length - 1, length);
         String rangeHeader = request.getHeader("Range");
-        InputStream input = new BufferedInputStream(Files.newInputStream(filepath));
-        OutputStream output = response.getOutputStream();
         if(rangeHeader != null) {
             long start = Long.valueOf(rangeHeader.substring(6, rangeHeader.length()-1));
             range = new Range(start, length - 1, length);
@@ -30,6 +28,9 @@ class MultipartFileSender {
         }
         response.setHeader("Content-Range", "bytes " + range.start + "-" + range.end + "/" + range.total);
         response.setHeader("Content-Length", String.valueOf(range.length));
+
+        InputStream input = new BufferedInputStream(Files.newInputStream(filepath));
+        OutputStream output = response.getOutputStream();
         Range.copy(input, output, length, range.start, range.length);
     }
 
