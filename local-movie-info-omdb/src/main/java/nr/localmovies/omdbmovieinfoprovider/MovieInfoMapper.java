@@ -9,10 +9,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Component
-class MovieInfoBuilder {
-    private static final Logger logger = Logger.getLogger(MovieInfoBuilder.class.getName());
+class MovieInfoMapper {
+    private static final Logger logger = Logger.getLogger(MovieInfoMapper.class.getName());
 
-    MovieInfo buildMovieInfo(JSONObject jsonObject, byte[] poster, String title){
+    MovieInfo jsonToMovieInfo(JSONObject jsonObject, byte[] poster, String title){
         MovieInfo.Builder movieInfoBuilder = MovieInfo.Builder.newInstance();
         movieInfoBuilder.setTitle(title);
 

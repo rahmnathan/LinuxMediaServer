@@ -28,7 +28,7 @@ public class MovieInfoControl {
                                 public MovieInfo load(String currentPath) {
                                     if(repository.exists(currentPath)){
                                         return loadMovieInfoFromDatabase(currentPath);
-                                    } else if (currentPath.toLowerCase().split("localmedia")[1].split("/").length == 3){
+                                    } else if (isViewingTopLevel(currentPath)){
                                         return loadMovieInfoFromOmdb(currentPath);
                                     } else {
                                         return loadSeriesParentInfo(currentPath);
@@ -93,5 +93,9 @@ public class MovieInfoControl {
                 .setIMDBRating(movieInfo.getIMDBRating())
                 .setImage(movieInfo.getImage())
                 .build();
+    }
+
+    private boolean isViewingTopLevel(String currentPath){
+        return currentPath.toLowerCase().split("localmedia")[1].split("/").length == 3;
     }
 }

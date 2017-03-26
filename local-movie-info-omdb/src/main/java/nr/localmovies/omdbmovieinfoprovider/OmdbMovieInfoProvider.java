@@ -12,16 +12,14 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Component
 public class OmdbMovieInfoProvider implements IMovieInfoProvider {
     private final OmdbRawDataProvider dataProvider;
-    private final MovieInfoBuilder movieInfoMapper;
+    private final MovieInfoMapper movieInfoMapper;
 
     @Autowired
-    public OmdbMovieInfoProvider(OmdbRawDataProvider dataProvider, MovieInfoBuilder movieInfoBuilder){
+    public OmdbMovieInfoProvider(OmdbRawDataProvider dataProvider, MovieInfoMapper movieInfoBuilder){
         this.dataProvider = dataProvider;
         this.movieInfoMapper = movieInfoBuilder;
     }
@@ -34,7 +32,7 @@ public class OmdbMovieInfoProvider implements IMovieInfoProvider {
 
         JSONObject jsonMovieInfo = dataProvider.loadMovieInfo(title);
         byte[] poster = loadPoster(jsonMovieInfo);
-        return movieInfoMapper.buildMovieInfo(jsonMovieInfo, poster, fileName);
+        return movieInfoMapper.jsonToMovieInfo(jsonMovieInfo, poster, fileName);
     }
 
     private byte[] loadPoster(JSONObject jsonMovieInfo){
