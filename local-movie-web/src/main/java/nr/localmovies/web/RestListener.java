@@ -70,7 +70,7 @@ public class RestListener {
      * @param moviePath - Path to video file to stream
      * throws Exception
      */
-    @RequestMapping("/video.mp4")
+    @RequestMapping(value = "/video.mp4", produces = "video/mp4")
     public void streamVideo(@RequestParam("path") String moviePath, HttpServletResponse response,
                             HttpServletRequest request) throws IOException {
         response.addHeader("Access-Control-Allow-Origin", "*");
