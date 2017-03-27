@@ -24,6 +24,7 @@ class FileSender {
             length = Files.size(filepath);
         } catch (IOException e) {
             length = 0L;
+            logger.info(e.toString());
         }
         Range range = new Range(0, length - 1, length);
         String rangeHeader = request.getHeader("Range");
@@ -38,7 +39,7 @@ class FileSender {
              OutputStream output = response.getOutputStream()){
             Range.copy(input, output, length, range.start, range.length);
         } catch (IOException e){
-            logger.severe(e.toString());
+            logger.fine(e.toString());
         }
     }
 
