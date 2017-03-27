@@ -69,9 +69,7 @@ public class MovieInfoControl {
     private MovieInfo loadSeriesParentInfo(String path) {
         logger.info("Getting info from parent - " + path);
         String[] pathArray = path.split("LocalMedia")[1].split("/");
-        int depth = 0;
-        if (pathArray.length == 4 || pathArray.length == 5)
-            depth = pathArray.length - 3;
+        int depth = pathArray.length > 3 ? pathArray.length - 3 : 0;
 
         StringBuilder sb = new StringBuilder();
         String[] directoryArray = path.split("/");
@@ -81,10 +79,6 @@ public class MovieInfoControl {
 
         String parentPath = sb.toString().substring(0, sb.length() - 1);
         MovieInfo movieInfo = loadMovieInfoFromDatabase(parentPath);
-        MovieInfo.Builder movieInfoBuilder = MovieInfo.Builder.newInstance();
-
-        if(movieInfo == null)
-            return movieInfoBuilder.build();
 
         return MovieInfo.Builder.copyWithNewTitle(movieInfo, pathArray[pathArray.length - 1]);
     }
