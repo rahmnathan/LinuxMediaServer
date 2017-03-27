@@ -128,5 +128,18 @@ public class MovieInfo {
         public MovieInfo build(){
             return new MovieInfo(title, IMDBRating, metaRating, image, releaseYear, path);
         }
+
+        public static MovieInfo copyWithNewTitle(MovieInfo movieInfo, String title){
+            if(movieInfo == null)
+                return Builder.newInstance().setTitle(title).build();
+
+            return Builder.newInstance()
+                    .setTitle(title)
+                    .setReleaseYear(movieInfo.getReleaseYear())
+                    .setMetaRating(movieInfo.getMetaRating())
+                    .setIMDBRating(movieInfo.getIMDBRating())
+                    .setImage(movieInfo.getImage())
+                    .build();
+        }
     }
 }

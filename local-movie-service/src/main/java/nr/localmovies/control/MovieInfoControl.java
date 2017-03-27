@@ -86,13 +86,7 @@ public class MovieInfoControl {
         if(movieInfo == null)
             return movieInfoBuilder.build();
 
-        return movieInfoBuilder
-                .setTitle(pathArray[pathArray.length - 1])
-                .setReleaseYear(movieInfo.getReleaseYear())
-                .setMetaRating(movieInfo.getMetaRating())
-                .setIMDBRating(movieInfo.getIMDBRating())
-                .setImage(movieInfo.getImage())
-                .build();
+        return MovieInfo.Builder.copyWithNewTitle(movieInfo, pathArray[pathArray.length - 1]);
     }
 
     private boolean isViewingTopLevel(String currentPath){
