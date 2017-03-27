@@ -5,9 +5,11 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,24 +20,36 @@ class OmdbRawDataProvider {
 
     JSONObject loadMovieInfo(String title) {
         String uri = "http://www.omdbapi.com/?t=";
+        HttpURLConnection urlConnection = null;
         try {
             URL url = new URL(uri + title.replace(" ", "%20"));
+            urlConnection = (HttpURLConnection) url.openConnection();
             logger.info("Getting info from OMDB - " + url.toString());
-            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-            StringBuilder stringBuilder = new StringBuilder();
-            br.lines().forEachOrdered(stringBuilder::append);
-            br.close();
-            urlConnection.disconnect();
-            return new JSONObject(stringBuilder.toString());
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.toString(), e);
+        } catch (IOException e) {
+            logger.fine(e.toString());
         }
-        return null;
+
+        if (urlConnection != null) {
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()))) {
+                StringBuilder stringBuilder = new StringBuilder();
+                br.lines().forEachOrdered(stringBuilder::append);
+                urlConnection.disconnect();
+                return new JSONObject(stringBuilder.toString());
+            } catch (Exception e) {
+                urlConnection.disconnect();
+                logger.log(Level.SEVERE, e.toString(), e);
+            }
+        }
+
+        return new JSONObject();
     }
 
-    byte[] loadMoviePoster(URL imageURL) throws Exception {
-        InputStream is = imageURL.openConnection().getInputStream();
-        return ByteStreams.toByteArray(is);
+    byte[] loadMoviePoster(URL imageURL) {
+        try(InputStream is = imageURL.openConnection().getInputStream()){
+            return ByteStreams.toByteArray(is);
+        } catch (IOException e){
+            logger.fine(e.toString());
+            return new byte[0];
+        }
     }
 }

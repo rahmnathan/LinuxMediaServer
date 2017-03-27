@@ -11,6 +11,8 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 @Component
@@ -36,24 +38,27 @@ public class OmdbMovieInfoProvider implements IMovieInfoProvider {
     }
 
     private byte[] loadPoster(JSONObject jsonMovieInfo){
-        byte[] poster;
+        URL url;
         try {
-            URL url = new URL(jsonMovieInfo.get("Poster").toString());
-            poster = scaleImage(dataProvider.loadMoviePoster(url));
-        } catch (Exception e){
-            poster = new byte[0];
+            url = new URL(jsonMovieInfo.get("Poster").toString());
+        }catch (MalformedURLException e){
+            return new byte[0];
         }
-        return poster;
-    }
+        return scaleImage(dataProvider.loadMoviePoster(url));
+        }
 
-    private byte[] scaleImage(byte[] poster) throws Exception {
-        BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(poster));
-        bufferedImage = Scalr.resize(bufferedImage, Scalr.Method.ULTRA_QUALITY, 300);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ImageIO.write(bufferedImage, "jpg", outputStream);
-        outputStream.flush();
-        byte[] resizedPoster = outputStream.toByteArray();
-        outputStream.close();
-        return resizedPoster;
+    private byte[] scaleImage(byte[] poster) {
+        if (poster.length == 0)
+            return poster;
+
+        try(ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(poster));
+            bufferedImage = Scalr.resize(bufferedImage, Scalr.Method.ULTRA_QUALITY, 300);
+            ImageIO.write(bufferedImage, "jpg", outputStream);
+            outputStream.flush();
+            return outputStream.toByteArray();
+        } catch (IOException e){
+            return new byte[0];
+        }
     }
 }

@@ -36,7 +36,7 @@ class FileSender {
         response.setHeader("Content-Range", "bytes " + range.start + "-" + range.end + "/" + range.total);
         response.setHeader("Content-Length", String.valueOf(range.length));
         try (InputStream input = new BufferedInputStream(Files.newInputStream(filepath));
-             OutputStream output = response.getOutputStream()){
+             OutputStream output = response.getOutputStream()) {
             Range.copy(input, output, length, range.start, range.length);
         } catch (IOException e){
             logger.fine(e.toString());
