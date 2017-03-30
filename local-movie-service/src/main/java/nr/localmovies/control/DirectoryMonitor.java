@@ -76,10 +76,10 @@ public class DirectoryMonitor {
         executor.submit(() -> {
             while (true) {
                 try {
-                    watcher.take(); // wait for a key to be available
+                    WatchKey key = watcher.take(); // wait for a key to be available
+                    key.reset();
                 } catch (InterruptedException ex) {
                     logger.error("Directory watcher interrupted");
-                    return;
                 }
 
                 fileListProvider.purgeTitleCache();
