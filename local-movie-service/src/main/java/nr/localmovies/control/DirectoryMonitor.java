@@ -4,6 +4,7 @@ import com.sun.nio.file.SensitivityWatchEventModifier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,12 @@ public class DirectoryMonitor {
     private static final Logger logger = LoggerFactory.getLogger(DirectoryMonitor.class);
     private WatchService watcher;
     private ExecutorService executor;
+    private FileListProvider fileListProvider;
+
+    @Autowired
+    public DirectoryMonitor(FileListProvider fileListProvider){
+        this.fileListProvider = fileListProvider;
+    }
 
     @PostConstruct
     public void init() throws IOException {
@@ -75,23 +82,8 @@ public class DirectoryMonitor {
                     return;
                 }
 
-                purgeTitleCache();
+                fileListProvider.purgeTitleCache();
             }
         });
-    }
-
-    @CacheEvict(value = "files", allEntries = true)
-    public void purgeTitleCache(){
-        logger.info("Purging cache");
-    }
-
-    @Cacheable(value = "files")
-    public File[] listFiles(String directoryPath) {
-        logger.info("Listing files at - " + directoryPath);
-        File[] files = new File(directoryPath).listFiles();
-        if(files == null || files.length == 0)
-            files = new File[0];
-
-        return files;
     }
 }
