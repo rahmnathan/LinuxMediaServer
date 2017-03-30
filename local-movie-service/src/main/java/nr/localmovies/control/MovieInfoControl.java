@@ -78,7 +78,6 @@ public class MovieInfoControl {
                 .forEachOrdered(directory-> sb.append(directory).append("/"));
 
         MovieInfo movieInfo = loadMovieInfoFromDatabase(sb.toString().substring(0, sb.length() - 1));
-
         return MovieInfo.Builder.copyWithNewTitle(movieInfo, pathArray[pathArray.length - 1]);
     }
 

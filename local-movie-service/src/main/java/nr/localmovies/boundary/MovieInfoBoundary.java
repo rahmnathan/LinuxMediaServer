@@ -5,11 +5,9 @@ import nr.localmovies.control.MovieInfoControl;
 import nr.localmovies.data.MovieSearchCriteria;
 import nr.localmovies.movieinfoapi.MovieInfo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
