@@ -85,7 +85,7 @@ public class DirectoryMonitor {
         logger.info("Purging cache");
     }
 
-    @Cacheable("files")
+    @Cacheable(value = "files")
     public File[] listFiles(String directoryPath) {
         logger.info("Listing files at - " + directoryPath);
         File[] files = new File(directoryPath).listFiles();
