@@ -19,7 +19,6 @@ public class FileLister implements FileRepository {
 
     @Cacheable("files")
     public File[] listFiles(String directoryPath) {
-        directoryMonitor.registerAll(directoryPath);
         File[] files = new File(directoryPath).listFiles();
         if(files == null || files.length == 0)
             files = new File[0];

@@ -1,74 +1,101 @@
 package nr.localmovies.directorymonitor;
 
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.stereotype.Component;
+import com.sun.nio.file.SensitivityWatchEventModifier;
 
-import javax.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.stereotype.Service;
+
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.*;
-import static java.nio.file.StandardWatchEventKinds.*;
-import java.nio.file.attribute.*;
-import java.io.*;
-import java.util.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-@Component
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
+import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
+
+@Service
 public class DirectoryMonitor {
+
+    private static final Logger logger = LoggerFactory.getLogger(DirectoryMonitor.class);
     private WatchService watcher;
-    private Map<WatchKey, Path> keys;
-    private Logger logger = Logger.getLogger(DirectoryMonitor.class.getName());
-    private ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private ExecutorService executor;
 
     @PostConstruct
-    public void watchDirectories(){
-        executorService.submit(this::processEvents);
+    public void init() throws IOException {
+        watcher = FileSystems.getDefault().newWatchService();
+        executor = Executors.newSingleThreadExecutor();
+        startRecursiveWatcher();
     }
 
-    private void register(Path dir) throws IOException {
-        WatchKey key = dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
-        keys.put(key, dir);
-    }
-
-    public void registerAll(String path) {
+    @PreDestroy
+    public void cleanup() {
         try {
-            Path parentPath = Paths.get(path);
-            this.watcher = FileSystems.getDefault().newWatchService();
-            this.keys = new HashMap<>();
-            Files.walkFileTree(parentPath, new SimpleFileVisitor<Path>() {
-                @Override
-                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                    register(dir);
-                    return FileVisitResult.CONTINUE;
-                }
-            });
-        } catch (IOException e){
-            logger.severe("Failed to register directory - " + path);
+            watcher.close();
+        } catch (IOException e) {
+            logger.error("Error closing watcher service", e);
         }
+        executor.shutdown();
     }
 
-    private void processEvents() {
-        while (true) {
+    private void startRecursiveWatcher() throws IOException {
+        logger.info("Starting Recursive Watcher");
 
-            // wait for key to be signalled
-            WatchKey key;
+        final Map<WatchKey, Path> keys = new HashMap<>();
+
+        Consumer<Path> register = path -> {
             try {
-                key = watcher.take();
-            } catch (InterruptedException x) {
-                return;
+                Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+                    @Override
+                    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                        logger.info("registering " + dir + " in watcher service");
+                        WatchKey watchKey = dir.register(watcher, new WatchEvent.Kind[]{ENTRY_CREATE}, SensitivityWatchEventModifier.HIGH);
+                        keys.put(watchKey, dir);
+                        return FileVisitResult.CONTINUE;
+                    }
+                });
+            } catch (IOException e) {
+                logger.info("Error registering path " + path);
             }
+        };
 
-            keys.get(key);
+        register.accept(Paths.get("/home/nathan/LocalMedia/"));
 
-            for (WatchEvent<?> event : key.pollEvents()) {
-                purgeTitleCache();
+        executor.submit(() -> {
+            while (true) {
+                final WatchKey key;
+                try {
+                    key = watcher.take(); // wait for a key to be available
+                } catch (InterruptedException ex) {
+                    return;
+                }
+
+                final Path dir = keys.get(key);
+
+                key.pollEvents().stream()
+                        .filter(e -> (e.kind() != OVERFLOW))
+                        .map(e -> ((WatchEvent<Path>) e).context())
+                        .forEach(p -> {
+                            purgeTitleCache();
+                        });
+
+                boolean valid = key.reset(); // IMPORTANT: The key must be reset after processed
             }
-        }
+        });
     }
 
     @CacheEvict(value = "files", allEntries = true)
     public void purgeTitleCache(){
-        logger.log(Level.INFO, "Purging cache");
+        logger.info("Purging cache");
     }
 }
