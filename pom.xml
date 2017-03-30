@@ -14,7 +14,6 @@
         <module>local-movie-service</module>
         <module>local-movie-web</module>
         <module>local-movie-standalone</module>
-        <module>local-movie-directory-monitor</module>
     </modules>
 
     <parent>
