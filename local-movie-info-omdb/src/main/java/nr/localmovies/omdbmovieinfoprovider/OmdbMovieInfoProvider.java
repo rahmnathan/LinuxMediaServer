@@ -3,6 +3,7 @@ package nr.localmovies.omdbmovieinfoprovider;
 import nr.localmovies.movieinfoapi.MovieInfo;
 import nr.localmovies.movieinfoapi.IMovieInfoProvider;
 import org.imgscalr.Scalr;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -41,7 +42,7 @@ public class OmdbMovieInfoProvider implements IMovieInfoProvider {
         URL url;
         try {
             url = new URL(jsonMovieInfo.get("Poster").toString());
-        }catch (MalformedURLException e){
+        }catch (MalformedURLException | JSONException e){
             return new byte[0];
         }
         return scaleImage(dataProvider.loadMoviePoster(url));
