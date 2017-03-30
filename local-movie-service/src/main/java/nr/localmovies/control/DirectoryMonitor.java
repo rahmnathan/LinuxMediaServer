@@ -59,8 +59,6 @@ public class DirectoryMonitor {
     private void startRecursiveWatcher() throws IOException {
         logger.info("Starting Recursive Watcher");
 
-        final Map<WatchKey, Path> keys = new HashMap<>();
-
         Consumer<Path> register = p -> {
             if (!p.toFile().exists() || !p.toFile().isDirectory()) {
                 throw new RuntimeException("folder " + p + " does not exist or is not a directory");
@@ -70,8 +68,7 @@ public class DirectoryMonitor {
                     @Override
                     public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
                         logger.info("registering " + dir + " in watcher service");
-                        WatchKey watchKey = dir.register(watcher, new WatchEvent.Kind[]{ENTRY_CREATE}, SensitivityWatchEventModifier.HIGH);
-                        keys.put(watchKey, dir);
+                        dir.register(watcher, new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE}, SensitivityWatchEventModifier.HIGH);
                         return FileVisitResult.CONTINUE;
                     }
                 });
@@ -86,35 +83,14 @@ public class DirectoryMonitor {
             while (true) {
                 final WatchKey key;
                 try {
-                    key = watcher.take(); // wait for a key to be available
+                    key = watcher.take();
                 } catch (InterruptedException ex) {
                     return;
                 }
 
-                final Path dir = keys.get(key);
-                if (dir == null) {
-                    System.err.println("WatchKey " + key + " not recognized!");
-                    continue;
-                }
-
-                key.pollEvents().stream()
-                        .filter(e -> (e.kind() != OVERFLOW))
-                        .map(e -> ((WatchEvent<Path>) e).context())
-                        .forEach(p -> {
-                            final Path absPath = dir.resolve(p);
-                            if (absPath.toFile().isDirectory()) {
-                                register.accept(absPath);
-                            } else {
-                                final File f = absPath.toFile();
-                                logger.info("Detected new file " + f.getAbsolutePath());
-                            }
-                        });
-
                 fileListProvider.purgeTitleCache();
-                boolean valid = key.reset(); // IMPORTANT: The key must be reset after processed
-                if (!valid) {
-                    break;
-                }
+                key.pollEvents();
+                key.reset();
             }
         });
     }
