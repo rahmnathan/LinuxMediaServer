@@ -1,29 +1,26 @@
-package nr.localmovies.directorymonitor;
+package nr.localmovies.control;
 
 import com.sun.nio.file.SensitivityWatchEventModifier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
-import java.util.logging.Level;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
-import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
 @Service
 public class DirectoryMonitor {
@@ -86,5 +83,15 @@ public class DirectoryMonitor {
     @CacheEvict(value = "files", allEntries = true)
     public void purgeTitleCache(){
         logger.info("Purging cache");
+    }
+
+    @Cacheable("files")
+    public File[] listFiles(String directoryPath) {
+        logger.info("Listing files at - " + directoryPath);
+        File[] files = new File(directoryPath).listFiles();
+        if(files == null || files.length == 0)
+            files = new File[0];
+
+        return files;
     }
 }
