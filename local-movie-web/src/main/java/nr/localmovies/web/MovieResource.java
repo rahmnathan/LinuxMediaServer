@@ -1,6 +1,6 @@
 package nr.localmovies.web;
 
-import nr.localmovies.boundary.MovieInfoBoundary;
+import nr.localmovies.boundary.MovieInfoFacade;
 import nr.localmovies.data.MovieSearchCriteria;
 import nr.localmovies.movieinfoapi.MovieInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +18,13 @@ import java.util.logging.Logger;
 
 @RestController
 public class MovieResource {
-    private final MovieInfoBoundary movieInfoBoundary;
+    private final MovieInfoFacade movieInfoFacade;
     private final FileSender fileSender;
     private final Logger logger = Logger.getLogger(MovieResource.class.getName());
 
     @Autowired
-    public MovieResource(MovieInfoBoundary movieInfoControl, FileSender fileSender){
-        this.movieInfoBoundary = movieInfoControl;
+    public MovieResource(MovieInfoFacade movieInfoControl, FileSender fileSender){
+        this.movieInfoFacade = movieInfoControl;
         this.fileSender = fileSender;
     }
 
@@ -50,7 +50,7 @@ public class MovieResource {
         if(searchCriteria.getPage() == 0)
             movieInfoCount(directoryPath, response, request);
 
-        return movieInfoBoundary.loadMovieList(searchCriteria);
+        return movieInfoFacade.loadMovieList(searchCriteria);
     }
 
     /**
@@ -59,7 +59,7 @@ public class MovieResource {
     @RequestMapping(value = "/movieinfocount")
     public void movieInfoCount(@RequestParam(value = "path") String path, HttpServletResponse response, HttpServletRequest request){
         logger.log(Level.INFO, "Received request for count for - " + path + " from - " + request.getRemoteAddr());
-        int count = movieInfoBoundary.loadMovieListLength(path);
+        int count = movieInfoFacade.loadMovieListLength(path);
         logger.log(Level.INFO, "Returning count of - " + count);
         response.setHeader("Count", String.valueOf(count));
     }
@@ -88,7 +88,7 @@ public class MovieResource {
         response.addHeader("Access-Control-Allow-Origin", "*");
         logger.info("Streaming poster " + moviePath + " to " + request.getRemoteAddr());
 
-        String image = movieInfoBoundary.loadSingleMovie(moviePath).getImage();
+        String image = movieInfoFacade.loadSingleMovie(moviePath).getImage();
         if(image == null)
             return new byte[0];
 

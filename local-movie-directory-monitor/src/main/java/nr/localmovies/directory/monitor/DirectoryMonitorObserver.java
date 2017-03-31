@@ -1,4 +1,4 @@
-package nr.localmovies.control;
+package nr.localmovies.directory.monitor;
 
 public interface DirectoryMonitorObserver {
     void directoryModified();

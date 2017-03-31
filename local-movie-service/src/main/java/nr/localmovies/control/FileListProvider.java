@@ -1,5 +1,6 @@
 package nr.localmovies.control;
 
+import nr.localmovies.directory.monitor.DirectoryMonitorObserver;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;

@@ -1,9 +1,9 @@
 package nr.localmovies.boundary;
 
-import nr.localmovies.control.DirectoryMonitor;
 import nr.localmovies.control.FileListProvider;
 import nr.localmovies.control.MovieInfoControl;
 import nr.localmovies.data.MovieSearchCriteria;
+import nr.localmovies.directory.monitor.DirectoryMonitor;
 import nr.localmovies.movieinfoapi.MovieInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,7 +17,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @Component
-public class MovieInfoBoundary {
+public class MovieInfoFacade {
     @Value("${media.path}")
     private String mediaPath;
     private MovieInfoControl movieInfoControl;
@@ -25,7 +25,7 @@ public class MovieInfoBoundary {
     private FileListProvider fileListProvider;
 
     @Autowired
-    public MovieInfoBoundary(MovieInfoControl movieInfoControl, DirectoryMonitor directoryMonitor, FileListProvider fileListProvider){
+    public MovieInfoFacade(MovieInfoControl movieInfoControl, DirectoryMonitor directoryMonitor, FileListProvider fileListProvider){
         this.movieInfoControl = movieInfoControl;
         this.directoryMonitor = directoryMonitor;
         this.fileListProvider = fileListProvider;
@@ -33,7 +33,7 @@ public class MovieInfoBoundary {
 
     @PostConstruct
     public void startDirectoryMonitor(){
-        if(!mediaPath.equals("")) {
+        if(!mediaPath.equalsIgnoreCase("none")) {
             directoryMonitor.addObserver(fileListProvider);
             directoryMonitor.startRecursiveWatcher(mediaPath);
         }
