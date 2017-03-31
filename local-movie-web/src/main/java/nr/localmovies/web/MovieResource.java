@@ -76,7 +76,7 @@ public class MovieResource {
                             HttpServletRequest request) {
         response.addHeader("Access-Control-Allow-Origin", "*");
         logger.info("Streaming - " + moviePath + " to " + request.getRemoteAddr());
-        if(!mediaPath.equalsIgnoreCase("none") && moviePath.toLowerCase().startsWith(mediaPath))
+        if(!mediaPath.equalsIgnoreCase("none") && moviePath.toLowerCase().startsWith(mediaPath.toLowerCase()))
             fileSender.serveResource(Paths.get(moviePath), request, response);
     }
 
