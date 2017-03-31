@@ -9,11 +9,14 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
@@ -31,6 +34,7 @@ public class DirectoryMonitor {
     private WatchService watcher;
     private ExecutorService executor;
     private List<DirectoryMonitorObserver> observerList = new ArrayList<>();
+    private final Map<WatchKey, Path> keys = new HashMap<>();
 
     public void addObserver(DirectoryMonitorObserver observer){
         observerList.add(observer);
@@ -69,7 +73,8 @@ public class DirectoryMonitor {
                     @Override
                     public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
                         logger.info("registering " + dir + " in watcher service");
-                        dir.register(watcher, new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE}, SensitivityWatchEventModifier.HIGH);
+                        WatchKey watchKey = dir.register(watcher, new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE}, SensitivityWatchEventModifier.HIGH);
+                        keys.put(watchKey, dir);
                         return FileVisitResult.CONTINUE;
                     }
                 });
@@ -88,12 +93,20 @@ public class DirectoryMonitor {
                 } catch (InterruptedException ex) {
                     return;
                 }
-                
-                key.pollEvents().forEach(event-> {
-                    Path pathWatchEvent = ((WatchEvent<Path>) event).context();
-                    if(pathWatchEvent.toFile().isDirectory())
-                        register.accept(pathWatchEvent);
-                });
+
+                final Path dir = keys.get(key);
+
+                key.pollEvents().stream()
+                        .map(e -> ((WatchEvent<Path>) e).context())
+                        .forEach(p -> {
+                            final Path absPath = dir.resolve(p);
+                            if (absPath.toFile().isDirectory()) {
+                                register.accept(absPath);
+                            } else {
+                                final File f = absPath.toFile();
+                                logger.info("Detected new file " + f.getAbsolutePath());
+                            }
+                        });
 
                 notifyObservers();
                 key.reset();
