@@ -8,12 +8,12 @@ import java.io.File;
 import java.util.logging.Logger;
 
 @Component
-public class FileListProvider implements FileRepository {
+public class FileListProvider implements FileRepository, DirectoryMonitorObserver {
 
     private final Logger logger = Logger.getLogger(FileListProvider.class.getName());
 
     @CacheEvict(value = "files", allEntries = true)
-    public void purgeTitleCache(){
+    public void directoryModified(){
         logger.info("Purging cache");
     }
 

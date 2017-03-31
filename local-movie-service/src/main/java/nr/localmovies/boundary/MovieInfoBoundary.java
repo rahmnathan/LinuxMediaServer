@@ -6,8 +6,10 @@ import nr.localmovies.control.MovieInfoControl;
 import nr.localmovies.data.MovieSearchCriteria;
 import nr.localmovies.movieinfoapi.MovieInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
@@ -16,6 +18,8 @@ import java.util.stream.Collectors;
 
 @Component
 public class MovieInfoBoundary {
+    @Value("${media.path}")
+    private String mediaPath;
     private MovieInfoControl movieInfoControl;
     private DirectoryMonitor directoryMonitor;
     private FileListProvider fileListProvider;
@@ -25,6 +29,14 @@ public class MovieInfoBoundary {
         this.movieInfoControl = movieInfoControl;
         this.directoryMonitor = directoryMonitor;
         this.fileListProvider = fileListProvider;
+    }
+
+    @PostConstruct
+    public void startDirectoryMonitor(){
+        if(!mediaPath.equals("")) {
+            directoryMonitor.addObserver(fileListProvider);
+            directoryMonitor.startRecursiveWatcher(mediaPath);
+        }
     }
 
     public int loadMovieListLength(String directoryPath){

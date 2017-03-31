@@ -13,7 +13,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,18 +34,20 @@ public class DirectoryMonitor {
     private static final Logger logger = LoggerFactory.getLogger(DirectoryMonitor.class);
     private WatchService watcher;
     private ExecutorService executor;
-    private FileListProvider fileListProvider;
+    private List<DirectoryMonitorObserver> observerList = new ArrayList<>();
 
-    @Autowired
-    public DirectoryMonitor(FileListProvider fileListProvider){
-        this.fileListProvider = fileListProvider;
+    public void addObserver(DirectoryMonitorObserver observer){
+        observerList.add(observer);
+    }
+
+    private void notifyObservers(){
+        observerList.forEach(DirectoryMonitorObserver::directoryModified);
     }
 
     @PostConstruct
     public void init() throws IOException {
         watcher = FileSystems.getDefault().newWatchService();
         executor = Executors.newSingleThreadExecutor();
-        startRecursiveWatcher();
     }
 
     @PreDestroy
@@ -56,7 +60,7 @@ public class DirectoryMonitor {
         executor.shutdown();
     }
 
-    private void startRecursiveWatcher() throws IOException {
+    public void startRecursiveWatcher(String pathToMonitor) {
         logger.info("Starting Recursive Watcher");
 
         Consumer<Path> register = p -> {
@@ -77,7 +81,7 @@ public class DirectoryMonitor {
             }
         };
 
-        register.accept(Paths.get("/home/nathan/LocalMedia/"));
+        register.accept(Paths.get(pathToMonitor));
 
         executor.submit(() -> {
             while (true) {
@@ -88,7 +92,7 @@ public class DirectoryMonitor {
                     return;
                 }
 
-                fileListProvider.purgeTitleCache();
+                notifyObservers();
                 key.pollEvents();
                 key.reset();
             }
