@@ -7,6 +7,7 @@ import nr.localmovies.movieinfoapi.IMovieInfoProvider;
 import nr.localmovies.movieinfoapi.MovieInfo;
 import nr.localmovies.movieinfoapi.MovieInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -15,6 +16,8 @@ import java.util.logging.Logger;
 
 @Component
 public class MovieInfoControl {
+    @Value("${media.path}")
+    private String mediaPath;
     private final MovieInfoRepository repository;
     private final IMovieInfoProvider movieInfoProvider;
     private final Logger logger = Logger.getLogger(MovieInfoControl.class.getName());
@@ -68,7 +71,7 @@ public class MovieInfoControl {
 
     private MovieInfo loadSeriesParentInfo(String path) {
         logger.info("Getting info from parent - " + path);
-        String[] pathArray = path.split("LocalMedia")[1].split("/");
+        String[] pathArray = path.substring(mediaPath.length()).split("/");
         int depth = pathArray.length > 3 ? pathArray.length - 3 : 0;
 
         StringBuilder sb = new StringBuilder();
@@ -82,6 +85,6 @@ public class MovieInfoControl {
     }
 
     private boolean isViewingTopLevel(String currentPath){
-        return currentPath.toLowerCase().split("localmedia")[1].split("/").length == 3;
+        return currentPath.substring(mediaPath.length()).split("/").length == 3;
     }
 }

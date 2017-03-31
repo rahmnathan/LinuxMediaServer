@@ -4,6 +4,7 @@ import nr.localmovies.boundary.MovieInfoFacade;
 import nr.localmovies.data.MovieSearchCriteria;
 import nr.localmovies.movieinfoapi.MovieInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +19,8 @@ import java.util.logging.Logger;
 
 @RestController
 public class MovieResource {
+    @Value("${media.path}")
+    private String mediaPath;
     private final MovieInfoFacade movieInfoFacade;
     private final FileSender fileSender;
     private final Logger logger = Logger.getLogger(MovieResource.class.getName());
@@ -73,7 +76,7 @@ public class MovieResource {
                             HttpServletRequest request) {
         response.addHeader("Access-Control-Allow-Origin", "*");
         logger.info("Streaming - " + moviePath + " to " + request.getRemoteAddr());
-        if(moviePath.toLowerCase().contains("localmedia"))
+        if(!mediaPath.equalsIgnoreCase("none") && moviePath.toLowerCase().startsWith(mediaPath))
             fileSender.serveResource(Paths.get(moviePath), request, response);
     }
 
