@@ -56,6 +56,7 @@ public class DirectoryMonitor {
         executor.shutdown();
     }
 
+    @SuppressWarnings("unchecked")
     public void startRecursiveWatcher(String pathToMonitor) {
         logger.info("Starting Recursive Watcher");
 
@@ -87,9 +88,14 @@ public class DirectoryMonitor {
                 } catch (InterruptedException ex) {
                     return;
                 }
+                
+                key.pollEvents().forEach(event-> {
+                    Path pathWatchEvent = ((WatchEvent<Path>) event).context();
+                    if(pathWatchEvent.toFile().isDirectory())
+                        register.accept(pathWatchEvent);
+                });
 
                 notifyObservers();
-                key.pollEvents();
                 key.reset();
             }
         });
