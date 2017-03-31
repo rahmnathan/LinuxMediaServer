@@ -72,6 +72,7 @@ public class MovieInfoControl {
     private MovieInfo loadSeriesParentInfo(String path) {
         logger.info("Getting info from parent - " + path);
         String[] pathArray = path.substring(mediaPath.length()).split("/");
+        logger.info(String.valueOf(pathArray.length));
         int depth = pathArray.length > 3 ? pathArray.length - 3 : 0;
 
         StringBuilder sb = new StringBuilder();
@@ -85,6 +86,7 @@ public class MovieInfoControl {
     }
 
     private boolean isViewingTopLevel(String currentPath){
+        logger.info(String.valueOf(currentPath.substring(mediaPath.length()).split("/").length == 3));
         return currentPath.substring(mediaPath.length()).split("/").length == 3;
     }
 }
