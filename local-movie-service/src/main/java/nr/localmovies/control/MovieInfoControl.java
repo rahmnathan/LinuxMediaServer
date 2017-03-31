@@ -73,7 +73,7 @@ public class MovieInfoControl {
         logger.info("Getting info from parent - " + path);
         String[] pathArray = path.substring(mediaPath.length()).split("/");
         logger.info(String.valueOf(pathArray.length));
-        int depth = pathArray.length > 3 ? pathArray.length - 3 : 0;
+        int depth = pathArray.length > 2 ? pathArray.length - 3 : 0;
 
         StringBuilder sb = new StringBuilder();
         String[] directoryArray = path.split("/");
@@ -86,7 +86,7 @@ public class MovieInfoControl {
     }
 
     private boolean isViewingTopLevel(String currentPath){
-        logger.info(String.valueOf(currentPath.substring(mediaPath.length()).split("/").length == 3));
-        return currentPath.substring(mediaPath.length()).split("/").length == 3;
+        logger.info(String.valueOf(currentPath.substring(mediaPath.length()).split("/").length));
+        return currentPath.substring(mediaPath.length()).split("/").length == 2;
     }
 }
