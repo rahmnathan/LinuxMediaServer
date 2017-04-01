@@ -4,9 +4,6 @@ import com.sun.nio.file.SensitivityWatchEventModifier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -65,9 +62,9 @@ public class DirectoryMonitor {
         logger.info("Starting Recursive Watcher");
 
         Consumer<Path> register = p -> {
-            if (!p.toFile().exists() || !p.toFile().isDirectory()) {
+            if (!p.toFile().exists() || !p.toFile().isDirectory())
                 throw new RuntimeException("folder " + p + " does not exist or is not a directory");
-            }
+
             try {
                 Files.walkFileTree(p, new SimpleFileVisitor<Path>() {
                     @Override
@@ -91,7 +88,8 @@ public class DirectoryMonitor {
                 try {
                     key = watcher.take();
                 } catch (InterruptedException ex) {
-                    return;
+                    logger.error(ex.toString());
+                    continue;
                 }
 
                 final Path dir = keys.get(key);
