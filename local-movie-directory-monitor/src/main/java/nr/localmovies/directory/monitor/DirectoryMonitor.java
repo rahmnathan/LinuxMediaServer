@@ -50,6 +50,7 @@ public class DirectoryMonitor {
     @PreDestroy
     public void cleanup() {
         try {
+            logger.info("Stopping directory monitor");
             watcher.close();
         } catch (IOException e) {
             logger.error("Error closing watcher service", e);
