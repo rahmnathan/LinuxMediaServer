@@ -3,6 +3,7 @@ package nr.localmovies.web;
 import nr.localmovies.boundary.MovieInfoFacade;
 import nr.localmovies.data.MovieSearchCriteria;
 import nr.localmovies.movieinfoapi.MovieInfo;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,8 +42,9 @@ public class MovieResource {
                                         @RequestParam(value = "resultsPerPage", required = false) Integer itemsPerPage,
                                         HttpServletRequest request, HttpServletResponse response) throws ExecutionException {
         response.addHeader("Access-Control-Allow-Origin", "*");
-        logger.log(Level.INFO, "Received request for - " + directoryPath + " page - " + page + " itemsPerPage - "
-                + itemsPerPage + " from " + request.getRemoteAddr());
+        MDC.put("Client-Address", request.getRemoteAddr());
+        logger.log(Level.INFO, String.format("Received request for - %s page - %s itemsPerPage - %s",
+                directoryPath, page, itemsPerPage));
 
         MovieSearchCriteria searchCriteria = MovieSearchCriteria.Builder.newInstance()
                 .setItemsPerPage(itemsPerPage)
@@ -53,7 +55,9 @@ public class MovieResource {
         if(searchCriteria.getPage() == 0)
             movieInfoCount(directoryPath, response, request);
 
-        return movieInfoFacade.loadMovieList(searchCriteria);
+        List<MovieInfo> movieInfoList = movieInfoFacade.loadMovieList(searchCriteria);
+        MDC.clear();
+        return movieInfoList;
     }
 
     /**
@@ -61,10 +65,12 @@ public class MovieResource {
      */
     @RequestMapping(value = "/movieinfocount")
     public void movieInfoCount(@RequestParam(value = "path") String path, HttpServletResponse response, HttpServletRequest request){
-        logger.log(Level.INFO, "Received request for count for - " + path + " from - " + request.getRemoteAddr());
+        MDC.put("Client-Address", request.getRemoteAddr());
+        logger.log(Level.INFO, "Received request for count for - " + path);
         int count = movieInfoFacade.loadMovieListLength(path);
         logger.log(Level.INFO, "Returning count of - " + count);
         response.setHeader("Count", String.valueOf(count));
+        MDC.clear();
     }
 
     /**
@@ -74,10 +80,12 @@ public class MovieResource {
     @RequestMapping(value = "/video.mp4", produces = "video/mp4")
     public void streamVideo(@RequestParam("path") String moviePath, HttpServletResponse response,
                             HttpServletRequest request) {
+        MDC.put("Client-Address", request.getRemoteAddr());
         response.addHeader("Access-Control-Allow-Origin", "*");
-        logger.info("Streaming - " + moviePath + " to " + request.getRemoteAddr());
+        logger.info("Streaming - " + moviePath);
         if(!mediaPath.equalsIgnoreCase("none") && moviePath.toLowerCase().startsWith(mediaPath.toLowerCase()))
             fileSender.serveResource(Paths.get(moviePath), request, response);
+        MDC.clear();
     }
 
     /**
@@ -88,13 +96,16 @@ public class MovieResource {
     @RequestMapping("/poster")
     public byte[] servePoster(@RequestParam("path") String moviePath, HttpServletResponse response,
                               HttpServletRequest request) throws ExecutionException {
+        MDC.put("Client-Address", request.getRemoteAddr());
         response.addHeader("Access-Control-Allow-Origin", "*");
-        logger.info("Streaming poster " + moviePath + " to " + request.getRemoteAddr());
+        logger.info("Streaming poster " + moviePath);
 
         String image = movieInfoFacade.loadSingleMovie(moviePath).getImage();
         if(image == null)
             return new byte[0];
 
-        return Base64.getDecoder().decode(image);
+        byte[] poster = Base64.getDecoder().decode(image);
+        MDC.clear();
+        return poster;
     }
 }
