@@ -33,14 +33,16 @@ public class MovieResource {
     }
 
     /**
-     * @param directoryPath - Path to directory you wish to list
-     * @return - List of files in specified directory
+     * @param directoryPath Directory of videos to return
+     * @param page Page to return
+     * @param itemsPerPage Items to return per page
+     * @return List of movie-info json objects
      */
     @RequestMapping(value = "/titlerequest", produces="application/json")
     public List<MovieInfo> titleRequest(@RequestParam(value = "path") String directoryPath,
                                         @RequestParam(value =  "page", required = false) Integer page,
                                         @RequestParam(value = "resultsPerPage", required = false) Integer itemsPerPage,
-                                        HttpServletRequest request, HttpServletResponse response) throws ExecutionException {
+                                        HttpServletRequest request, HttpServletResponse response) {
         response.addHeader("Access-Control-Allow-Origin", "*");
         MDC.put("Client-Address", request.getRemoteAddr());
         logger.log(Level.INFO, String.format("Received request for - %s page - %s itemsPerPage - %s",
@@ -75,7 +77,6 @@ public class MovieResource {
 
     /**
      * @param moviePath - Path to video file to stream
-     * throws Exception
      */
     @RequestMapping(value = "/video.mp4", produces = "video/mp4")
     public void streamVideo(@RequestParam("path") String moviePath, HttpServletResponse response,
@@ -91,11 +92,10 @@ public class MovieResource {
     /**
      * @param moviePath - Path to video file
      * @return - Poster image for specified video file
-     * throws Exception
      */
     @RequestMapping("/poster")
     public byte[] servePoster(@RequestParam("path") String moviePath, HttpServletResponse response,
-                              HttpServletRequest request) throws ExecutionException {
+                              HttpServletRequest request) {
         MDC.put("Client-Address", request.getRemoteAddr());
         response.addHeader("Access-Control-Allow-Origin", "*");
         logger.info("Streaming poster " + moviePath);

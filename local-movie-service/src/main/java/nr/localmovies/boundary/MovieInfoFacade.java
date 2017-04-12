@@ -54,7 +54,7 @@ public class MovieInfoFacade {
                 .collect(Collectors.toList());
     }
 
-    public MovieInfo loadSingleMovie(String filePath) throws ExecutionException {
+    public MovieInfo loadSingleMovie(String filePath) {
         return movieInfoControl.loadMovieInfoFromCache(filePath);
     }
 }
