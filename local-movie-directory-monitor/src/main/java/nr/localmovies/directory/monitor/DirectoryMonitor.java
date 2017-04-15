@@ -41,10 +41,13 @@ public class DirectoryMonitor {
         observerList.forEach(DirectoryMonitorObserver::directoryModified);
     }
 
-    @PostConstruct
-    public void init() throws IOException {
-        watcher = FileSystems.getDefault().newWatchService();
-        executor = Executors.newSingleThreadExecutor();
+    public void init() {
+        try {
+            watcher = FileSystems.getDefault().newWatchService();
+            executor = Executors.newSingleThreadExecutor();
+        } catch (IOException e){
+            logger.error("Failed to start watch service", e);
+        }
     }
 
     @PreDestroy

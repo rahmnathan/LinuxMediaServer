@@ -34,6 +34,7 @@ public class MovieInfoFacade {
     @PostConstruct
     public void startDirectoryMonitor(){
         if(!mediaPath.equalsIgnoreCase("none")) {
+            directoryMonitor.init();
             directoryMonitor.addObserver(fileListProvider);
             directoryMonitor.startRecursiveWatcher(mediaPath);
         }
