@@ -23,6 +23,7 @@ import javax.annotation.PreDestroy;
 
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
+import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
 @Service
 public class DirectoryMonitor {
@@ -67,7 +68,7 @@ public class DirectoryMonitor {
 
         Consumer<Path> register = p -> {
             if (!p.toFile().exists() || !p.toFile().isDirectory())
-                throw new RuntimeException("folder " + p + " does not exist or is not a directory");
+                logger.error("folder " + p + " does not exist or is not a directory");
 
             try {
                 Files.walkFileTree(p, new SimpleFileVisitor<Path>() {
@@ -80,7 +81,7 @@ public class DirectoryMonitor {
                     }
                 });
             } catch (IOException e) {
-                throw new RuntimeException("Error registering path " + p);
+                logger.error(e.toString());
             }
         };
 
@@ -99,19 +100,22 @@ public class DirectoryMonitor {
                 final Path dir = keys.get(key);
 
                 key.pollEvents().stream()
-                        .map(e -> ((WatchEvent<Path>) e).context())
+                        .map(e -> ((WatchEvent<Path>) e))
                         .forEach(p -> {
-                            final Path absPath = dir.resolve(p);
-                            if (absPath.toFile().isDirectory()) {
-                                register.accept(absPath);
-                            } else {
-                                final File f = absPath.toFile();
-                                logger.info("Detected new file " + f.getAbsolutePath());
+                            if(!p.kind().equals(OVERFLOW)) {
+                                final Path absPath = dir.resolve(p.context());
+                                if (absPath.toFile().isDirectory()) {
+                                    register.accept(absPath);
+                                } else {
+                                    final File f = absPath.toFile();
+                                    logger.info("Detected new file " + f.getAbsolutePath());
+                                }
                             }
                         });
 
                 notifyObservers();
-                key.reset();
+                if(!key.reset())
+                    return;
             }
         });
     }
