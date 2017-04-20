@@ -114,8 +114,7 @@ public class DirectoryMonitor {
                         });
 
                 notifyObservers();
-                if(!key.reset())
-                    return;
+                key.reset();
             }
         });
     }
