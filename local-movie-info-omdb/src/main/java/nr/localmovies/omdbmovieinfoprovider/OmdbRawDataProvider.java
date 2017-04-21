@@ -40,7 +40,6 @@ class OmdbRawDataProvider {
                 logger.log(Level.SEVERE, e.toString(), e);
             }
         }
-
         return new JSONObject();
     }
 

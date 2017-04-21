@@ -38,15 +38,14 @@ public class OmdbMovieInfoProvider implements IMovieInfoProvider {
         return movieInfoMapper.jsonToMovieInfo(jsonMovieInfo, poster, fileName);
     }
 
-    private byte[] loadPoster(JSONObject jsonMovieInfo){
-        URL url;
+    private byte[] loadPoster(JSONObject jsonMovieInfo) {
         try {
-            url = new URL(jsonMovieInfo.get("Poster").toString());
-        }catch (MalformedURLException | JSONException e){
+            URL url = new URL(jsonMovieInfo.get("Poster").toString());
+            return scaleImage(dataProvider.loadMoviePoster(url));
+        } catch (MalformedURLException | JSONException e) {
             return new byte[0];
         }
-        return scaleImage(dataProvider.loadMoviePoster(url));
-        }
+    }
 
     private byte[] scaleImage(byte[] poster) {
         if (poster.length == 0)
