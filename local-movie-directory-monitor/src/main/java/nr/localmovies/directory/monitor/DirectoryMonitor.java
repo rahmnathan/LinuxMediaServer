@@ -4,6 +4,7 @@ import com.sun.nio.file.SensitivityWatchEventModifier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -29,92 +30,82 @@ import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 public class DirectoryMonitor {
 
     private static final Logger logger = LoggerFactory.getLogger(DirectoryMonitor.class);
-    private WatchService watcher;
     private ExecutorService executor;
-    private List<DirectoryMonitorObserver> observerList = new ArrayList<>();
+    private List<DirectoryMonitorObserver> observerList;
     private final Map<WatchKey, Path> keys = new HashMap<>();
-
-    public void addObserver(DirectoryMonitorObserver observer){
-        observerList.add(observer);
-    }
 
     private void notifyObservers(){
         observerList.forEach(DirectoryMonitorObserver::directoryModified);
     }
 
-    public void init() {
-        try {
-            watcher = FileSystems.getDefault().newWatchService();
-            executor = Executors.newSingleThreadExecutor();
-        } catch (IOException e){
-            logger.error("Failed to start watch service", e);
-        }
+    @Autowired
+    public DirectoryMonitor(List<DirectoryMonitorObserver> observerList) {
+        this.observerList = observerList;
     }
 
     @PreDestroy
     public void cleanup() {
-        try {
-            logger.info("Stopping directory monitor");
-            watcher.close();
-        } catch (IOException e) {
-            logger.error("Error closing watcher service", e);
-        }
         executor.shutdown();
     }
 
     @SuppressWarnings("unchecked")
     public void startRecursiveWatcher(String pathToMonitor) {
         logger.info("Starting Recursive Watcher");
+        executor = Executors.newSingleThreadExecutor();
 
-        Consumer<Path> register = p -> {
-            if (!p.toFile().exists() || !p.toFile().isDirectory())
-                logger.error("folder " + p + " does not exist or is not a directory");
+        try (WatchService watcher = FileSystems.getDefault().newWatchService()) {
+            Consumer<Path> register = p -> {
+                if (!p.toFile().exists() || !p.toFile().isDirectory())
+                    logger.error("folder " + p + " does not exist or is not a directory");
 
-            try {
-                Files.walkFileTree(p, new SimpleFileVisitor<Path>() {
-                    @Override
-                    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                        logger.info("registering " + dir + " in watcher service");
-                        WatchKey watchKey = dir.register(watcher, new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE}, SensitivityWatchEventModifier.HIGH);
-                        keys.put(watchKey, dir);
-                        return FileVisitResult.CONTINUE;
-                    }
-                });
-            } catch (IOException e) {
-                logger.error(e.toString());
-            }
-        };
-
-        register.accept(Paths.get(pathToMonitor));
-
-        executor.submit(() -> {
-            while (true) {
-                final WatchKey key;
                 try {
-                    key = watcher.take();
-                } catch (InterruptedException ex) {
-                    logger.error(ex.toString());
-                    continue;
+                    Files.walkFileTree(p, new SimpleFileVisitor<Path>() {
+                        @Override
+                        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                            logger.info("registering " + dir + " in watcher service");
+                            WatchKey watchKey = dir.register(watcher, new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE}, SensitivityWatchEventModifier.HIGH);
+                            keys.put(watchKey, dir);
+                            return FileVisitResult.CONTINUE;
+                        }
+                    });
+                } catch (IOException e) {
+                    logger.error(e.toString());
                 }
+            };
 
-                final Path dir = keys.get(key);
+            register.accept(Paths.get(pathToMonitor));
 
-                key.pollEvents().stream()
-                        .map(e -> ((WatchEvent<Path>) e))
-                        .forEach(p -> {
-                            if(!p.kind().equals(OVERFLOW)) {
-                                final Path absPath = dir.resolve(p.context());
-                                if (absPath.toFile().isDirectory()) {
-                                    register.accept(absPath);
-                                } else {
-                                    logger.info("Detected new file " + absPath.toString());
+            executor.submit(() -> {
+                while (true) {
+                    final WatchKey key;
+                    try {
+                        key = watcher.take();
+                    } catch (InterruptedException ex) {
+                        logger.error(ex.toString());
+                        continue;
+                    }
+
+                    final Path dir = keys.get(key);
+
+                    key.pollEvents().stream()
+                            .map(e -> ((WatchEvent<Path>) e))
+                            .forEach(p -> {
+                                if (!p.kind().equals(OVERFLOW)) {
+                                    final Path absPath = dir.resolve(p.context());
+                                    if (absPath.toFile().isDirectory()) {
+                                        register.accept(absPath);
+                                    } else {
+                                        logger.info("Detected new file " + absPath.toString());
+                                    }
                                 }
-                            }
-                        });
+                            });
 
-                notifyObservers();
-                key.reset();
-            }
-        });
+                    notifyObservers();
+                    key.reset();
+                }
+            });
+        } catch (IOException e){
+            logger.error(e.toString());
+        }
     }
 }
