@@ -55,9 +55,6 @@ public class DirectoryMonitor {
 
         try (WatchService watcher = FileSystems.getDefault().newWatchService()) {
             Consumer<Path> register = p -> {
-                if (!p.toFile().exists() || !p.toFile().isDirectory())
-                    logger.error("folder " + p + " does not exist or is not a directory");
-
                 try {
                     Files.walkFileTree(p, new SimpleFileVisitor<Path>() {
                         @Override
