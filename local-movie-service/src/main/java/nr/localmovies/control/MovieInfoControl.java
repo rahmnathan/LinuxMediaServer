@@ -49,7 +49,7 @@ public class MovieInfoControl {
         try {
             return movieInfoCache.get(path);
         } catch (ExecutionException e){
-            e.printStackTrace();
+            logger.fine(e.toString());
             return MovieInfo.Builder.newInstance().build();
         }
     }
@@ -64,7 +64,7 @@ public class MovieInfoControl {
         String[] pathArray = path.split("/");
         String title = pathArray[pathArray.length - 1];
         MovieInfo movieInfo = movieInfoProvider.loadMovieInfo(title);
-        movieInfo.setPath(path);
+        movieInfo.setPath(path.substring(mediaPath.length()));
         repository.save(movieInfo);
         return movieInfo;
     }

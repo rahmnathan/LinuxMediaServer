@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -46,8 +45,7 @@ public class MovieResource {
                                         HttpServletRequest request, HttpServletResponse response) {
         response.addHeader("Access-Control-Allow-Origin", "*");
         MDC.put("Client-Address", request.getRemoteAddr());
-        if(!path.toLowerCase().startsWith(mediaPath.toLowerCase()))
-            path = mediaPath + path;
+        path = mediaPath + path;
         logger.log(Level.INFO, String.format("Received request for - %s page - %s itemsPerPage - %s",
                 path, page, itemsPerPage));
 
@@ -71,8 +69,7 @@ public class MovieResource {
     @RequestMapping(value = "/movieinfocount")
     public void movieInfoCount(@RequestParam(value = "path") String path, HttpServletResponse response, HttpServletRequest request){
         MDC.put("Client-Address", request.getRemoteAddr());
-        if(!path.toLowerCase().startsWith(mediaPath.toLowerCase()))
-            path = mediaPath + path;
+        path = mediaPath + path;
         logger.log(Level.INFO, "Received request for count for - " + path);
         int count = movieInfoFacade.loadMovieListLength(path);
         logger.log(Level.INFO, "Returning count of - " + count);
@@ -88,8 +85,7 @@ public class MovieResource {
                             HttpServletRequest request) {
         MDC.put("Client-Address", request.getRemoteAddr());
         response.addHeader("Access-Control-Allow-Origin", "*");
-        if(!path.toLowerCase().startsWith(mediaPath.toLowerCase()))
-            path = mediaPath + path;
+        path = mediaPath + path;
         logger.info("Streaming - " + path);
         fileSender.serveResource(Paths.get(path), request, response);
         MDC.clear();
@@ -103,8 +99,7 @@ public class MovieResource {
     public byte[] servePoster(@RequestParam("path") String path, HttpServletResponse response, HttpServletRequest request) {
         MDC.put("Client-Address", request.getRemoteAddr());
         response.addHeader("Access-Control-Allow-Origin", "*");
-        if(!path.toLowerCase().startsWith(mediaPath.toLowerCase()))
-            path = mediaPath + path;
+        path = mediaPath + path;
         logger.info("Streaming poster " + path);
 
         String image = movieInfoFacade.loadSingleMovie(path).getImage();
