@@ -45,14 +45,14 @@ public class MovieResource {
                                         HttpServletRequest request, HttpServletResponse response) {
         response.addHeader("Access-Control-Allow-Origin", "*");
         MDC.put("Client-Address", request.getRemoteAddr());
-        path = mediaPath + path;
+        String absolutePath = mediaPath + path;
         logger.log(Level.INFO, String.format("Received request for - %s page - %s itemsPerPage - %s",
-                path, page, itemsPerPage));
+                absolutePath, page, itemsPerPage));
 
         MovieSearchCriteria searchCriteria = MovieSearchCriteria.Builder.newInstance()
                 .setItemsPerPage(itemsPerPage)
                 .setPage(page)
-                .setPath(path)
+                .setPath(absolutePath)
                 .build();
 
         if(searchCriteria.getPage() == 0)
