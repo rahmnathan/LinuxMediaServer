@@ -1,1 +1,1 @@
-See LocalMovies Repository for project explanation.
+Server-side Spring-Boot application that serves up video files for streaming. 
