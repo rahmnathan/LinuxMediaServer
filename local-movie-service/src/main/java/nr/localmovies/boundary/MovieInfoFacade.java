@@ -32,10 +32,8 @@ public class MovieInfoFacade {
     }
 
     @PostConstruct
-    public void startDirectoryMonitor(){
-        if(!mediaPath.equalsIgnoreCase("none")) {
-            directoryMonitor.startRecursiveWatcher(mediaPath);
-        }
+    public void startDirectoryMonitor() {
+        directoryMonitor.startRecursiveWatcher(mediaPath);
     }
 
     public int loadMovieListLength(String directoryPath){
@@ -49,7 +47,7 @@ public class MovieInfoFacade {
                 .sorted()
                 .skip(searchCriteria.getPage() * searchCriteria.getItemsPerPage())
                 .limit(searchCriteria.getItemsPerPage())
-                .map(file -> movieInfoControl.loadMovieInfoFromCache(file.getAbsolutePath()))
+                .map(file -> movieInfoControl.loadMovieInfoFromCache(file.getAbsolutePath().substring(mediaPath.length())))
                 .collect(Collectors.toList());
     }
 

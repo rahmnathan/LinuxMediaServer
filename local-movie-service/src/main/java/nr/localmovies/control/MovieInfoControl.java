@@ -16,12 +16,10 @@ import java.util.logging.Logger;
 
 @Component
 public class MovieInfoControl {
-    @Value("${media.path}")
-    private String mediaPath;
+
     private final MovieInfoRepository repository;
     private final IMovieInfoProvider movieInfoProvider;
     private final Logger logger = Logger.getLogger(MovieInfoControl.class.getName());
-
     private final LoadingCache<String, MovieInfo> movieInfoCache =
             CacheBuilder.newBuilder()
                     .maximumSize(500)
@@ -64,14 +62,14 @@ public class MovieInfoControl {
         String[] pathArray = path.split("/");
         String title = pathArray[pathArray.length - 1];
         MovieInfo movieInfo = movieInfoProvider.loadMovieInfo(title);
-        movieInfo.setPath(path.substring(mediaPath.length()));
+        movieInfo.setPath(path);
         repository.save(movieInfo);
         return movieInfo;
     }
 
     private MovieInfo loadSeriesParentInfo(String path) {
         logger.info("Getting info from parent - " + path);
-        String[] pathArray = path.substring(mediaPath.length()).split("/");
+        String[] pathArray = path.split("/");
         int depth = pathArray.length > 2 ? pathArray.length - 2 : 0;
 
         StringBuilder sb = new StringBuilder();
@@ -85,6 +83,6 @@ public class MovieInfoControl {
     }
 
     private boolean isViewingTopLevel(String currentPath){
-        return currentPath.substring(mediaPath.length()).split("/").length == 2;
+        return currentPath.split("/").length == 2;
     }
 }
