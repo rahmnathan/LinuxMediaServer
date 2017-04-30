@@ -99,7 +99,7 @@ public class DirectoryMonitor {
                                 if (absPath.toFile().isDirectory()) {
                                     register.accept(absPath);
                                 } else {
-                                    logger.info("Detected new file " + absPath.toString());
+                                    logger.info("Detected " + p.kind().name() + " " + absPath.toString());
                                 }
                             }
                         });
