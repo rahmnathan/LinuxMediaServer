@@ -13,16 +13,15 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @Component
 public class MovieInfoFacade {
     @Value("${media.path}")
     private String mediaPath;
-    private MovieInfoControl movieInfoControl;
-    private DirectoryMonitor directoryMonitor;
-    private FileListProvider fileListProvider;
+    private final MovieInfoControl movieInfoControl;
+    private final DirectoryMonitor directoryMonitor;
+    private final FileListProvider fileListProvider;
 
     @Autowired
     public MovieInfoFacade(MovieInfoControl movieInfoControl, DirectoryMonitor directoryMonitor, FileListProvider fileListProvider){

@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,7 +36,7 @@ class OmdbRawDataProvider {
                 return new JSONObject(stringBuilder.toString());
             } catch (Exception e) {
                 urlConnection.disconnect();
-                logger.log(Level.SEVERE, e.toString(), e);
+                logger.log(Level.SEVERE, e.toString());
             }
         }
         return new JSONObject();

@@ -7,11 +7,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +17,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
@@ -30,8 +27,8 @@ import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 public class DirectoryMonitor {
 
     private static final Logger logger = LoggerFactory.getLogger(DirectoryMonitor.class);
-    private ExecutorService executor;
-    private List<DirectoryMonitorObserver> observerList;
+    private final ExecutorService executor;
+    private final List<DirectoryMonitorObserver> observerList;
     private final Map<WatchKey, Path> keys = new HashMap<>();
     private WatchService watchService;
 

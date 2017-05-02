@@ -9,12 +9,11 @@ public class MovieInfo {
 
     @Id
     private String path;
+    @Lob
+    private String image;
     private String title;
     private String IMDBRating;
     private String metaRating;
-
-    @Lob
-    private String image;
     private String releaseYear;
 
     private MovieInfo(String title, String IMDBRating, String metaRating, String image, String releaseYear, String path) {
