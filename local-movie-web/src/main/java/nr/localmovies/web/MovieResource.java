@@ -99,7 +99,6 @@ public class MovieResource {
     public byte[] servePoster(@RequestParam("path") String path, HttpServletResponse response, HttpServletRequest request) {
         MDC.put("Client-Address", request.getRemoteAddr());
         response.addHeader("Access-Control-Allow-Origin", "*");
-        path = mediaPath + path;
         logger.info("Streaming poster " + path);
 
         String image = movieInfoFacade.loadSingleMovie(path).getImage();
