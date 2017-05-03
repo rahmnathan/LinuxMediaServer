@@ -9,6 +9,7 @@ import nr.localmovies.movieinfoapi.MovieInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
@@ -58,7 +59,7 @@ public class MovieInfoControl {
 
     private MovieInfo loadMovieInfoFromOmdb(String path) {
         logger.info("Getting from OMDB - " + path);
-        String[] pathArray = path.split("/");
+        String[] pathArray = path.split(File.separator);
         String title = pathArray[pathArray.length - 1];
         MovieInfo movieInfo = movieInfoProvider.loadMovieInfo(title);
         movieInfo.setPath(path);
@@ -68,20 +69,19 @@ public class MovieInfoControl {
 
     private MovieInfo loadSeriesParentInfo(String path) {
         logger.info("Getting info from parent - " + path);
-        String[] pathArray = path.split("/");
+        String[] pathArray = path.split(File.separator);
         int depth = pathArray.length > 2 ? pathArray.length - 2 : 0;
 
         StringBuilder sb = new StringBuilder();
-        String[] directoryArray = path.split("/");
-        Arrays.stream(directoryArray)
-                .limit(directoryArray.length - depth)
-                .forEachOrdered(directory-> sb.append(directory).append("/"));
+        Arrays.stream(pathArray)
+                .limit(pathArray.length - depth)
+                .forEachOrdered(directory-> sb.append(directory).append(File.separator));
 
         MovieInfo movieInfo = loadMovieInfoFromDatabase(sb.toString().substring(0, sb.length() - 1));
         return MovieInfo.Builder.copyWithNewTitle(movieInfo, pathArray[pathArray.length - 1]);
     }
 
     private boolean isViewingTopLevel(String currentPath){
-        return currentPath.split("/").length == 2;
+        return currentPath.split(File.separator).length == 2;
     }
 }
