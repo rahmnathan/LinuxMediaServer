@@ -2,6 +2,7 @@ package nr.localmovies.omdbmovieinfoprovider;
 
 import com.google.common.io.ByteStreams;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
@@ -15,13 +16,16 @@ import java.util.logging.Logger;
 
 @Component
 class OmdbRawDataProvider {
+
+    @Value("${omdb.api.key}")
+    private String apiKey;
     private final Logger logger = Logger.getLogger(OmdbRawDataProvider.class.getName());
 
     JSONObject loadMovieInfo(String title) {
         String uri = "http://www.omdbapi.com/?t=";
         HttpURLConnection urlConnection = null;
         try {
-            URL url = new URL(uri + title.replace(" ", "%20"));
+            URL url = new URL(uri + title.replace(" ", "%20") + "&apikey=" + apiKey);
             urlConnection = (HttpURLConnection) url.openConnection();
             logger.info("Getting info from OMDB - " + url.toString());
         } catch (IOException e) {
