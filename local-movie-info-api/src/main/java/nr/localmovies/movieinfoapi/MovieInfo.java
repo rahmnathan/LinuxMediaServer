@@ -1,8 +1,7 @@
 package nr.localmovies.movieinfoapi;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Lob;
+import javax.persistence.*;
+import java.util.Calendar;
 
 @Entity(name = "movies")
 public class MovieInfo {
@@ -11,6 +10,8 @@ public class MovieInfo {
     private String path;
     @Lob
     private String image;
+    private long created;
+    private int views;
     private String title;
     private String IMDBRating;
     private String metaRating;
@@ -20,9 +21,10 @@ public class MovieInfo {
         this.title = title;
         this.IMDBRating = IMDBRating;
         this.metaRating = metaRating;
-        this.image = image;
         this.releaseYear = releaseYear;
+        this.image = image;
         this.path = path;
+        created = Calendar.getInstance().getTimeInMillis();
     }
 
     public MovieInfo(){
@@ -55,6 +57,26 @@ public class MovieInfo {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public void addView(){
+        views++;
+    }
+
+    public void setCreated(long created) {
+        this.created = created;
+    }
+
+    public int getViews() {
+        return views;
+    }
+
+    public void setViews(int views) {
+        this.views = views;
+    }
+
+    public long getDateCreated() {
+        return created;
     }
 
     public void setTitle(String title) {

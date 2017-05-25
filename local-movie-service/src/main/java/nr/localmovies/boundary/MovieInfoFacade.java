@@ -2,6 +2,7 @@ package nr.localmovies.boundary;
 
 import nr.localmovies.control.FileListProvider;
 import nr.localmovies.control.MovieInfoControl;
+import nr.localmovies.data.MovieOrder;
 import nr.localmovies.data.MovieSearchCriteria;
 import nr.localmovies.directory.monitor.DirectoryMonitor;
 import nr.localmovies.movieinfoapi.MovieInfo;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,5 +54,28 @@ public class MovieInfoFacade {
 
     public MovieInfo loadSingleMovie(String filePath) {
         return movieInfoControl.loadMovieInfoFromCache(filePath);
+    }
+
+    public List<MovieInfo> sortMovieInfoList(List<MovieInfo> movieInfoList, String orderString){
+        MovieOrder order = MovieOrder.valueOf(orderString);
+        switch (order){
+            case DATE_ADDED:
+                return movieInfoList.parallelStream()
+                        .sorted((movie1, movie2) -> Long.valueOf(movie2.getDateCreated()).compareTo(movie1.getDateCreated()))
+                        .collect(Collectors.toList());
+            case MOST_VIEWS:
+                return movieInfoList.parallelStream()
+                        .sorted((movie1, movie2) -> Integer.valueOf(movie2.getViews()).compareTo(movie1.getViews()))
+                        .collect(Collectors.toList());
+            case RELEASE_YEAR:
+                return movieInfoList.parallelStream()
+                        .sorted((movie1, movie2) -> Long.valueOf(movie2.getReleaseYear()).compareTo(Long.valueOf(movie1.getReleaseYear())))
+                        .collect(Collectors.toList());
+            case RATING:
+                return movieInfoList.parallelStream()
+                        .sorted((movie1, movie2) -> Double.valueOf(movie2.getIMDBRating()).compareTo(Double.valueOf(movie1.getIMDBRating())))
+                        .collect(Collectors.toList());
+        }
+        return movieInfoList;
     }
 }
