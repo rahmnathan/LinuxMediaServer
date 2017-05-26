@@ -63,40 +63,12 @@ public class MovieInfo {
         views++;
     }
 
-    public void setCreated(long created) {
-        this.created = created;
-    }
-
     public int getViews() {
         return views;
     }
 
-    public void setViews(int views) {
-        this.views = views;
-    }
-
     public long getDateCreated() {
         return created;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setIMDBRating(String IMDBRating) {
-        this.IMDBRating = IMDBRating;
-    }
-
-    public void setMetaRating(String metaRating) {
-        this.metaRating = metaRating;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public void setReleaseYear(String releaseYear) {
-        this.releaseYear = releaseYear;
     }
 
     @Override

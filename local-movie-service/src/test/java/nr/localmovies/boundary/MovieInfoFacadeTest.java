@@ -11,7 +11,7 @@ import java.util.Random;
 public class MovieInfoFacadeTest {
 
     private List<MovieInfo> movieInfoList = new ArrayList<>();
-    private MovieInfoFacade movieInfoFacade = new MovieInfoFacade(null, null, null);
+    private final MovieInfoFacade movieInfoFacade = new MovieInfoFacade(null, null, null);
 
     @Before
     public void initializeMovieList() throws Exception {

@@ -32,8 +32,8 @@ public class DirectoryMonitor {
     private final Map<WatchKey, Path> keys = new HashMap<>();
     private WatchService watchService;
 
-    private void notifyObservers(){
-        observerList.forEach(DirectoryMonitorObserver::directoryModified);
+    private void notifyObservers(WatchEvent.Kind eventType){
+        observerList.forEach(observer -> observer.directoryModified(eventType));
     }
 
     @Autowired
@@ -93,6 +93,7 @@ public class DirectoryMonitor {
                         .forEach(p -> {
                             if (!p.kind().equals(OVERFLOW)) {
                                 final Path absPath = dir.resolve(p.context());
+                                notifyObservers(p.kind());
                                 if (absPath.toFile().isDirectory()) {
                                     register.accept(absPath);
                                 } else {
@@ -101,7 +102,6 @@ public class DirectoryMonitor {
                             }
                         });
 
-                notifyObservers();
                 key.reset();
             }
         });

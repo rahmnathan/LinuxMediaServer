@@ -25,6 +25,7 @@
             <groupId>rahmnathan.LinuxServer</groupId>
             <artifactId>local-movie-directory-monitor</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

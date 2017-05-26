@@ -1,5 +1,7 @@
 package nr.localmovies.directory.monitor;
 
+import java.nio.file.WatchEvent;
+
 public interface DirectoryMonitorObserver {
-    void directoryModified();
+    void directoryModified(WatchEvent.Kind eventType);
 }

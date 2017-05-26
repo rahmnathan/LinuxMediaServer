@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,7 +42,6 @@ public class MovieInfoFacade {
 
     public List<MovieInfo> loadMovieList(MovieSearchCriteria searchCriteria) {
         List<File> files = Arrays.asList(fileListProvider.listFiles(searchCriteria.getPath()));
-
         return files.parallelStream()
                 .sorted()
                 .skip(searchCriteria.getPage() * searchCriteria.getItemsPerPage())

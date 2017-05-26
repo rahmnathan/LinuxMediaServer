@@ -1,7 +1,6 @@
 package nr.localmovies.web;
 
 import nr.localmovies.boundary.MovieInfoFacade;
-import nr.localmovies.data.MovieOrder;
 import nr.localmovies.data.MovieSearchCriteria;
 import nr.localmovies.movieinfoapi.MovieInfo;
 import org.slf4j.MDC;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;

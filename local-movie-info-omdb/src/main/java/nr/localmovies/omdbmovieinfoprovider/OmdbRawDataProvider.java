@@ -27,7 +27,7 @@ class OmdbRawDataProvider {
         try {
             URL url = new URL(uri + title.replace(" ", "%20") + "&apikey=" + apiKey);
             urlConnection = (HttpURLConnection) url.openConnection();
-            logger.info("Getting info from OMDB - " + url.toString());
+            logger.info("Loading MovieInfo from OMDB - " + url.toString());
         } catch (IOException e) {
             logger.fine(e.toString());
         }

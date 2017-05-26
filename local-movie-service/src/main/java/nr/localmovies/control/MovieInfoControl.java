@@ -30,7 +30,7 @@ public class MovieInfoControl {
                                     if(repository.exists(currentPath)){
                                         return loadMovieInfoFromDatabase(currentPath);
                                     } else if (isViewingTopLevel(currentPath)){
-                                        return loadMovieInfoFromOmdb(currentPath);
+                                        return loadMovieInfoFromProvider(currentPath);
                                     } else {
                                         return loadSeriesParentInfo(currentPath);
                                     }
@@ -57,8 +57,8 @@ public class MovieInfoControl {
         return repository.findOne(path);
     }
 
-    private MovieInfo loadMovieInfoFromOmdb(String path) {
-        logger.info("Getting from OMDB - " + path);
+    private MovieInfo loadMovieInfoFromProvider(String path) {
+        logger.info("Loading MovieInfo from provider - " + path);
         String[] pathArray = path.split(File.separator);
         String title = pathArray[pathArray.length - 1];
         MovieInfo movieInfo = movieInfoProvider.loadMovieInfo(title);
