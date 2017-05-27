@@ -47,7 +47,7 @@ public class MovieResource {
         response.addHeader("Access-Control-Allow-Origin", "*");
         MDC.put("Client-Address", request.getRemoteAddr());
         String absolutePath = mediaPath + path;
-        logger.log(Level.INFO, String.format("Received request for - %s page - %s itemsPerPage - %s",
+        logger.log(Level.INFO, String.format("Received request for - %s page - %s resultsPerPage - %s",
                 absolutePath, page, itemsPerPage));
 
         MovieSearchCriteria searchCriteria = MovieSearchCriteria.Builder.newInstance()
