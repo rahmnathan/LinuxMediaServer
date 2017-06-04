@@ -1,4 +1,4 @@
-package com.github.rahmnathan.localmovies.directorymonitor;
+package com.github.rahmnathan.directorymonitor;
 
 import java.nio.file.Path;
 import java.nio.file.WatchEvent;

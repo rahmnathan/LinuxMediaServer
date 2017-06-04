@@ -1,4 +1,4 @@
-package com.github.rahmnathan.localmovies.directorymonitor;
+package com.github.rahmnathan.directorymonitor;
 
 import com.sun.nio.file.SensitivityWatchEventModifier;
 
