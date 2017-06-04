@@ -4,23 +4,22 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>localmovie-server</artifactId>
-        <groupId>rahmnathan.LinuxServer</groupId>
+        <groupId>com.github.rahmnathan</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>local-movie-directory-monitor</artifactId>
+    <artifactId>directory-monitor</artifactId>
     <dependencies>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>4.3.6.RELEASE</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
-
-
 </project>
