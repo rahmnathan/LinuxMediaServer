@@ -29,7 +29,7 @@ class FileSender {
         Range range = new Range(0, length - 1, length);
         String rangeHeader = request.getHeader("Range");
         if (rangeHeader != null) {
-            long start = Long.valueOf(rangeHeader.substring(6, rangeHeader.length() - 1));
+            long start = Long.valueOf(rangeHeader.split("-")[0].substring(6));
             range = new Range(start, length - 1, length);
             response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
         }
