@@ -6,6 +6,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.nio.file.WatchEvent;
 import java.util.logging.Logger;
 
@@ -15,7 +16,8 @@ public class FileListProvider implements FileRepository, DirectoryMonitorObserve
     private final Logger logger = Logger.getLogger(FileListProvider.class.getName());
 
     @CacheEvict(value = "files", allEntries = true)
-    public void directoryModified(WatchEvent.Kind eventType){
+    public void directoryModified(WatchEvent event, Path absolutePath){
+        logger.info("Detected " + event.kind().name() + " " + absolutePath.toString());
         logger.info("Purging cache");
     }
 

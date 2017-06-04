@@ -32,10 +32,6 @@ public class DirectoryMonitor {
     private final Map<WatchKey, Path> keys = new HashMap<>();
     private WatchService watchService;
 
-    private void notifyObservers(WatchEvent.Kind eventType){
-        observerList.forEach(observer -> observer.directoryModified(eventType));
-    }
-
     @Autowired
     public DirectoryMonitor(List<DirectoryMonitorObserver> observerList) {
         this.observerList = observerList;
@@ -45,6 +41,10 @@ public class DirectoryMonitor {
     @PreDestroy
     public void cleanup() {
         executor.shutdown();
+    }
+
+    private void notifyObservers(WatchEvent event, Path absolutePath){
+        observerList.forEach(observer -> observer.directoryModified(event, absolutePath));
     }
 
     @SuppressWarnings("unchecked")
@@ -90,18 +90,15 @@ public class DirectoryMonitor {
 
                 key.pollEvents().stream()
                         .map(e -> ((WatchEvent<Path>) e))
-                        .forEach(p -> {
-                            if (!p.kind().equals(OVERFLOW)) {
-                                final Path absPath = dir.resolve(p.context());
-                                notifyObservers(p.kind());
+                        .forEach(event -> {
+                            if (!event.kind().equals(OVERFLOW)) {
+                                final Path absPath = dir.resolve(event.context());
+                                notifyObservers(event, absPath);
                                 if (absPath.toFile().isDirectory()) {
                                     register.accept(absPath);
-                                } else {
-                                    logger.info("Detected " + p.kind().name() + " " + absPath.toString());
                                 }
                             }
                         });
-
                 key.reset();
             }
         });
