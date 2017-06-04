@@ -8,10 +8,10 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
-@EnableJpaRepositories(basePackages = "nr")
-@EntityScan(basePackages = "nr")
+@EnableJpaRepositories(basePackages = "com.github.rahmnathan")
+@EntityScan(basePackages = "com.github.rahmnathan")
 @EnableCaching
-@ComponentScan(basePackages = "nr")
+@ComponentScan(basePackages = "com.github.rahmnathan")
 public class Application {
 
     public static void main(String[] args) {
