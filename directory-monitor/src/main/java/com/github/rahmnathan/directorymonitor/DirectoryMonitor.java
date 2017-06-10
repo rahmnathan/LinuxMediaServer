@@ -31,11 +31,13 @@ public class DirectoryMonitor {
     private final List<DirectoryMonitorObserver> observerList;
     private final Map<WatchKey, Path> keys = new HashMap<>();
     private WatchService watchService;
+    private Consumer<Path> register;
 
     @Autowired
     public DirectoryMonitor(List<DirectoryMonitorObserver> observerList) {
         this.observerList = observerList;
         this.executor = Executors.newSingleThreadExecutor();
+        startRecursiveWatcher();
     }
 
     @PreDestroy
@@ -47,8 +49,12 @@ public class DirectoryMonitor {
         observerList.forEach(observer -> observer.directoryModified(event, absolutePath));
     }
 
+    public void registerDirectory(String pathToMonitor){
+        register.accept(Paths.get(pathToMonitor));
+    }
+
     @SuppressWarnings("unchecked")
-    public void startRecursiveWatcher(String pathToMonitor) {
+    private void startRecursiveWatcher() {
         logger.info("Starting Recursive Watcher");
         
         try{
@@ -58,7 +64,7 @@ public class DirectoryMonitor {
             return;
         }
 
-        Consumer<Path> register = p -> {
+        register = p -> {
             try {
                 Files.walkFileTree(p, new SimpleFileVisitor<Path>() {
                     @Override
@@ -73,8 +79,6 @@ public class DirectoryMonitor {
                 logger.error(e.toString());
             }
         };
-
-        register.accept(Paths.get(pathToMonitor));
 
         executor.submit(() -> {
             while (true) {

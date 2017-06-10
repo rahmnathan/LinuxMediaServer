@@ -12,8 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,7 +25,7 @@ import java.util.logging.Logger;
 public class MovieResource {
 
     @Value("${media.path}")
-    private String mediaPath;
+    private String[] mediaPaths;
     private final MovieInfoFacade movieInfoFacade;
     private final FileSender fileSender;
     private final Logger logger = Logger.getLogger(MovieResource.class.getName());
@@ -46,14 +50,12 @@ public class MovieResource {
                                         HttpServletRequest request, HttpServletResponse response) {
         response.addHeader("Access-Control-Allow-Origin", "*");
         MDC.put("Client-Address", request.getRemoteAddr());
-        String absolutePath = mediaPath + path;
-        logger.log(Level.INFO, String.format("Received request for - %s page - %s resultsPerPage - %s",
-                absolutePath, page, itemsPerPage));
+        logger.log(Level.INFO, String.format("Received request for - %s page - %s resultsPerPage - %s", path, page, itemsPerPage));
 
         MovieSearchCriteria searchCriteria = MovieSearchCriteria.Builder.newInstance()
                 .setItemsPerPage(itemsPerPage)
                 .setPage(page)
-                .setPath(absolutePath)
+                .setPath(path)
                 .build();
 
         if(searchCriteria.getPage() == 0)
@@ -73,7 +75,6 @@ public class MovieResource {
     @RequestMapping(value = "/movieinfocount")
     public void movieInfoCount(@RequestParam(value = "path") String path, HttpServletResponse response, HttpServletRequest request){
         MDC.put("Client-Address", request.getRemoteAddr());
-        path = mediaPath + path;
         logger.log(Level.INFO, "Received request for count for - " + path);
         int count = movieInfoFacade.loadMovieListLength(path);
         logger.log(Level.INFO, "Returning count of - " + count);
@@ -91,9 +92,14 @@ public class MovieResource {
         response.addHeader("Access-Control-Allow-Origin", "*");
         MovieInfo movie = movieInfoFacade.loadSingleMovie(path);
         movie.addView();
-        path = mediaPath + path;
-        logger.info("Streaming - " + path);
-        fileSender.serveResource(Paths.get(path), request, response);
+        logger.info("Received streaming request - " + path);
+        for(String mediaPath : mediaPaths) {
+            if (new File(mediaPath + path).exists()) {
+                logger.info("Streaming - " + mediaPath + path);
+                fileSender.serveResource(Paths.get(mediaPath + path), request, response);
+                break;
+            }
+        }
         MDC.clear();
     }
 

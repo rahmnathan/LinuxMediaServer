@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 @Component
 public class MovieInfoFacade {
     @Value("${media.path}")
-    private String mediaPath;
+    private String[] mediaPaths;
     private final MovieInfoControl movieInfoControl;
     private final DirectoryMonitor directoryMonitor;
     private final FileListProvider fileListProvider;
@@ -33,20 +34,32 @@ public class MovieInfoFacade {
 
     @PostConstruct
     public void startDirectoryMonitor() {
-        directoryMonitor.startRecursiveWatcher(mediaPath);
+        for(String mediaPath : mediaPaths) {
+            directoryMonitor.registerDirectory(mediaPath);
+        }
     }
 
     public int loadMovieListLength(String directoryPath){
-        return fileListProvider.listFiles(directoryPath).length;
+        int total = 0;
+        for(String mediaPath : mediaPaths){
+            total += fileListProvider.listFiles(mediaPath + directoryPath).length;
+        }
+        return total;
     }
 
     public List<MovieInfo> loadMovieList(MovieSearchCriteria searchCriteria) {
-        List<File> files = Arrays.asList(fileListProvider.listFiles(searchCriteria.getPath()));
-        return files.parallelStream()
+        List<String> movies = new ArrayList<>();
+        Arrays.asList(mediaPaths).parallelStream()
+                .forEach(path -> movies.addAll(Arrays.asList(fileListProvider.listFiles(path + searchCriteria.getPath()))
+                        .parallelStream()
+                        .map(file -> file.getAbsolutePath().substring(path.length()))
+                        .collect(Collectors.toList())));
+
+        return movies.parallelStream()
                 .sorted()
                 .skip(searchCriteria.getPage() * searchCriteria.getItemsPerPage())
                 .limit(searchCriteria.getItemsPerPage())
-                .map(file -> movieInfoControl.loadMovieInfoFromCache(file.getAbsolutePath().substring(mediaPath.length())))
+                .map(movieInfoControl::loadMovieInfoFromCache)
                 .collect(Collectors.toList());
     }
 
