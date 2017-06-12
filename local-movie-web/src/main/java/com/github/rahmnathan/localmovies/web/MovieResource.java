@@ -121,4 +121,18 @@ public class MovieResource {
         MDC.clear();
         return poster;
     }
+
+    /**
+     * @param date - Date to check if there has been updates since
+     * @return - Boolean
+     */
+    @RequestMapping("/hasUpdates")
+    public boolean checkForUpdates(@RequestParam("date") String date, HttpServletResponse response, HttpServletRequest request) {
+        MDC.put("Client-Address", request.getRemoteAddr());
+        response.addHeader("Access-Control-Allow-Origin", "*");
+        logger.info("Checking for updates since ->  " + date);
+        boolean changes = movieInfoFacade.hasUpdates(date);
+        MDC.clear();
+        return changes;
+    }
 }

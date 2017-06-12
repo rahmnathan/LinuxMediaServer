@@ -1,87 +1,93 @@
 package com.github.rahmnathan.localmovies.control;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.github.rahmnathan.localmovies.movieinfoapi.IMovieInfoProvider;
+import com.github.rahmnathan.directorymonitor.DirectoryMonitor;
+import com.github.rahmnathan.localmovies.data.MovieOrder;
+import com.github.rahmnathan.localmovies.data.MovieSearchCriteria;
 import com.github.rahmnathan.localmovies.movieinfoapi.MovieInfo;
-import com.github.rahmnathan.localmovies.movieinfoapi.MovieInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
+import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.ExecutionException;
-import java.util.logging.Logger;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class MovieInfoControl {
-
-    private final MovieInfoRepository repository;
-    private final IMovieInfoProvider movieInfoProvider;
-    private final Logger logger = Logger.getLogger(MovieInfoControl.class.getName());
-    private final LoadingCache<String, MovieInfo> movieInfoCache =
-            CacheBuilder.newBuilder()
-                    .maximumSize(500)
-                    .build(
-                            new CacheLoader<String, MovieInfo>() {
-                                @Override
-                                public MovieInfo load(String currentPath) {
-                                    if(repository.exists(currentPath)){
-                                        return loadMovieInfoFromDatabase(currentPath);
-                                    } else if (isViewingTopLevel(currentPath)){
-                                        return loadMovieInfoFromProvider(currentPath);
-                                    } else {
-                                        return loadSeriesParentInfo(currentPath);
-                                    }
-                                }
-                            });
+    @Value("${media.path}")
+    private String[] mediaPaths;
+    private final MovieInfoProvider movieInfoProvider;
+    private final DirectoryMonitor directoryMonitor;
+    private final FileListProvider fileListProvider;
 
     @Autowired
-    public MovieInfoControl(MovieInfoRepository repository, IMovieInfoProvider movieInfoProvider){
-        this.repository = repository;
+    public MovieInfoControl(MovieInfoProvider movieInfoProvider, DirectoryMonitor directoryMonitor, FileListProvider fileListProvider){
         this.movieInfoProvider = movieInfoProvider;
+        this.directoryMonitor = directoryMonitor;
+        this.fileListProvider = fileListProvider;
     }
 
-    public MovieInfo loadMovieInfoFromCache(String path){
-        try {
-            return movieInfoCache.get(path);
-        } catch (ExecutionException e){
-            logger.fine(e.toString());
-            return MovieInfo.Builder.newInstance().build();
+    @PostConstruct
+    public void startDirectoryMonitor() {
+        for(String mediaPath : mediaPaths) {
+            directoryMonitor.registerDirectory(mediaPath);
         }
     }
 
-    private MovieInfo loadMovieInfoFromDatabase(String path){
-        logger.info("Getting from database - " + path);
-        return repository.findOne(path);
+    public MovieInfo loadSingleMovie(String filePath) {
+        return movieInfoProvider.loadMovieInfoFromCache(filePath);
     }
 
-    private MovieInfo loadMovieInfoFromProvider(String path) {
-        logger.info("Loading MovieInfo from provider - " + path);
-        String[] pathArray = path.split(File.separator);
-        String title = pathArray[pathArray.length - 1];
-        MovieInfo movieInfo = movieInfoProvider.loadMovieInfo(title);
-        movieInfo.setPath(path);
-        repository.save(movieInfo);
-        return movieInfo;
+    public boolean hasUpdates(String date){
+        return fileListProvider.hasUpdates(date);
     }
 
-    private MovieInfo loadSeriesParentInfo(String path) {
-        logger.info("Getting info from parent - " + path);
-        String[] pathArray = path.split(File.separator);
-        int depth = pathArray.length > 2 ? pathArray.length - 2 : 0;
-
-        StringBuilder sb = new StringBuilder();
-        Arrays.stream(pathArray)
-                .limit(pathArray.length - depth)
-                .forEachOrdered(directory-> sb.append(directory).append(File.separator));
-
-        MovieInfo movieInfo = loadMovieInfoFromDatabase(sb.toString().substring(0, sb.length() - 1));
-        return MovieInfo.Builder.copyWithNewTitle(movieInfo, pathArray[pathArray.length - 1]);
+    public int loadMovieListLength(String relativePath){
+        int total = 0;
+        for(String mediaPath : mediaPaths){
+            total += fileListProvider.listFiles(mediaPath + relativePath).length;
+        }
+        return total;
     }
 
-    private boolean isViewingTopLevel(String currentPath){
-        return currentPath.split(File.separator).length == 2;
+    public List<MovieInfo> loadMovieList(MovieSearchCriteria searchCriteria) {
+        List<String> movies = new ArrayList<>();
+        Arrays.asList(mediaPaths).parallelStream()
+                .forEach(path -> movies.addAll(Arrays.asList(fileListProvider.listFiles(path + searchCriteria.getPath()))
+                        .parallelStream()
+                        .map(file -> file.getAbsolutePath().substring(path.length()))
+                        .collect(Collectors.toList())));
+
+        return movies.parallelStream()
+                .sorted()
+                .skip(searchCriteria.getPage() * searchCriteria.getItemsPerPage())
+                .limit(searchCriteria.getItemsPerPage())
+                .map(movieInfoProvider::loadMovieInfoFromCache)
+                .collect(Collectors.toList());
+    }
+
+    public List<MovieInfo> sortMovieInfoList(List<MovieInfo> movieInfoList, String orderString){
+        MovieOrder order = MovieOrder.valueOf(orderString);
+        switch (order){
+            case DATE_ADDED:
+                return movieInfoList.parallelStream()
+                        .sorted((movie1, movie2) -> Long.valueOf(movie2.getDateCreated()).compareTo(movie1.getDateCreated()))
+                        .collect(Collectors.toList());
+            case MOST_VIEWS:
+                return movieInfoList.parallelStream()
+                        .sorted((movie1, movie2) -> Integer.valueOf(movie2.getViews()).compareTo(movie1.getViews()))
+                        .collect(Collectors.toList());
+            case RELEASE_YEAR:
+                return movieInfoList.parallelStream()
+                        .sorted((movie1, movie2) -> Long.valueOf(movie2.getReleaseYear()).compareTo(Long.valueOf(movie1.getReleaseYear())))
+                        .collect(Collectors.toList());
+            case RATING:
+                return movieInfoList.parallelStream()
+                        .sorted((movie1, movie2) -> Double.valueOf(movie2.getIMDBRating()).compareTo(Double.valueOf(movie1.getIMDBRating())))
+                        .collect(Collectors.toList());
+        }
+        return movieInfoList;
     }
 }
