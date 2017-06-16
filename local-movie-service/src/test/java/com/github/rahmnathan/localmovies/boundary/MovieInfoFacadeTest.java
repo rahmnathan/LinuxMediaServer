@@ -1,5 +1,6 @@
 package com.github.rahmnathan.localmovies.boundary;
 
+import com.github.rahmnathan.localmovies.control.MovieInfoControl;
 import com.github.rahmnathan.localmovies.movieinfoapi.MovieInfo;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,7 +12,7 @@ import java.util.Random;
 public class MovieInfoFacadeTest {
 
     private List<MovieInfo> movieInfoList = new ArrayList<>();
-    private final MovieInfoFacade movieInfoFacade = new MovieInfoFacade(null, null, null);
+    private final MovieInfoFacade movieInfoFacade = new MovieInfoFacade(new MovieInfoControl(null, null, null));
 
     @Before
     public void initializeMovieList() throws Exception {
