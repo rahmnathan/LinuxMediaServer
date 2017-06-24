@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -60,12 +61,26 @@ public class MovieInfoControl {
                         .map(file -> file.getAbsolutePath().substring(path.length()))
                         .collect(Collectors.toList())));
 
-        return movies.parallelStream()
-                .sorted()
-                .skip(searchCriteria.getPage() * searchCriteria.getItemsPerPage())
-                .limit(searchCriteria.getItemsPerPage())
-                .map(movieInfoProvider::loadMovieInfoFromCache)
-                .collect(Collectors.toList());
+        int pathLength = searchCriteria.getPath().split("/").length;
+        if(pathLength > 1){
+            return movies.parallelStream()
+                    .sorted((movieInfo, t1) -> {
+                        Integer current = Integer.parseInt(movieInfo.split(File.separator)[pathLength].split(" ")[1].split("\\.")[0]);
+                        Integer next = Integer.parseInt(t1.split(File.separator)[pathLength].split(" ")[1].split("\\.")[0]);
+                        return current.compareTo(next);
+                    })
+                    .skip(searchCriteria.getPage() * searchCriteria.getItemsPerPage())
+                    .limit(searchCriteria.getItemsPerPage())
+                    .map(movieInfoProvider::loadMovieInfoFromCache)
+                    .collect(Collectors.toList());
+        } else {
+            return movies.parallelStream()
+                    .sorted()
+                    .skip(searchCriteria.getPage() * searchCriteria.getItemsPerPage())
+                    .limit(searchCriteria.getItemsPerPage())
+                    .map(movieInfoProvider::loadMovieInfoFromCache)
+                    .collect(Collectors.toList());
+        }
     }
 
     public List<MovieInfo> sortMovieInfoList(List<MovieInfo> movieInfoList, String orderString){
