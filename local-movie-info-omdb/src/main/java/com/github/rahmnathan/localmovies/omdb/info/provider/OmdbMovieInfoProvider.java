@@ -1,4 +1,4 @@
-package com.github.rahmnathan.localmovies.omdbmovieinfoprovider;
+package com.github.rahmnathan.localmovies.omdb.info.provider;
 
 import com.github.rahmnathan.localmovies.movieinfoapi.MovieInfo;
 import com.github.rahmnathan.localmovies.movieinfoapi.IMovieInfoProvider;
