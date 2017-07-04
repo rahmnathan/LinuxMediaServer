@@ -53,7 +53,7 @@ public class OmdbMovieInfoProvider implements IMovieInfoProvider {
 
         try(ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(poster));
-            bufferedImage = Scalr.resize(bufferedImage, Scalr.Method.ULTRA_QUALITY, 300);
+            bufferedImage = Scalr.resize(bufferedImage, Scalr.Method.ULTRA_QUALITY, 200);
             ImageIO.write(bufferedImage, "jpg", outputStream);
             outputStream.flush();
             return outputStream.toByteArray();
