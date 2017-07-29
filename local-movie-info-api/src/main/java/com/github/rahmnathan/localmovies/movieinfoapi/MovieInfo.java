@@ -144,14 +144,20 @@ public class MovieInfo {
             if(movieInfo == null)
                 return Builder.newInstance().build();
 
-            return Builder.newInstance()
+            Builder builder = Builder.newInstance()
                     .setTitle(movieInfo.getTitle())
                     .setReleaseYear(movieInfo.getReleaseYear())
                     .setMetaRating(movieInfo.getMetaRating())
                     .setIMDBRating(movieInfo.getIMDBRating())
-                    .setImage("")
-                    .setPath(movieInfo.getPath())
-                    .build();
+                    .setPath(movieInfo.getPath());
+
+            if(movieInfo.getImage() == null || movieInfo.getImage().equals("")){
+                builder.setImage("noImage");
+            } else {
+                builder.setImage("");
+            }
+
+            return builder.build();
         }
     }
 }
