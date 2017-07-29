@@ -47,6 +47,7 @@ public class MovieResource {
                                         @RequestParam(value =  "page", required = false) Integer page,
                                         @RequestParam(value = "resultsPerPage", required = false) Integer itemsPerPage,
                                         @RequestParam(value = "order", required = false) String orderString,
+                                        @RequestParam(value = "client", required = false) String client,
                                         HttpServletRequest request, HttpServletResponse response) {
         response.addHeader("Access-Control-Allow-Origin", "*");
         MDC.put("Client-Address", request.getRemoteAddr());
@@ -54,6 +55,7 @@ public class MovieResource {
 
         MovieSearchCriteria searchCriteria = MovieSearchCriteria.Builder.newInstance()
                 .setItemsPerPage(itemsPerPage)
+                .setClient(client)
                 .setPage(page)
                 .setPath(path)
                 .build();

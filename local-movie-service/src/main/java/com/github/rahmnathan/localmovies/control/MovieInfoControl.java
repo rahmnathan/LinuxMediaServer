@@ -1,6 +1,7 @@
 package com.github.rahmnathan.localmovies.control;
 
 import com.github.rahmnathan.directorymonitor.DirectoryMonitor;
+import com.github.rahmnathan.localmovies.data.MovieClient;
 import com.github.rahmnathan.localmovies.data.MovieOrder;
 import com.github.rahmnathan.localmovies.data.MovieSearchCriteria;
 import com.github.rahmnathan.localmovies.movieinfoapi.MovieInfo;
@@ -62,8 +63,9 @@ public class MovieInfoControl {
                         .collect(Collectors.toList())));
 
         int pathLength = searchCriteria.getPath().split("/").length;
+        List<MovieInfo> movieInfoList;
         if(pathLength > 1){
-            return movies.parallelStream()
+            movieInfoList = movies.parallelStream()
                     .sorted((movieInfo, t1) -> {
                         Integer current = Integer.parseInt(movieInfo.split(File.separator)[pathLength].split(" ")[1].split("\\.")[0]);
                         Integer next = Integer.parseInt(t1.split(File.separator)[pathLength].split(" ")[1].split("\\.")[0]);
@@ -74,13 +76,21 @@ public class MovieInfoControl {
                     .map(movieInfoProvider::loadMovieInfoFromCache)
                     .collect(Collectors.toList());
         } else {
-            return movies.parallelStream()
+            movieInfoList = movies.parallelStream()
                     .sorted()
                     .skip(searchCriteria.getPage() * searchCriteria.getItemsPerPage())
                     .limit(searchCriteria.getItemsPerPage())
                     .map(movieInfoProvider::loadMovieInfoFromCache)
                     .collect(Collectors.toList());
         }
+
+        if(searchCriteria.getClient() == MovieClient.WEBAPP){
+            movieInfoList = movieInfoList.parallelStream()
+                    .map(MovieInfo.Builder::copyWithNoImage)
+                    .collect(Collectors.toList());
+        }
+
+        return movieInfoList;
     }
 
     public List<MovieInfo> sortMovieInfoList(List<MovieInfo> movieInfoList, String orderString){

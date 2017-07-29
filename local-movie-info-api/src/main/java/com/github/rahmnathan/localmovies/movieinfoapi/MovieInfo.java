@@ -71,6 +71,10 @@ public class MovieInfo {
         return created;
     }
 
+    public void emptyImage(){
+        this.image = "";
+    }
+
     @Override
     public String toString(){
         return title;
@@ -131,7 +135,22 @@ public class MovieInfo {
                     .setReleaseYear(movieInfo.getReleaseYear())
                     .setMetaRating(movieInfo.getMetaRating())
                     .setIMDBRating(movieInfo.getIMDBRating())
+                    .setPath(movieInfo.getPath())
                     .setImage(movieInfo.getImage())
+                    .build();
+        }
+
+        public static MovieInfo copyWithNoImage(MovieInfo movieInfo){
+            if(movieInfo == null)
+                return Builder.newInstance().build();
+
+            return Builder.newInstance()
+                    .setTitle(movieInfo.getTitle())
+                    .setReleaseYear(movieInfo.getReleaseYear())
+                    .setMetaRating(movieInfo.getMetaRating())
+                    .setIMDBRating(movieInfo.getIMDBRating())
+                    .setImage("")
+                    .setPath(movieInfo.getPath())
                     .build();
         }
     }
