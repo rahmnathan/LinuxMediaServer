@@ -11,6 +11,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,10 +24,9 @@ class OmdbRawDataProvider {
     private final Logger logger = Logger.getLogger(OmdbRawDataProvider.class.getName());
 
     JSONObject loadMovieInfo(String title) {
-        String uri = "http://www.omdbapi.com/?t=";
         HttpURLConnection urlConnection = null;
         try {
-            URL url = new URL(uri + title.replace(" ", "%20") + "&apikey=" + apiKey);
+            URL url = new URL("http://www.omdbapi.com/?t=" + URLEncoder.encode(title, StandardCharsets.UTF_8.name()) + "&apikey=" + apiKey);
             urlConnection = (HttpURLConnection) url.openConnection();
             logger.info("Loading MovieInfo from OMDB - " + url.toString());
         } catch (IOException e) {

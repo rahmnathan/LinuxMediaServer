@@ -33,9 +33,7 @@ public class MovieInfoControl {
 
     @PostConstruct
     public void startDirectoryMonitor() {
-        for(String mediaPath : mediaPaths) {
-            directoryMonitor.registerDirectory(mediaPath);
-        }
+        Arrays.stream(mediaPaths).forEach(directoryMonitor::registerDirectory);
     }
 
     public MovieInfo loadSingleMovie(String filePath) {
@@ -55,17 +53,16 @@ public class MovieInfoControl {
     }
 
     public List<MovieInfo> loadMovieList(MovieSearchCriteria searchCriteria) {
-        List<String> movies = new ArrayList<>();
-        Arrays.asList(mediaPaths).parallelStream()
-                .forEach(path -> movies.addAll(Arrays.asList(fileListProvider.listFiles(path + searchCriteria.getPath()))
-                        .parallelStream()
+        List<String> relativeMoviePaths = new ArrayList<>();
+        Arrays.stream(mediaPaths)
+                .forEach(path -> relativeMoviePaths.addAll(Arrays.stream(fileListProvider.listFiles(path + searchCriteria.getPath()))
                         .map(file -> file.getAbsolutePath().substring(path.length()))
                         .collect(Collectors.toList())));
 
-        int pathLength = searchCriteria.getPath().split("/").length;
-        List<MovieInfo> movieInfoList;
+        int pathLength = searchCriteria.getPath().split(File.separator).length;
+        List<MovieInfo> movies;
         if(pathLength > 1){
-            movieInfoList = movies.parallelStream()
+            movies = relativeMoviePaths.parallelStream()
                     .sorted((movieInfo, t1) -> {
                         Integer current = Integer.parseInt(movieInfo.split(File.separator)[pathLength].split(" ")[1].split("\\.")[0]);
                         Integer next = Integer.parseInt(t1.split(File.separator)[pathLength].split(" ")[1].split("\\.")[0]);
@@ -76,7 +73,7 @@ public class MovieInfoControl {
                     .map(movieInfoProvider::loadMovieInfoFromCache)
                     .collect(Collectors.toList());
         } else {
-            movieInfoList = movies.parallelStream()
+            movies = relativeMoviePaths.parallelStream()
                     .sorted()
                     .skip(searchCriteria.getPage() * searchCriteria.getItemsPerPage())
                     .limit(searchCriteria.getItemsPerPage())
@@ -85,12 +82,12 @@ public class MovieInfoControl {
         }
 
         if(searchCriteria.getClient() == MovieClient.WEBAPP){
-            movieInfoList = movieInfoList.parallelStream()
+            movies = movies.stream()
                     .map(MovieInfo.Builder::copyWithNoImage)
                     .collect(Collectors.toList());
         }
 
-        return movieInfoList;
+        return movies;
     }
 
     public List<MovieInfo> sortMovieInfoList(List<MovieInfo> movieInfoList, String orderString){

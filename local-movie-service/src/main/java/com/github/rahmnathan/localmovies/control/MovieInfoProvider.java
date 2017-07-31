@@ -77,7 +77,7 @@ public class MovieInfoProvider {
                 .limit(pathArray.length - depth)
                 .forEachOrdered(directory-> sb.append(directory).append(File.separator));
 
-        MovieInfo movieInfo = loadMovieInfoFromDatabase(sb.toString().substring(0, sb.length() - 1));
+        MovieInfo movieInfo = loadMovieInfoFromCache(sb.toString().substring(0, sb.length() - 1));
         return MovieInfo.Builder.copyWithNewTitle(movieInfo, pathArray[pathArray.length - 1]);
     }
 
