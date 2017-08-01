@@ -11,6 +11,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Logger;
 
 @Component
@@ -21,7 +23,7 @@ public class ImdbApiRawDataProvider {
     JSONObject loadMovieInfo(String title){
         HttpURLConnection connection = null;
         try {
-            URL url = new URL("https://theimdbapi.org/api/find/movie?title=" + title.replace(" ", "%20"));
+            URL url = new URL("https://theimdbapi.org/api/find/movie?title=" + URLEncoder.encode(title, StandardCharsets.UTF_8.name()));
             System.setProperty("http.agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
             connection = (HttpURLConnection) url.openConnection();
         } catch (IOException e){

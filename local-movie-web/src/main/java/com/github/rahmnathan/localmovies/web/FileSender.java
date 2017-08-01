@@ -26,13 +26,16 @@ class FileSender {
             length = 0L;
             logger.info(e.toString());
         }
-        Range range = new Range(0, length - 1, length);
+        Range range;
         String rangeHeader = request.getHeader("Range");
         if (rangeHeader != null) {
             long start = Long.valueOf(rangeHeader.split("-")[0].substring(6));
             range = new Range(start, length - 1, length);
             response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
+        } else {
+            range = new Range(0, length - 1, length);
         }
+
         response.setHeader("Content-Range", "bytes " + range.start + "-" + range.end + "/" + range.total);
         response.setHeader("Content-Length", String.valueOf(range.length));
         try (InputStream input = new BufferedInputStream(Files.newInputStream(filepath));
