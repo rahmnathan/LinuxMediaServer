@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 @Component
 class FileSender {
 
-    private static final int DEFAULT_BUFFER_SIZE = 8192;
+    private static final int DEFAULT_BUFFER_SIZE = 16384;
     private final Logger logger = Logger.getLogger(FileSender.class.getName());
 
     void serveResource(Path filepath, HttpServletRequest request, HttpServletResponse response) {
