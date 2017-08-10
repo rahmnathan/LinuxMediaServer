@@ -1,5 +1,6 @@
 package com.github.rahmnathan.localmovies.web;
 
+import com.github.rahmnathan.file.sender.FileSender;
 import com.github.rahmnathan.localmovies.boundary.MovieInfoFacade;
 import com.github.rahmnathan.localmovies.data.MovieSearchCriteria;
 import com.github.rahmnathan.localmovies.movieinfoapi.MovieInfo;
@@ -15,9 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -58,14 +56,13 @@ public class MovieResource {
                 .setClient(client)
                 .setPage(page)
                 .setPath(path)
+                .setOrder(orderString)
                 .build();
 
         if(searchCriteria.getPage() == 0)
             movieInfoCount(path, response, request);
 
         List<MovieInfo> movieInfoList = movieInfoFacade.loadMovieList(searchCriteria);
-        if(orderString != null)
-            movieInfoList = movieInfoFacade.sortMovieInfoList(movieInfoList, orderString);
 
         MDC.clear();
         return movieInfoList;

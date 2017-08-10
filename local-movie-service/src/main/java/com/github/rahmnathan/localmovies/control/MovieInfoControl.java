@@ -54,44 +54,40 @@ public class MovieInfoControl {
 
     public List<MovieInfo> loadMovieList(MovieSearchCriteria searchCriteria) {
         List<String> relativeMoviePaths = new ArrayList<>();
+        
+        // List all files in provided path
         Arrays.stream(mediaPaths)
                 .forEach(path -> relativeMoviePaths.addAll(Arrays.stream(fileListProvider.listFiles(path + searchCriteria.getPath()))
                         .map(file -> file.getAbsolutePath().substring(path.length()))
                         .collect(Collectors.toList())));
 
-        int pathLength = searchCriteria.getPath().split(File.separator).length;
-        List<MovieInfo> movies;
-        if(pathLength > 1){
-            movies = relativeMoviePaths.parallelStream()
-                    .sorted((movieInfo, t1) -> {
-                        Integer current = Integer.parseInt(movieInfo.split(File.separator)[pathLength].split(" ")[1].split("\\.")[0]);
-                        Integer next = Integer.parseInt(t1.split(File.separator)[pathLength].split(" ")[1].split("\\.")[0]);
-                        return current.compareTo(next);
-                    })
-                    .skip(searchCriteria.getPage() * searchCriteria.getItemsPerPage())
-                    .limit(searchCriteria.getItemsPerPage())
-                    .map(movieInfoProvider::loadMovieInfoFromCache)
-                    .collect(Collectors.toList());
-        } else {
-            movies = relativeMoviePaths.parallelStream()
+        // Load movie info
+        List<MovieInfo> movies = relativeMoviePaths.parallelStream()
                     .sorted()
-                    .skip(searchCriteria.getPage() * searchCriteria.getItemsPerPage())
-                    .limit(searchCriteria.getItemsPerPage())
                     .map(movieInfoProvider::loadMovieInfoFromCache)
                     .collect(Collectors.toList());
-        }
 
+        // Removing images for web app
         if(searchCriteria.getClient() == MovieClient.WEBAPP){
             movies = movies.stream()
                     .map(MovieInfo.Builder::copyWithNoImage)
                     .collect(Collectors.toList());
         }
 
-        return movies;
+        // Sorting
+        if(searchCriteria.getPath().split(File.separator).length > 1)
+            movies = sortMovieInfoList(movies, MovieOrder.SEASONS_EPISODES);
+        else if (searchCriteria.getOrder() != null)
+            movies = sortMovieInfoList(movies, searchCriteria.getOrder());
+
+        // Pagination
+        return movies.stream()
+                .skip(searchCriteria.getPage() * searchCriteria.getItemsPerPage())
+                .limit(searchCriteria.getItemsPerPage())
+                .collect(Collectors.toList());
     }
 
-    public List<MovieInfo> sortMovieInfoList(List<MovieInfo> movieInfoList, String orderString){
-        MovieOrder order = MovieOrder.valueOf(orderString);
+    private List<MovieInfo> sortMovieInfoList(List<MovieInfo> movieInfoList, MovieOrder order){
         switch (order){
             case DATE_ADDED:
                 return movieInfoList.parallelStream()
@@ -108,6 +104,14 @@ public class MovieInfoControl {
             case RATING:
                 return movieInfoList.parallelStream()
                         .sorted((movie1, movie2) -> Double.valueOf(movie2.getIMDBRating()).compareTo(Double.valueOf(movie1.getIMDBRating())))
+                        .collect(Collectors.toList());
+            case SEASONS_EPISODES:
+                return movieInfoList.parallelStream()
+                        .sorted((movie1, movie2) -> {
+                            Integer current = Integer.parseInt(movie1.getTitle().split(" ")[1].split("\\.")[0]);
+                            Integer next = Integer.parseInt(movie2.getTitle().split(" ")[1].split("\\.")[0]);
+                            return current.compareTo(next);
+                        })
                         .collect(Collectors.toList());
         }
         return movieInfoList;

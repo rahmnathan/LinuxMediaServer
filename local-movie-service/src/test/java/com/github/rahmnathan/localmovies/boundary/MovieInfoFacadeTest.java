@@ -33,22 +33,4 @@ public class MovieInfoFacadeTest {
 
         movieInfoList.get(2).addView();
     }
-
-    @Test
-    public void testDateAddedSort(){
-        movieInfoList = movieInfoFacade.sortMovieInfoList(movieInfoList, "DATE_ADDED");
-        movieInfoList.forEach(movie -> System.out.println(movie.getDateCreated()));
-    }
-
-    @Test
-    public void testViewSort(){
-        movieInfoList = movieInfoFacade.sortMovieInfoList(movieInfoList, "MOST_VIEWS");
-        movieInfoList.forEach(movie -> System.out.println(movie.getViews()));
-    }
-
-    @Test
-    public void testRatingSort(){
-        movieInfoList = movieInfoFacade.sortMovieInfoList(movieInfoList, "RATING");
-        movieInfoList.forEach(movie -> System.out.println(movie.getIMDBRating()));
-    }
 }

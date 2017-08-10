@@ -16,7 +16,7 @@
         <module>local-movie-web</module>
         <module>local-movie-standalone</module>
         <module>directory-monitor</module>
-        <module>local-movie-info-imdbapi</module>
+        <module>file-sender</module>
     </modules>
 
     <parent>

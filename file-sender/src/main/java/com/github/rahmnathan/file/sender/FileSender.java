@@ -1,4 +1,4 @@
-package com.github.rahmnathan.localmovies.web;
+package com.github.rahmnathan.file.sender;
 
 import org.springframework.stereotype.Component;
 
@@ -10,12 +10,12 @@ import java.nio.file.Path;
 import java.util.logging.Logger;
 
 @Component
-class FileSender {
+public class FileSender {
 
     private static final int DEFAULT_BUFFER_SIZE = 16384;
     private final Logger logger = Logger.getLogger(FileSender.class.getName());
 
-    void serveResource(Path filepath, HttpServletRequest request, HttpServletResponse response) {
+    public void serveResource(Path filepath, HttpServletRequest request, HttpServletResponse response) {
         if (response == null || request == null)
             return;
 

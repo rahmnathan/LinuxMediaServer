@@ -1,6 +1,7 @@
 package com.github.rahmnathan.localmovies.boundary;
 
 import com.github.rahmnathan.localmovies.control.MovieInfoControl;
+import com.github.rahmnathan.localmovies.data.MovieOrder;
 import com.github.rahmnathan.localmovies.data.MovieSearchCriteria;
 import com.github.rahmnathan.localmovies.movieinfoapi.MovieInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +29,6 @@ public class MovieInfoFacade {
 
     public MovieInfo loadSingleMovie(String path) {
         return movieInfoControl.loadSingleMovie(path);
-    }
-
-    public List<MovieInfo> sortMovieInfoList(List<MovieInfo> movieInfoList, String order){
-        return movieInfoControl.sortMovieInfoList(movieInfoList, order);
     }
 
     public boolean hasUpdates(String date){
