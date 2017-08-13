@@ -1,7 +1,6 @@
 package com.github.rahmnathan.localmovies.boundary;
 
 import com.github.rahmnathan.localmovies.control.MovieInfoControl;
-import com.github.rahmnathan.localmovies.data.MovieOrder;
 import com.github.rahmnathan.localmovies.data.MovieSearchCriteria;
 import com.github.rahmnathan.localmovies.movieinfoapi.MovieInfo;
 import org.springframework.beans.factory.annotation.Autowired;

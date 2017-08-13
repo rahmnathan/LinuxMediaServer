@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 
 @Component
 class MovieInfoMapper {
-    private static final Logger logger = Logger.getLogger(MovieInfoMapper.class.getName());
 
     MovieInfo jsonToMovieInfo(JSONObject jsonObject, byte[] poster, String title){
         MovieInfo.Builder movieInfoBuilder = MovieInfo.Builder.newInstance();
@@ -27,7 +26,6 @@ class MovieInfoMapper {
             movieInfoBuilder.setImage(Base64.getEncoder().encodeToString(poster));
         } catch (Exception e) {
             movieInfoBuilder.setImage(null);
-            logger.log(Level.WARNING, "No image for title - " + title);
         }
 
         return movieInfoBuilder.build();

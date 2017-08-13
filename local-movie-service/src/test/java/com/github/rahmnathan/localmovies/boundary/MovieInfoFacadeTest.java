@@ -3,7 +3,6 @@ package com.github.rahmnathan.localmovies.boundary;
 import com.github.rahmnathan.localmovies.control.MovieInfoControl;
 import com.github.rahmnathan.localmovies.movieinfoapi.MovieInfo;
 import org.junit.Before;
-import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;

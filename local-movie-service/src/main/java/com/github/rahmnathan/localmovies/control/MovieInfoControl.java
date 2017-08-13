@@ -67,8 +67,8 @@ public class MovieInfoControl {
                     .map(movieInfoProvider::loadMovieInfoFromCache)
                     .collect(Collectors.toList());
 
-        // Removing images for web app
         if(searchCriteria.getClient() == MovieClient.WEBAPP){
+            // Removing images for web app
             movies = movies.stream()
                     .map(MovieInfo.Builder::copyWithNoImage)
                     .collect(Collectors.toList());
@@ -91,11 +91,11 @@ public class MovieInfoControl {
         switch (order){
             case DATE_ADDED:
                 return movieInfoList.parallelStream()
-                        .sorted((movie1, movie2) -> Long.valueOf(movie2.getDateCreated()).compareTo(movie1.getDateCreated()))
+                        .sorted((movie1, movie2) -> Long.compare(movie2.getDateCreated(), movie1.getDateCreated()))
                         .collect(Collectors.toList());
             case MOST_VIEWS:
                 return movieInfoList.parallelStream()
-                        .sorted((movie1, movie2) -> Integer.valueOf(movie2.getViews()).compareTo(movie1.getViews()))
+                        .sorted((movie1, movie2) -> Integer.compare(movie2.getViews(), movie1.getViews()))
                         .collect(Collectors.toList());
             case RELEASE_YEAR:
                 return movieInfoList.parallelStream()
