@@ -15,80 +15,43 @@ public class FileSender {
     private static final int DEFAULT_BUFFER_SIZE = 16384;
     private final Logger logger = Logger.getLogger(FileSender.class.getName());
 
-    public void serveResource(Path filepath, HttpServletRequest request, HttpServletResponse response) {
+    public void serveResource(Path file, HttpServletRequest request, HttpServletResponse response) {
         if (response == null || request == null)
             return;
 
-        Long length;
+        long totalBytes = 0L;
         try {
-            length = Files.size(filepath);
+            totalBytes = Files.size(file);
         } catch (IOException e) {
-            length = 0L;
-            logger.info(e.toString());
+            logger.severe(e.toString());
         }
-        Range range;
+
+        long startByte = 0L;
         String rangeHeader = request.getHeader("Range");
         if (rangeHeader != null) {
-            long start = Long.valueOf(rangeHeader.split("-")[0].substring(6));
-            range = new Range(start, length - 1, length);
+            startByte = Long.valueOf(rangeHeader.split("-")[0].substring(6));
             response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
-        } else {
-            range = new Range(0, length - 1, length);
         }
 
-        response.setHeader("Content-Range", "bytes " + range.start + "-" + range.end + "/" + range.total);
-        response.setHeader("Content-Length", String.valueOf(range.length));
-        try (InputStream input = new BufferedInputStream(Files.newInputStream(filepath));
-             OutputStream output = response.getOutputStream()) {
-            Range.copy(input, output, length, range.start, range.length);
-        } catch (IOException e){
-            logger.fine(e.toString());
-        }
+        response.setHeader("Content-Range", "bytes " + startByte + "-" + (totalBytes - 1) + "/" + totalBytes);
+        response.setHeader("Content-Length", String.valueOf(totalBytes - startByte));
+
+        streamFile(file, response, startByte);
     }
 
-    private static class Range {
-        final long start;
-        final long end;
-        final long length;
-        final long total;
+    private void streamFile(Path file, HttpServletResponse response, long startByte){
+        try (InputStream input = new BufferedInputStream(Files.newInputStream(file));
+             OutputStream output = response.getOutputStream()) {
 
-        /**
-         * Construct a byte range.
-         * @param start Start of the byte range.
-         * @param end End of the byte range.
-         * @param total Total length of the byte source.
-         */
-        Range(long start, long end, long total) {
-            this.start = start;
-            this.end = end;
-            this.length = end - start + 1;
-            this.total = total;
-        }
-
-        private static void copy(InputStream input, OutputStream output, long inputSize, long start, long length) throws IOException {
             byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
-            int read;
-
-            if (inputSize == length) {
-                while ((read = input.read(buffer)) > 0) {
-                    output.write(buffer, 0, read);
-                    output.flush();
-                }
-            } else {
-                input.skip(start);
-                long toRead = length;
-
-                while ((read = input.read(buffer)) > 0) {
-                    if ((toRead -= read) > 0) {
-                        output.write(buffer);
-                        output.flush();
-                    } else {
-                        output.write(buffer);
-                        output.flush();
-                        break;
-                    }
-                }
+            input.skip(startByte);
+            while ((input.read(buffer)) > 0) {
+                output.write(buffer);
+                output.flush();
             }
+
+        } catch (IOException e) {
+            logger.severe(e.toString());
         }
     }
 }
