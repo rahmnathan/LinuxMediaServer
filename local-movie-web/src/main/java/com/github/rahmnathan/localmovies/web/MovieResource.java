@@ -49,6 +49,8 @@ public class MovieResource {
                                         HttpServletRequest request, HttpServletResponse response) {
         response.addHeader("Access-Control-Allow-Origin", "*");
         MDC.put("Client-Address", request.getRemoteAddr());
+        // Using file-system specific file separator
+        path = path.replace("/", File.separator);
         logger.log(Level.INFO, String.format("Received request for - %s page - %s resultsPerPage - %s", path, page, itemsPerPage));
 
         MovieSearchCriteria searchCriteria = MovieSearchCriteria.Builder.newInstance()
@@ -74,7 +76,11 @@ public class MovieResource {
     @RequestMapping(value = "/movieinfocount")
     public void movieInfoCount(@RequestParam(value = "path") String path, HttpServletResponse response, HttpServletRequest request){
         MDC.put("Client-Address", request.getRemoteAddr());
+
+        // Using file-system specific file separator
+        path = path.replace("/", File.separator);
         logger.log(Level.INFO, "Received request for count for - " + path);
+
         int count = movieInfoFacade.loadMovieListLength(path);
         logger.log(Level.INFO, "Returning count of - " + count);
         response.setHeader("Count", String.valueOf(count));
@@ -85,10 +91,13 @@ public class MovieResource {
      * @param path - Path to video file to stream
      */
     @RequestMapping(value = "/video.mp4", produces = "video/mp4")
-    public void streamVideo(@RequestParam("path") String path, HttpServletResponse response,
-                            HttpServletRequest request) {
+    public void streamVideo(@RequestParam("path") String path, HttpServletResponse response, HttpServletRequest request) {
         MDC.put("Client-Address", request.getRemoteAddr());
         response.addHeader("Access-Control-Allow-Origin", "*");
+
+        // Using file-system specific file separator
+        path = path.replace("/", File.separator);
+
         MovieInfo movie = movieInfoFacade.loadSingleMovie(path);
         movie.addView();
         logger.info("Received streaming request - " + path);
@@ -110,6 +119,9 @@ public class MovieResource {
     public byte[] servePoster(@RequestParam("path") String path, HttpServletResponse response, HttpServletRequest request) {
         MDC.put("Client-Address", request.getRemoteAddr());
         response.addHeader("Access-Control-Allow-Origin", "*");
+
+        // Using file-system specific file separator
+        path = path.replace("/", File.separator);
         logger.info("Streaming poster " + path);
 
         String image = movieInfoFacade.loadSingleMovie(path).getImage();
