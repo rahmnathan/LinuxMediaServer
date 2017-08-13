@@ -2,8 +2,6 @@ package com.github.rahmnathan.directorymonitor;
 
 import com.sun.nio.file.SensitivityWatchEventModifier;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +14,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 
 import javax.annotation.PreDestroy;
 
@@ -26,7 +25,7 @@ import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 @Service
 public class DirectoryMonitor {
 
-    private static final Logger logger = LoggerFactory.getLogger(DirectoryMonitor.class);
+    private static final Logger logger = Logger.getLogger(DirectoryMonitor.class.getName());
     private final ExecutorService executor;
     private final List<DirectoryMonitorObserver> observerList;
     private final Map<WatchKey, Path> keys = new HashMap<>();
@@ -45,22 +44,22 @@ public class DirectoryMonitor {
         executor.shutdown();
     }
 
-    private void notifyObservers(WatchEvent event, Path absolutePath){
+    private void notifyObservers(WatchEvent event, Path absolutePath) {
         observerList.forEach(observer -> observer.directoryModified(event, absolutePath));
     }
 
-    public void registerDirectory(String pathToMonitor){
+    public void registerDirectory(String pathToMonitor) {
         register.accept(Paths.get(pathToMonitor));
     }
 
     @SuppressWarnings("unchecked")
     private void startRecursiveWatcher() {
         logger.info("Starting Recursive Watcher");
-        
-        try{
+
+        try {
             this.watchService = FileSystems.getDefault().newWatchService();
-        } catch (IOException e){
-            logger.error(e.toString());
+        } catch (IOException e) {
+            logger.severe(e.toString());
             return;
         }
 
@@ -76,7 +75,7 @@ public class DirectoryMonitor {
                     }
                 });
             } catch (IOException e) {
-                logger.error(e.toString());
+                logger.severe(e.toString());
             }
         };
 
@@ -85,8 +84,8 @@ public class DirectoryMonitor {
                 final WatchKey key;
                 try {
                     key = watchService.take();
-                } catch (InterruptedException ex) {
-                    logger.error(ex.toString());
+                } catch (InterruptedException e) {
+                    logger.severe(e.toString());
                     continue;
                 }
 

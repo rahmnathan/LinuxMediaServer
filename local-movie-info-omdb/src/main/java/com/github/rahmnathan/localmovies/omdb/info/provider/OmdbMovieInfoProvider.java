@@ -30,7 +30,7 @@ public class OmdbMovieInfoProvider implements IMovieInfoProvider {
     @Override
     public MovieInfo loadMovieInfo(String title){
         String fileName = title;
-        if(title.contains("."))
+        if(title.charAt(title.length() - 4) == '.')
             title = title.substring(0, title.length()-4);
 
         JSONObject jsonMovieInfo = dataProvider.loadMovieInfo(title);

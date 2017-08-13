@@ -37,11 +37,11 @@ class OmdbRawDataProvider {
             try (BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()))) {
                 StringBuilder stringBuilder = new StringBuilder();
                 br.lines().forEachOrdered(stringBuilder::append);
-                urlConnection.disconnect();
                 return new JSONObject(stringBuilder.toString());
             } catch (Exception e) {
+                logger.severe(e.toString());
+            } finally {
                 urlConnection.disconnect();
-                logger.log(Level.SEVERE, e.toString());
             }
         }
         return new JSONObject();

@@ -47,7 +47,7 @@ public class MovieInfoProvider {
         try {
             return movieInfoCache.get(path);
         } catch (ExecutionException e){
-            logger.fine(e.toString());
+            logger.severe(e.toString());
             return MovieInfo.Builder.newInstance().build();
         }
     }

@@ -54,7 +54,7 @@ public class MovieInfoControl {
 
     public List<MovieInfo> loadMovieList(MovieSearchCriteria searchCriteria) {
         List<String> relativeMoviePaths = new ArrayList<>();
-        
+
         // List all files in provided path
         Arrays.stream(mediaPaths)
                 .forEach(path -> relativeMoviePaths.addAll(Arrays.stream(fileListProvider.listFiles(path + searchCriteria.getPath()))
