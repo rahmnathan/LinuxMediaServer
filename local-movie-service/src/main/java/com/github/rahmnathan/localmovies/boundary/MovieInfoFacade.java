@@ -1,5 +1,6 @@
 package com.github.rahmnathan.localmovies.boundary;
 
+import com.github.rahmnathan.file.converter.VideoController;
 import com.github.rahmnathan.localmovies.control.MovieInfoControl;
 import com.github.rahmnathan.localmovies.data.MovieSearchCriteria;
 import com.github.rahmnathan.localmovies.movieinfoapi.MovieInfo;
@@ -10,12 +11,13 @@ import java.util.List;
 
 @Component
 public class MovieInfoFacade {
-
+    private final VideoController videoController;
     private final MovieInfoControl movieInfoControl;
 
     @Autowired
-    public MovieInfoFacade(MovieInfoControl movieInfoControl){
+    public MovieInfoFacade(MovieInfoControl movieInfoControl, VideoController videoController){
         this.movieInfoControl = movieInfoControl;
+        this.videoController = videoController;
     }
 
     public int loadMovieListLength(String directoryPath){

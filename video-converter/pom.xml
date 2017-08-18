@@ -22,5 +22,16 @@
             <artifactId>humble-video-all</artifactId>
             <version>0.2.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.rahmnathan</groupId>
+            <artifactId>directory-monitor</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>
