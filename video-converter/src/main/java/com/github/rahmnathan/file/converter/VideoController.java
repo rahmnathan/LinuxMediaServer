@@ -2,6 +2,7 @@ package com.github.rahmnathan.file.converter;
 
 import com.github.rahmnathan.directorymonitor.DirectoryMonitorObserver;
 import io.humble.video.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -15,11 +16,16 @@ import java.util.logging.Logger;
 
 @Component
 public class VideoController implements DirectoryMonitorObserver {
+    @Value("${video.conversion.version}")
+    private String videoConversionVersion;
     private final Logger logger = Logger.getLogger(VideoController.class.getName());
     private final Executor executor = Executors.newSingleThreadExecutor();
 
     @Override
     public void directoryModified(WatchEvent event, Path absolutePath) {
+        if(!"handbrake".equals(videoConversionVersion))
+            return;
+
         if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE) {
             convertToCastableFormat(absolutePath.toFile());
         }
