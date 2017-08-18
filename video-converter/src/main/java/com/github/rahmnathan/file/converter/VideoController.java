@@ -20,36 +20,46 @@ public class VideoController implements DirectoryMonitorObserver {
 
     @Override
     public void directoryModified(WatchEvent event, Path absolutePath) {
-        if(event.kind() == StandardWatchEventKinds.ENTRY_CREATE){
+        if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE) {
             convertToCastableFormat(absolutePath.toFile());
         }
     }
 
-    public void convertToCastableFormat(File videoFile){
-        if(!isCorrectFormat(videoFile))
-            executor.execute(new VideoConverter(videoFile));
+    public void convertToCastableFormat(File videoFile) {
+        try {
+            if (!isCorrectFormat(videoFile))
+                executor.execute(new VideoConverter(videoFile));
+        } catch (Exception e) {
+            logger.severe(e.toString());
+        }
     }
 
-    private boolean isCorrectFormat(File videoFile) {
+    private boolean isCorrectFormat(File videoFile) throws InterruptedException, IOException {
         boolean isH264 = false;
         boolean isAAC = false;
+        boolean fileIsBeingModified = true;
+
+        long fileSize = videoFile.length();
+        while (fileIsBeingModified) {
+            Thread.sleep(1000);
+            if (fileSize != videoFile.length()) {
+                fileSize = videoFile.length();
+            } else {
+                fileIsBeingModified = false;
+            }
+        }
 
         Demuxer demuxer = Demuxer.make();
-        try {
-            demuxer.open(videoFile.getAbsolutePath(), null, false, true, null, null);
-            for (int i = 0; i < demuxer.getNumStreams(); i++) {
-                DemuxerStream stream = demuxer.getStream(i);
-                Codec.ID codecId = stream.getDecoder().getCodecID();
-                if (codecId == Codec.ID.CODEC_ID_H264)
-                    isH264 = true;
-                if (codecId == Codec.ID.CODEC_ID_AAC)
-                    isAAC = true;
-            }
-            demuxer.close();
-        } catch (Exception e){
-            logger.severe(e.toString());
-            return true;
+        demuxer.open(videoFile.getAbsolutePath(), null, false, true, null, null);
+        for (int i = 0; i < demuxer.getNumStreams(); i++) {
+            DemuxerStream stream = demuxer.getStream(i);
+            Codec.ID codecId = stream.getDecoder().getCodecID();
+            if (codecId == Codec.ID.CODEC_ID_H264)
+                isH264 = true;
+            if (codecId == Codec.ID.CODEC_ID_AAC)
+                isAAC = true;
         }
+        demuxer.close();
         return isH264 && isAAC;
     }
 }
