@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
@@ -20,11 +22,17 @@ public class VideoController implements DirectoryMonitorObserver {
     private String videoConversionVersion;
     private final Logger logger = Logger.getLogger(VideoController.class.getName());
     private final Executor executor = Executors.newSingleThreadExecutor();
+    private volatile Set<String> convertedFiles = new HashSet<>();
 
     @Override
     public void directoryModified(WatchEvent event, Path absolutePath) {
         if(!"handbrake".equals(videoConversionVersion))
             return;
+
+        if(convertedFiles.contains(absolutePath.toString())){
+            convertedFiles.remove(absolutePath.toString());
+            return;
+        }
 
         if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE) {
             convertToCastableFormat(absolutePath.toFile());
@@ -34,7 +42,7 @@ public class VideoController implements DirectoryMonitorObserver {
     public void convertToCastableFormat(File videoFile) {
         try {
             if (!isCorrectFormat(videoFile))
-                executor.execute(new VideoConverter(videoFile));
+                executor.execute(new VideoConverter(videoFile, convertedFiles));
         } catch (Exception e) {
             logger.severe(e.toString());
         }
@@ -43,17 +51,6 @@ public class VideoController implements DirectoryMonitorObserver {
     private boolean isCorrectFormat(File videoFile) throws InterruptedException, IOException {
         boolean isH264 = false;
         boolean isAAC = false;
-        boolean fileIsBeingModified = true;
-
-        long fileSize = videoFile.length();
-        while (fileIsBeingModified) {
-            Thread.sleep(1000);
-            if (fileSize != videoFile.length()) {
-                fileSize = videoFile.length();
-            } else {
-                fileIsBeingModified = false;
-            }
-        }
 
         Demuxer demuxer = Demuxer.make();
         demuxer.open(videoFile.getAbsolutePath(), null, false, true, null, null);
