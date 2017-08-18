@@ -48,6 +48,7 @@ public class VideoController implements DirectoryMonitorObserver {
             demuxer.close();
         } catch (Exception e){
             logger.severe(e.toString());
+            return true;
         }
         return isH264 && isAAC;
     }
