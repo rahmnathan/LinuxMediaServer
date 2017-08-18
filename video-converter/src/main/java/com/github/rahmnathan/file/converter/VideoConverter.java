@@ -22,7 +22,7 @@ public class VideoConverter implements Runnable {
         String newPath = originalPath.substring(0, originalPath.length() - 3) + "mp4";
         convertedFiles.add(newPath);
         try{
-            Process process = new ProcessBuilder("HandBrakeCLI",  "-i", originalPath, "-o", newPath).start();
+            Process process = new ProcessBuilder("HandBrakeCLI",  "-i", originalPath, "-o", newPath, "-e", "x264").start();
             process.waitFor();
             int status = process.exitValue();
             logger.log(Level.INFO, "Conversion exit code: " + status);
