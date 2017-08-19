@@ -1,7 +1,6 @@
 package com.github.rahmnathan.file.converter;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,8 +22,9 @@ public class VideoConverter implements Runnable {
         convertedFiles.add(newPath);
         try{
             Process process = new ProcessBuilder("HandBrakeCLI",  "-i", originalPath, "-o", newPath, "-e", "x264").start();
-            process.waitFor();
-            int status = process.exitValue();
+            readStream(process.getInputStream());
+            readStream(process.getErrorStream());
+            int status = process.waitFor();
             logger.log(Level.INFO, "Conversion exit code: " + status);
             if(status == 0) {
                 videoFile.delete();
@@ -32,5 +32,11 @@ public class VideoConverter implements Runnable {
         } catch (IOException | InterruptedException e){
             logger.severe(e.toString());
         }
+    }
+
+    private void readStream(InputStream inputStream) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+        bufferedReader.lines().forEachOrdered(logger::fine);
+        bufferedReader.close();
     }
 }
