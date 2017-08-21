@@ -18,9 +18,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>io.humble</groupId>
-            <artifactId>humble-video-all</artifactId>
-            <version>0.2.1</version>
+            <groupId>net.bramp.ffmpeg</groupId>
+            <artifactId>ffmpeg</artifactId>
+            <version>0.6.1</version>
         </dependency>
         <dependency>
             <groupId>com.github.rahmnathan</groupId>

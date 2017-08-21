@@ -1,7 +1,9 @@
 package com.github.rahmnathan.file.converter;
 
 import com.github.rahmnathan.directorymonitor.DirectoryMonitorObserver;
-import io.humble.video.*;
+import net.bramp.ffmpeg.FFprobe;
+import net.bramp.ffmpeg.probe.FFmpegProbeResult;
+import net.bramp.ffmpeg.probe.FFmpegStream;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -18,17 +20,16 @@ import java.util.logging.Logger;
 
 @Component
 public class VideoController implements DirectoryMonitorObserver {
-    @Value("${video.conversion.version}")
-    private String videoConversionVersion;
+    @Value("${ffmpeg.location}")
+    private String ffmpegLocation;
+    @Value("${ffprobe.location}")
+    private String ffprobeLocation;
     private final Logger logger = Logger.getLogger(VideoController.class.getName());
     private final Executor executor = Executors.newSingleThreadExecutor();
     private volatile Set<String> convertedFiles = new HashSet<>();
 
     @Override
     public void directoryModified(WatchEvent event, Path absolutePath) {
-        if(!"handbrake".equals(videoConversionVersion))
-            return;
-
         if(convertedFiles.contains(absolutePath.toString())){
             convertedFiles.remove(absolutePath.toString());
             return;
@@ -39,30 +40,34 @@ public class VideoController implements DirectoryMonitorObserver {
         }
     }
 
-    public void convertToCastableFormat(File videoFile) {
-        try {
-            if (!isCorrectFormat(videoFile))
-                executor.execute(new VideoConverter(videoFile, convertedFiles));
-        } catch (Exception e) {
-            logger.severe(e.toString());
+    private void convertToCastableFormat(File videoFile) {
+        if (!isCorrectFormat(videoFile)) {
+            executor.execute(new VideoConverter(videoFile, convertedFiles, ffmpegLocation, ffprobeLocation));
         }
     }
 
-    private boolean isCorrectFormat(File videoFile) throws InterruptedException, IOException {
+    private boolean isCorrectFormat(File videoFile) {
+        if(ffprobeLocation == null)
+            return true;
+
         boolean isH264 = false;
         boolean isAAC = false;
 
-        Demuxer demuxer = Demuxer.make();
-        demuxer.open(videoFile.getAbsolutePath(), null, false, true, null, null);
-        for (int i = 0; i < demuxer.getNumStreams(); i++) {
-            DemuxerStream stream = demuxer.getStream(i);
-            Codec.ID codecId = stream.getDecoder().getCodecID();
-            if (codecId == Codec.ID.CODEC_ID_H264)
-                isH264 = true;
-            if (codecId == Codec.ID.CODEC_ID_AAC)
-                isAAC = true;
+        try {
+            FFprobe probe = new FFprobe(ffprobeLocation);
+            FFmpegProbeResult probeResult = probe.probe(videoFile.getAbsolutePath());
+            for (FFmpegStream stream : probeResult.getStreams()) {
+                String codecName = stream.codec_name;
+                logger.info(videoFile.getAbsolutePath() + " " + codecName);
+                if (codecName.equalsIgnoreCase("aac"))
+                    isAAC = true;
+                else if (codecName.equalsIgnoreCase("h264"))
+                    isH264 = true;
+            }
+        } catch (IOException e){
+            logger.severe(e.toString());
         }
-        demuxer.close();
+
         return isH264 && isAAC;
     }
 }
