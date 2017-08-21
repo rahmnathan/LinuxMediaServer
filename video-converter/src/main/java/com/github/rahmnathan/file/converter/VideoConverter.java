@@ -40,24 +40,25 @@ public class VideoConverter implements Runnable {
         String originalPath = videoFile.getAbsolutePath();
         String newPath = originalPath.substring(0, originalPath.length() - 3) + "mp4";
         convertedFiles.add(newPath);
+        
+        FFmpegBuilder builder = new FFmpegBuilder()
+                .setInput(originalPath)
+                .overrideOutputFiles(true)
+                .addOutput(newPath)
+                .setFormat("mp4")
+                .disableSubtitle()
+                .setAudioCodec("aac")
+                .setVideoCodec("libx264")
+                .setStrict(FFmpegBuilder.Strict.EXPERIMENTAL)
+                .done();
 
         try {
             FFmpeg ffmpeg = new FFmpeg(ffmpegLocation);
             FFprobe ffprobe = new FFprobe(ffprobeLocation);
+
             FFmpegProbeResult in = ffprobe.probe(originalPath);
-
-            FFmpegBuilder builder = new FFmpegBuilder()
-                    .setInput(originalPath)
-                    .overrideOutputFiles(true)
-                    .addOutput(newPath)
-                    .setFormat("mp4")
-                    .disableSubtitle()
-                    .setAudioCodec("aac")
-                    .setVideoCodec("libx264")
-                    .setStrict(FFmpegBuilder.Strict.EXPERIMENTAL)
-                    .done();
-
             FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
+
             FFmpegJob job = executor.createJob(builder, progress -> {
                     final double duration_ns = in.getFormat().duration * TimeUnit.SECONDS.toNanos(1);
                     double percentage = progress.out_time_ms / duration_ns;
@@ -65,6 +66,7 @@ public class VideoConverter implements Runnable {
                 });
 
             job.run();
+
             while (true){
                 try {
                     Thread.sleep(5000);
