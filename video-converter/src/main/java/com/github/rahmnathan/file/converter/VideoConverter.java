@@ -2,43 +2,40 @@ package com.github.rahmnathan.file.converter;
 
 import net.bramp.ffmpeg.FFmpeg;
 import net.bramp.ffmpeg.FFmpegExecutor;
-import net.bramp.ffmpeg.FFmpegUtils;
 import net.bramp.ffmpeg.FFprobe;
 import net.bramp.ffmpeg.builder.FFmpegBuilder;
 import net.bramp.ffmpeg.job.FFmpegJob;
 import net.bramp.ffmpeg.probe.FFmpegProbeResult;
-import net.bramp.ffmpeg.progress.Progress;
-import net.bramp.ffmpeg.progress.ProgressListener;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class VideoConverter implements Runnable {
-    @Value("${ffmpeg.location}")
-    private String ffmpegLocation;
-    @Value("${ffprobe.location}")
-    private String ffprobeLocation;
+    private final Logger logger = Logger.getLogger(VideoConverter.class.getName());
+    private final String ffmpegLocation;
+    private final String ffprobeLocation;
     private final File videoFile;
     private volatile Set<String> convertedFiles;
-    private final Logger logger = Logger.getLogger(VideoConverter.class.getName());
 
-    public VideoConverter(File videoFile, Set<String> convertedFiles) {
+    public VideoConverter(File videoFile, Set<String> convertedFiles, String ffmpegLocation, String ffprobeLocation) {
         this.videoFile = videoFile;
         this.convertedFiles = convertedFiles;
+        this.ffprobeLocation = ffprobeLocation;
+        this.ffmpegLocation = ffmpegLocation;
     }
 
     @Override
     public void run() {
-        if(ffmpegLocation == null || ffprobeLocation == null || ffmpegLocation.equals("") || ffprobeLocation.equals(""))
+        if(ffmpegLocation == null || ffprobeLocation == null || videoFile == null) {
+            logger.info("Skipping video conversion due to null inputs");
             return;
+        }
 
         String originalPath = videoFile.getAbsolutePath();
         String newPath = originalPath.substring(0, originalPath.length() - 3) + "mp4";
+        logger.info("Encoding " + originalPath + " to " + newPath);
         convertedFiles.add(newPath);
         
         FFmpegBuilder builder = new FFmpegBuilder()
@@ -60,16 +57,16 @@ public class VideoConverter implements Runnable {
             FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
 
             FFmpegJob job = executor.createJob(builder, progress -> {
-                    final double duration_ns = in.getFormat().duration * TimeUnit.SECONDS.toNanos(1);
-                    double percentage = progress.out_time_ms / duration_ns;
-                    logger.info(originalPath + " Encoding progress -> " + percentage + "%");
+                    double duration = in.getFormat().duration;
+                    double percentage = progress.out_time_ms / duration;
+                    logger.info(originalPath + " Encoding progress -> " + percentage);
                 });
 
             job.run();
 
             while (true){
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(10000);
                 } catch (InterruptedException e){
                     logger.severe(e.toString());
                     break;

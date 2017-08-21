@@ -20,6 +20,8 @@ import java.util.logging.Logger;
 
 @Component
 public class VideoController implements DirectoryMonitorObserver {
+    @Value("${ffmpeg.location}")
+    private String ffmpegLocation;
     @Value("${ffprobe.location}")
     private String ffprobeLocation;
     private final Logger logger = Logger.getLogger(VideoController.class.getName());
@@ -38,13 +40,14 @@ public class VideoController implements DirectoryMonitorObserver {
         }
     }
 
-    public void convertToCastableFormat(File videoFile) {
-        if (!isCorrectFormat(videoFile))
-            executor.execute(new VideoConverter(videoFile, convertedFiles));
+    private void convertToCastableFormat(File videoFile) {
+        if (!isCorrectFormat(videoFile)) {
+            executor.execute(new VideoConverter(videoFile, convertedFiles, ffmpegLocation, ffprobeLocation));
+        }
     }
 
-    public boolean isCorrectFormat(File videoFile) {
-        if(ffprobeLocation == null || ffprobeLocation.equals(""))
+    private boolean isCorrectFormat(File videoFile) {
+        if(ffprobeLocation == null)
             return true;
 
         boolean isH264 = false;
@@ -54,10 +57,11 @@ public class VideoController implements DirectoryMonitorObserver {
             FFprobe probe = new FFprobe(ffprobeLocation);
             FFmpegProbeResult probeResult = probe.probe(videoFile.getAbsolutePath());
             for (FFmpegStream stream : probeResult.getStreams()) {
-                logger.info(videoFile.getAbsolutePath() + " " + stream.codec_name);
-                if (stream.codec_name.equalsIgnoreCase("aac"))
+                String codecName = stream.codec_name;
+                logger.info(videoFile.getAbsolutePath() + " " + codecName);
+                if (codecName.equalsIgnoreCase("aac"))
                     isAAC = true;
-                else if (stream.codec_name.equalsIgnoreCase("h264"))
+                else if (codecName.equalsIgnoreCase("h264"))
                     isH264 = true;
             }
         } catch (IOException e){
