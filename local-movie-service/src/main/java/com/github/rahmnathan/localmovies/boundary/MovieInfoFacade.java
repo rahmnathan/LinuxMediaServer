@@ -1,6 +1,6 @@
 package com.github.rahmnathan.localmovies.boundary;
 
-import com.github.rahmnathan.file.converter.VideoController;
+import com.github.rahmnathan.media.converter.VideoController;
 import com.github.rahmnathan.localmovies.control.MovieInfoControl;
 import com.github.rahmnathan.localmovies.data.MovieSearchCriteria;
 import com.github.rahmnathan.localmovies.movieinfoapi.MovieInfo;
