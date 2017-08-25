@@ -41,7 +41,7 @@ public class VideoController {
             FFprobe probe = new FFprobe(ffprobeLocation);
             FFmpegProbeResult probeResult = probe.probe(conversionJob.getInputFile().getAbsolutePath());
 
-            logger.log(Level.INFO, probeResult.format.format_name);
+            logger.log(Level.INFO, "Container format - " + probeResult.format.format_name);
             if(conversionJob.getContainerFormat() != null &&
                     !probeResult.format.format_name.toLowerCase().contains(conversionJob.getContainerFormat().name().toLowerCase())) {
                 return false;
@@ -54,7 +54,7 @@ public class VideoController {
 
             for (FFmpegStream stream : probeResult.getStreams()) {
                 String codecName = stream.codec_name;
-                logger.info(conversionJob.getInputFile().getAbsolutePath() + " " + codecName);
+                logger.info("Stream codec - " + codecName);
                 if (conversionJob.getAudioCodec() != null && codecName.equalsIgnoreCase(conversionJob.getAudioCodec().name()))
                     correctAudioCodec = true;
                 else if (conversionJob.getVideoCodec() != null && codecName.equalsIgnoreCase(conversionJob.getVideoCodec().name()))

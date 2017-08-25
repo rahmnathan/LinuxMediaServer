@@ -68,7 +68,7 @@ public class VideoConverter implements Runnable {
 
             while (true){
                 try {
-                    Thread.sleep(10000);
+                    Thread.sleep(5000);
                 } catch (InterruptedException e){
                     logger.severe(e.toString());
                     break;
