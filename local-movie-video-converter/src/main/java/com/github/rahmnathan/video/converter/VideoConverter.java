@@ -14,6 +14,10 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Component
 public class VideoConverter implements DirectoryMonitorObserver {
@@ -21,25 +25,22 @@ public class VideoConverter implements DirectoryMonitorObserver {
     private String ffmpegLocation;
     @Value("${ffprobe.location}")
     private String ffprobeLocation;
-    private VideoController videoController;
-
-    @PostConstruct
-    public void initialize(){
-        videoController = new VideoController(ffmpegLocation, ffprobeLocation);
-    }
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     @Override
     public void directoryModified(WatchEvent event, Path absolutePath) {
         if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE) {
+            String newFilePath = absolutePath.toString().substring(0, absolutePath.toString().lastIndexOf('.')) + ".mp4";
+
             ConversionJob conversionJob = ConversionJob.Builder.newInstance()
                     .setAudioCodec(AudioCodec.AAC)
                     .setVideoCodec(VideoCodec.H264)
                     .setContainerFormat(ContainerFormat.MP4)
                     .setInputFile(absolutePath.toFile())
-                    .setOutputFile(new File(absolutePath.toString().substring(0, absolutePath.toString().lastIndexOf('.')) + ".mp4"))
+                    .setOutputFile(new File(newFilePath))
                     .build();
 
-            videoController.convertIfNecessary(conversionJob);
+            executorService.submit(new VideoController(conversionJob, ffmpegLocation, ffprobeLocation));
         }
     }
 }
