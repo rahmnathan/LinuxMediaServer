@@ -2,9 +2,6 @@ package com.github.rahmnathan.directorymonitor;
 
 import com.sun.nio.file.SensitivityWatchEventModifier;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -22,9 +19,7 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
 import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
-@Service
 public class DirectoryMonitor {
-
     private static final Logger logger = Logger.getLogger(DirectoryMonitor.class.getName());
     private final ExecutorService executor;
     private final List<DirectoryMonitorObserver> observerList;
@@ -32,7 +27,6 @@ public class DirectoryMonitor {
     private WatchService watchService;
     private Consumer<Path> register;
 
-    @Autowired
     public DirectoryMonitor(List<DirectoryMonitorObserver> observerList) {
         this.observerList = observerList;
         this.executor = Executors.newSingleThreadExecutor();

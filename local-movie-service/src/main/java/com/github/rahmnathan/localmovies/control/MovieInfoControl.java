@@ -1,6 +1,7 @@
 package com.github.rahmnathan.localmovies.control;
 
 import com.github.rahmnathan.directorymonitor.DirectoryMonitor;
+import com.github.rahmnathan.directorymonitor.DirectoryMonitorObserver;
 import com.github.rahmnathan.localmovies.data.MovieClient;
 import com.github.rahmnathan.localmovies.data.MovieOrder;
 import com.github.rahmnathan.localmovies.data.MovieSearchCriteria;
@@ -25,9 +26,9 @@ public class MovieInfoControl {
     private final FileListProvider fileListProvider;
 
     @Autowired
-    public MovieInfoControl(MovieInfoProvider movieInfoProvider, DirectoryMonitor directoryMonitor, FileListProvider fileListProvider){
+    public MovieInfoControl(MovieInfoProvider movieInfoProvider, List<DirectoryMonitorObserver> observers, FileListProvider fileListProvider){
+        this.directoryMonitor = new DirectoryMonitor(observers);
         this.movieInfoProvider = movieInfoProvider;
-        this.directoryMonitor = directoryMonitor;
         this.fileListProvider = fileListProvider;
     }
 
