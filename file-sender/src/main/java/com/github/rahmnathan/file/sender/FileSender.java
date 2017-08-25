@@ -13,7 +13,7 @@ public class FileSender {
     private final Logger logger = Logger.getLogger(FileSender.class.getName());
 
     public void serveResource(Path file, HttpServletRequest request, HttpServletResponse response) {
-        if (response == null || request == null)
+        if (response == null || request == null || file == null)
             return;
 
         long totalBytes = 0L;

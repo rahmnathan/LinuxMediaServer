@@ -36,7 +36,7 @@ public class VideoConverter implements DirectoryMonitorObserver {
                     .setVideoCodec(VideoCodec.H264)
                     .setContainerFormat(ContainerFormat.MP4)
                     .setInputFile(absolutePath.toFile())
-                    .setOutputFile(new File(absolutePath.toString().substring(absolutePath.toString().lastIndexOf('.')) + "mp4"))
+                    .setOutputFile(new File(absolutePath.toString().substring(0, absolutePath.toString().lastIndexOf('.')) + ".mp4"))
                     .build();
 
             videoController.convertIfNecessary(conversionJob);
