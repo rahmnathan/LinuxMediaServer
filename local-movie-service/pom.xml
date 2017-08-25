@@ -35,7 +35,7 @@
         </dependency>
         <dependency>
             <groupId>com.github.rahmnathan</groupId>
-            <artifactId>video-converter</artifactId>
+            <artifactId>local-movie-video-converter</artifactId>
             <version>${project.parent.version}</version>
             <scope>provided</scope>
         </dependency>
