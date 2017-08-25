@@ -17,7 +17,6 @@
         <module>local-movie-standalone</module>
         <module>directory-monitor</module>
         <module>file-sender</module>
-        <module>video-converter</module>
         <module>local-movie-video-converter</module>
     </modules>
 
