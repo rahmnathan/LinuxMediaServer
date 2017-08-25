@@ -15,7 +15,7 @@ public class VideoControllerTest {
 
 //    @Test
 //    public void correctFormatTest() throws Exception {
-//        videoFile = new File("/home/nathan/development/workspaces/localmovies-server/video-converter/src/test/resources/com.github.rahmnathan.media.converter/test-original.mp4");
+//        videoFile = new File("/home/nathan/development/workspaces/localmovies-server/video-converter/src/test/resources/com.github.rahmnathan.media.converter/test.mp4");
 //        ConversionJob job = ConversionJob.Builder.newInstance()
 //                .setInputFile(videoFile)
 //                .setAudioCodec(AudioCodec.AAC)

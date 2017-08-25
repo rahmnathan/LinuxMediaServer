@@ -9,6 +9,7 @@ import com.github.rahmnathan.media.data.ConversionJob;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
@@ -20,9 +21,10 @@ public class VideoConverter implements DirectoryMonitorObserver {
     private String ffmpegLocation;
     @Value("${ffprobe.location}")
     private String ffprobeLocation;
-    private final VideoController videoController;
+    private VideoController videoController;
 
-    public VideoConverter() {
+    @PostConstruct
+    public void initialize(){
         videoController = new VideoController(ffmpegLocation, ffprobeLocation);
     }
 

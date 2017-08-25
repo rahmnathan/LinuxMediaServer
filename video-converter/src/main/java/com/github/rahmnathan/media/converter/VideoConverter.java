@@ -60,8 +60,8 @@ public class VideoConverter implements Runnable {
 
             FFmpegJob job = executor.createJob(outputBuilder.done(), progress -> {
                     double duration = in.getFormat().duration;
-                    int percentage = Double.valueOf((progress.out_time_ms / duration) / 1000).intValue();
-                    logger.info(existingFilePath + " Encoding progress -> " + percentage);
+                    int percentage = Double.valueOf((progress.out_time_ms / duration) / 10000).intValue();
+                    logger.info(existingFilePath + " Encoding progress -> " + percentage + "%");
                 });
 
             job.run();
