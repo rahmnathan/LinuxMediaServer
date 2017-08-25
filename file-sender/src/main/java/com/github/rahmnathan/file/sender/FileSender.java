@@ -1,7 +1,5 @@
 package com.github.rahmnathan.file.sender;
 
-import org.springframework.stereotype.Component;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -9,7 +7,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.logging.Logger;
 
-@Component
 public class FileSender {
 
     private static final int DEFAULT_BUFFER_SIZE = 16384;

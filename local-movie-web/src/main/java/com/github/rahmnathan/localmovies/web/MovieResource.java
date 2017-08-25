@@ -25,13 +25,12 @@ public class MovieResource {
     @Value("${media.path}")
     private String[] mediaPaths;
     private final MovieInfoFacade movieInfoFacade;
-    private final FileSender fileSender;
+    private final FileSender fileSender = new FileSender();
     private final Logger logger = Logger.getLogger(MovieResource.class.getName());
 
     @Autowired
-    public MovieResource(MovieInfoFacade movieInfoControl, FileSender fileSender){
+    public MovieResource(MovieInfoFacade movieInfoControl){
         this.movieInfoFacade = movieInfoControl;
-        this.fileSender = fileSender;
     }
 
     /**
