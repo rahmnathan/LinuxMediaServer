@@ -9,6 +9,7 @@ import net.bramp.ffmpeg.builder.FFmpegOutputBuilder;
 import net.bramp.ffmpeg.job.FFmpegJob;
 import net.bramp.ffmpeg.probe.FFmpegProbeResult;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.logging.Logger;
@@ -38,9 +39,10 @@ public class VideoConverter implements Runnable {
 
         logger.info("Encoding " + existingFilePath + " to " + newFilePath);
 
-        FFmpegOutputBuilder outputBuilder = new FFmpegOutputBuilder()
-                .setUri(URI.create(newFilePath))
-                .setStrict(FFmpegBuilder.Strict.EXPERIMENTAL);
+        FFmpegOutputBuilder outputBuilder = new FFmpegBuilder()
+                .setInput(existingFilePath)
+                .overrideOutputFiles(true)
+                .addOutput(newFilePath);
 
         if(conversionJob.getAudioCodec() != null)
             outputBuilder.setAudioCodec(conversionJob.getAudioCodec().getFfmpegFormat());
@@ -49,11 +51,6 @@ public class VideoConverter implements Runnable {
         if(conversionJob.getContainerFormat() != null)
             outputBuilder.setFormat(conversionJob.getContainerFormat().getFfmpegFormat());
 
-        FFmpegBuilder builder = new FFmpegBuilder()
-                .setInput(existingFilePath)
-                .overrideOutputFiles(true)
-                .addOutput(outputBuilder);
-
         try {
             FFmpeg ffmpeg = new FFmpeg(ffmpegLocation);
             FFprobe ffprobe = new FFprobe(ffprobeLocation);
@@ -61,9 +58,9 @@ public class VideoConverter implements Runnable {
             FFmpegProbeResult in = ffprobe.probe(existingFilePath);
             FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
 
-            FFmpegJob job = executor.createJob(builder, progress -> {
+            FFmpegJob job = executor.createJob(outputBuilder.done(), progress -> {
                     double duration = in.getFormat().duration;
-                    double percentage = progress.out_time_ms / duration;
+                    int percentage = Double.valueOf((progress.out_time_ms / duration) / 1000).intValue();
                     logger.info(existingFilePath + " Encoding progress -> " + percentage);
                 });
 
@@ -77,8 +74,10 @@ public class VideoConverter implements Runnable {
                     break;
                 }
                 if(job.getState() == FFmpegJob.State.FAILED) {
+                    logger.info("Encoding Failed");
                     break;
                 } else if(job.getState() == FFmpegJob.State.FINISHED) {
+                    logger.info("Encoding Finished");
                     conversionJob.getInputFile().delete();
                     break;
                 }

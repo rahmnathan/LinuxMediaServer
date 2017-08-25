@@ -22,8 +22,10 @@ public class VideoController {
         this.ffprobeLocation = ffprobeLocation;
     }
 
-    public void convertToCastableFormat(ConversionJob conversionJob) {
-        if (!isCorrectFormat(conversionJob)) {
+    public void convertIfNecessary(ConversionJob conversionJob) {
+        boolean correctFormat = isCorrectFormat(conversionJob);
+        logger.info("Correct format? - " + correctFormat);
+        if (!correctFormat) {
             executor.execute(new VideoConverter(conversionJob, ffmpegLocation, ffprobeLocation));
         }
     }
@@ -44,7 +46,6 @@ public class VideoController {
                     !probeResult.format.format_name.toLowerCase().contains(conversionJob.getContainerFormat().name().toLowerCase())) {
                 return false;
             }
-            logger.log(Level.INFO, "Correct CONTAINER");
 
             if(conversionJob.getVideoCodec() == null)
                 correctVideoCodec = true;
@@ -59,7 +60,6 @@ public class VideoController {
                 else if (conversionJob.getVideoCodec() != null && codecName.equalsIgnoreCase(conversionJob.getVideoCodec().name()))
                     correctVideoCodec = true;
             }
-
         } catch (IOException e){
             logger.severe(e.toString());
         }
