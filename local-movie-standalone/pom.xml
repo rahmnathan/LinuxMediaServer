@@ -46,6 +46,11 @@
             <artifactId>video-converter</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.rahmnathan</groupId>
+            <artifactId>local-movie-video-converter</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
