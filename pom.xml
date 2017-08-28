@@ -15,7 +15,6 @@
         <module>local-movie-service</module>
         <module>local-movie-web</module>
         <module>local-movie-standalone</module>
-        <module>file-sender</module>
         <module>local-movie-video-converter</module>
     </modules>
 

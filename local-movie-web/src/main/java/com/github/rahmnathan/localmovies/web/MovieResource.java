@@ -1,6 +1,5 @@
 package com.github.rahmnathan.localmovies.web;
 
-import com.github.rahmnathan.file.sender.FileSender;
 import com.github.rahmnathan.localmovies.boundary.MovieInfoFacade;
 import com.github.rahmnathan.localmovies.data.MovieSearchCriteria;
 import com.github.rahmnathan.localmovies.movieinfoapi.MovieInfo;

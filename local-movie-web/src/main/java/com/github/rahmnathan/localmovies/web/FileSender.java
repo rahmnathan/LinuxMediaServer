@@ -1,4 +1,4 @@
-package com.github.rahmnathan.file.sender;
+package com.github.rahmnathan.localmovies.web;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
