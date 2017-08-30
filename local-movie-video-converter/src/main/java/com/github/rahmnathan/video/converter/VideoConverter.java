@@ -9,13 +9,11 @@ import com.github.rahmnathan.media.data.ConversionJob;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -29,7 +27,7 @@ public class VideoConverter implements DirectoryMonitorObserver {
 
     @Override
     public void directoryModified(WatchEvent event, Path absolutePath) {
-        if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE) {
+        if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE && Files.isRegularFile(absolutePath)) {
             String newFilePath = absolutePath.toString().substring(0, absolutePath.toString().lastIndexOf('.')) + ".mp4";
 
             ConversionJob conversionJob = ConversionJob.Builder.newInstance()
