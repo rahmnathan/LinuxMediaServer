@@ -33,7 +33,6 @@ public class VideoConverter implements DirectoryMonitorObserver {
             ConversionJob conversionJob = ConversionJob.Builder.newInstance()
                     .setAudioCodec(AudioCodec.AAC)
                     .setVideoCodec(VideoCodec.H264)
-                    .setContainerFormat(ContainerFormat.MP4)
                     .setInputFile(absolutePath.toFile())
                     .setOutputFile(new File(newFilePath))
                     .build();
