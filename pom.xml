@@ -42,8 +42,8 @@
         <profile>
             <id>release</id>
             <properties>
-                <video.converter.version>1.0.0</video.converter.version>
-                <directory.monitor.version>1.0.0</directory.monitor.version>
+                <video.converter.version>1.0</video.converter.version>
+                <directory.monitor.version>1.0</directory.monitor.version>
             </properties>
         </profile>
     </profiles>
