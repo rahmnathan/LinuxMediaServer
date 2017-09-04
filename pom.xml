@@ -61,6 +61,12 @@
         </dependencies>
     </dependencyManagement>
 
+    <!--
+        These repositories are currently not exposed outside of my local network so you will need to install the video-converter
+        and directory-monitor projects into your local Maven repository to resolve those dependencies. I may expose my
+        Artifactory instance in the future in which case these will be updated.
+    -->
+
     <repositories>
         <repository>
             <id>central</id>
