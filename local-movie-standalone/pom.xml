@@ -34,7 +34,7 @@
         <dependency>
             <groupId>com.github.rahmnathan</groupId>
             <artifactId>directory-monitor</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${directory.monitor.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.rahmnathan</groupId>
@@ -44,7 +44,7 @@
         <dependency>
             <groupId>com.github.rahmnathan</groupId>
             <artifactId>video-converter</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${video.converter.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.rahmnathan</groupId>

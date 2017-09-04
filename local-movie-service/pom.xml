@@ -21,7 +21,7 @@
         <dependency>
             <groupId>com.github.rahmnathan</groupId>
             <artifactId>directory-monitor</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${directory.monitor.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

@@ -28,6 +28,26 @@
         <java.version>1.8</java.version>
     </properties>
 
+    <profiles>
+        <profile>
+            <id>snapshot</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <video.converter.version>1.0-SNAPSHOT</video.converter.version>
+                <directory.monitor.version>1.0-SNAPSHOT</directory.monitor.version>
+            </properties>
+        </profile>
+        <profile>
+            <id>release</id>
+            <properties>
+                <video.converter.version>1.0.0</video.converter.version>
+                <directory.monitor.version>1.0.0</directory.monitor.version>
+            </properties>
+        </profile>
+    </profiles>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
