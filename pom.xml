@@ -33,8 +33,8 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <video.converter.version>1.0-SNAPSHOT</video.converter.version>
-                <directory.monitor.version>1.0-SNAPSHOT</directory.monitor.version>
+                <video.converter.version>1.1-SNAPSHOT</video.converter.version>
+                <directory.monitor.version>1.1-SNAPSHOT</directory.monitor.version>
             </properties>
         </profile>
         <profile>
@@ -60,4 +60,17 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>09e55c54b48b-releases</name>
+            <url>http://192.168.1.8:8081/artifactory/nathan-release</url>
+        </repository>
+        <repository>
+            <id>snapshots</id>
+            <name>09e55c54b48b-snapshots</name>
+            <url>http://192.168.1.8:8081/artifactory/nathan-snapshot</url>
+        </repository>
+    </repositories>
 </project>
