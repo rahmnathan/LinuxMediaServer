@@ -60,23 +60,4 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
-    <!--
-        These repositories are currently not exposed outside of my local network so you will need to install the video-converter
-        and directory-monitor projects into your local Maven repository to resolve those dependencies. I may expose my
-        Artifactory instance in the future in which case these will be updated.
-    -->
-
-    <repositories>
-        <repository>
-            <id>central</id>
-            <name>09e55c54b48b-releases</name>
-            <url>http://192.168.1.8:8081/artifactory/nathan-release</url>
-        </repository>
-        <repository>
-            <id>snapshots</id>
-            <name>09e55c54b48b-snapshots</name>
-            <url>http://192.168.1.8:8081/artifactory/nathan-snapshot</url>
-        </repository>
-    </repositories>
 </project>
