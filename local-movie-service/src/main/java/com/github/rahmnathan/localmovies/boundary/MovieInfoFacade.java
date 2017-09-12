@@ -3,7 +3,7 @@ package com.github.rahmnathan.localmovies.boundary;
 import com.github.rahmnathan.localmovies.control.MovieInfoControl;
 import com.github.rahmnathan.localmovies.data.MovieSearchCriteria;
 import com.github.rahmnathan.localmovies.movieinfoapi.MovieInfo;
-import com.github.rahmnathan.video.converter.VideoConverter;
+import com.github.rahmnathan.video.control.VideoConversionMonitor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -11,13 +11,13 @@ import java.util.List;
 
 @Component
 public class MovieInfoFacade {
-    private final VideoConverter videoController;
+    private final VideoConversionMonitor videoConversionMonitor;
     private final MovieInfoControl movieInfoControl;
 
     @Autowired
-    public MovieInfoFacade(MovieInfoControl movieInfoControl, VideoConverter videoController){
+    public MovieInfoFacade(MovieInfoControl movieInfoControl, VideoConversionMonitor videoConversionMonitor){
         this.movieInfoControl = movieInfoControl;
-        this.videoController = videoController;
+        this.videoConversionMonitor = videoConversionMonitor;
     }
 
     public int loadMovieListLength(String directoryPath){
