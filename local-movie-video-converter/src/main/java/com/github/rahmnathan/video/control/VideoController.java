@@ -6,7 +6,6 @@ import net.bramp.ffmpeg.probe.FFmpegProbeResult;
 import net.bramp.ffmpeg.probe.FFmpegStream;
 
 import java.io.IOException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class VideoController implements Runnable {
@@ -14,7 +13,7 @@ public class VideoController implements Runnable {
     private final VideoConverter videoConverter = new VideoConverter();
     private final Logger logger = Logger.getLogger(VideoController.class.getName());
 
-    public VideoController(SimpleConversionJob simpleConversionJob) {
+    VideoController(SimpleConversionJob simpleConversionJob) {
         this.simpleConversionJob = simpleConversionJob;
     }
 
@@ -27,7 +26,7 @@ public class VideoController implements Runnable {
         }
     }
 
-    public boolean isCorrectFormat(SimpleConversionJob simpleConversionJob) {
+    private boolean isCorrectFormat(SimpleConversionJob simpleConversionJob) {
         if (simpleConversionJob.getFfprobe() == null) return true;
 
         boolean correctVideoCodec = false;
