@@ -5,8 +5,6 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 
 import java.util.Base64;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Component
 class MovieInfoMapper {
@@ -21,6 +19,8 @@ class MovieInfoMapper {
             movieInfoBuilder.setMetaRating(jsonObject.getString("Metascore"));
         if(jsonObject.has("Year"))
             movieInfoBuilder.setReleaseYear(jsonObject.getString("Year"));
+        if(jsonObject.has("Genre"))
+            movieInfoBuilder.setGenre(jsonObject.getString("Genre"));
 
         try {
             movieInfoBuilder.setImage(Base64.getEncoder().encodeToString(poster));

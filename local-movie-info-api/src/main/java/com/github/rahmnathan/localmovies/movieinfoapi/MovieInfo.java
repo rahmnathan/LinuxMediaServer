@@ -16,14 +16,16 @@ public class MovieInfo {
     private String IMDBRating;
     private String metaRating;
     private String releaseYear;
+    private String genre;
 
-    private MovieInfo(String title, String IMDBRating, String metaRating, String image, String releaseYear, String path) {
+    private MovieInfo(String title, String IMDBRating, String metaRating, String image, String releaseYear, String path, String genre) {
         this.title = title;
         this.IMDBRating = IMDBRating;
         this.metaRating = metaRating;
         this.releaseYear = releaseYear;
         this.image = image;
         this.path = path;
+        this.genre = genre;
         created = Calendar.getInstance().getTimeInMillis();
     }
 
@@ -71,6 +73,10 @@ public class MovieInfo {
         return created;
     }
 
+    public String getGenre() {
+        return genre;
+    }
+
     public void emptyImage(){
         this.image = "";
     }
@@ -87,9 +93,15 @@ public class MovieInfo {
         private String image;
         private String releaseYear;
         private String path;
+        private String genre;
 
         public static Builder newInstance(){
             return new Builder();
+        }
+
+        public Builder setGenre(String genre) {
+            this.genre = genre;
+            return this;
         }
 
         public Builder setTitle(String title) {
@@ -123,7 +135,7 @@ public class MovieInfo {
         }
 
         public MovieInfo build(){
-            return new MovieInfo(title, IMDBRating, metaRating, image, releaseYear, path);
+            return new MovieInfo(title, IMDBRating, metaRating, image, releaseYear, path, genre);
         }
 
         public static MovieInfo copyWithNewTitle(MovieInfo movieInfo, String title){
@@ -137,6 +149,7 @@ public class MovieInfo {
                     .setIMDBRating(movieInfo.getIMDBRating())
                     .setPath(movieInfo.getPath())
                     .setImage(movieInfo.getImage())
+                    .setGenre(movieInfo.getGenre())
                     .build();
         }
 
@@ -149,6 +162,7 @@ public class MovieInfo {
                     .setReleaseYear(movieInfo.getReleaseYear())
                     .setMetaRating(movieInfo.getMetaRating())
                     .setIMDBRating(movieInfo.getIMDBRating())
+                    .setGenre(movieInfo.getGenre())
                     .setPath(movieInfo.getPath());
 
             if(movieInfo.getImage() == null || movieInfo.getImage().equals("")){

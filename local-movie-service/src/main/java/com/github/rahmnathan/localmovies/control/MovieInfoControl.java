@@ -69,7 +69,6 @@ public class MovieInfoControl {
                     .collect(Collectors.toList());
 
         if(searchCriteria.getClient() == MovieClient.WEBAPP){
-            // Removing images for web app
             movies = movies.stream()
                     .map(MovieInfo.Builder::copyWithNoImage)
                     .collect(Collectors.toList());
