@@ -1,11 +1,11 @@
 package com.github.rahmnathan.localmovies.control;
 
+import com.github.rahmnathan.localmovies.data.MovieInfoWithContext;
+import com.github.rahmnathan.localmovies.movieinfoapi.IMovieInfoProvider;
+import com.github.rahmnathan.localmovies.persistence.MovieInfoRepository;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.github.rahmnathan.localmovies.movieinfoapi.IMovieInfoProvider;
-import com.github.rahmnathan.localmovies.movieinfoapi.MovieInfo;
-import com.github.rahmnathan.localmovies.movieinfoapi.MovieInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,13 +20,13 @@ public class MovieInfoProvider {
     private final MovieInfoRepository repository;
     private final IMovieInfoProvider movieInfoProvider;
     private final Logger logger = Logger.getLogger(MovieInfoProvider.class.getName());
-    private final LoadingCache<String, MovieInfo> movieInfoCache =
+    private final LoadingCache<String, MovieInfoWithContext> movieInfoCache =
             CacheBuilder.newBuilder()
                     .maximumSize(500)
                     .build(
-                            new CacheLoader<String, MovieInfo>() {
+                            new CacheLoader<String, MovieInfoWithContext>() {
                                 @Override
-                                public MovieInfo load(String currentPath) {
+                                public MovieInfoWithContext load(String currentPath) {
                                     if(repository.exists(currentPath)){
                                         return loadMovieInfoFromDatabase(currentPath);
                                     } else if (isViewingTopLevel(currentPath)){
@@ -43,31 +43,33 @@ public class MovieInfoProvider {
         this.movieInfoProvider = movieInfoProvider;
     }
 
-    public MovieInfo loadMovieInfoFromCache(String path){
+    public MovieInfoWithContext loadMovieInfoFromCache(String path){
         try {
             return movieInfoCache.get(path);
         } catch (ExecutionException e){
             logger.severe(e.toString());
-            return MovieInfo.Builder.newInstance().build();
+            return MovieInfoWithContext.Builder.newInstance().build();
         }
     }
 
-    private MovieInfo loadMovieInfoFromDatabase(String path){
+    private MovieInfoWithContext loadMovieInfoFromDatabase(String path){
         logger.info("Getting from database - " + path);
         return repository.findOne(path);
     }
 
-    private MovieInfo loadMovieInfoFromProvider(String path) {
-        logger.info("Loading MovieInfo from provider - " + path);
+    private MovieInfoWithContext loadMovieInfoFromProvider(String path) {
+        logger.info("Loading MovieInfoWithContext from provider - " + path);
         String[] pathArray = path.split(File.separator);
         String title = pathArray[pathArray.length - 1];
-        MovieInfo movieInfo = movieInfoProvider.loadMovieInfo(title);
-        movieInfo.setPath(path);
-        repository.save(movieInfo);
-        return movieInfo;
+        MovieInfoWithContext movieInfoWithContext = movieInfoProvider.loadMovieInfo(title);
+        MovieInfoWithContext.Builder.newInstance()
+
+        movieInfoWithContext.setPath(path);
+        repository.save(movieInfoWithContext);
+        return movieInfoWithContext;
     }
 
-    private MovieInfo loadSeriesParentInfo(String path) {
+    private MovieInfoWithContext loadSeriesParentInfo(String path) {
         logger.info("Getting info from parent - " + path);
         String[] pathArray = path.split(File.separator);
         int depth = pathArray.length > 2 ? pathArray.length - 2 : 0;
@@ -77,8 +79,8 @@ public class MovieInfoProvider {
                 .limit(pathArray.length - depth)
                 .forEachOrdered(directory-> sb.append(directory).append(File.separator));
 
-        MovieInfo movieInfo = loadMovieInfoFromCache(sb.toString().substring(0, sb.length() - 1));
-        return MovieInfo.Builder.copyWithNewTitle(movieInfo, pathArray[pathArray.length - 1]);
+        MovieInfoWithContext movieInfoWithContext = loadMovieInfoFromCache(sb.toString().substring(0, sb.length() - 1));
+        return MovieInfoWithContext.Builder.copyWithNewTitle(movieInfoWithContext, pathArray[pathArray.length - 1]);
     }
 
     private boolean isViewingTopLevel(String currentPath){

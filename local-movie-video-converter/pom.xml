@@ -12,9 +12,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.github.rahmnathan</groupId>
+            <groupId>com.github.rahmnathan.utils</groupId>
             <artifactId>directory-monitor</artifactId>
-            <version>${directory.monitor.version}</version>
+            <version>1.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -22,9 +22,10 @@
             <artifactId>spring-context</artifactId>
         </dependency>
         <dependency>
-            <groupId>net.bramp.ffmpeg</groupId>
-            <artifactId>ffmpeg</artifactId>
-            <version>0.6.1</version>
+            <groupId>com.github.rahmnathan.utils</groupId>
+            <artifactId>video-converter</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

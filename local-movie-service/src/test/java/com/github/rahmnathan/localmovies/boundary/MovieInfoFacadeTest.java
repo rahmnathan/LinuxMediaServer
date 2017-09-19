@@ -1,16 +1,10 @@
 package com.github.rahmnathan.localmovies.boundary;
 
-import com.github.rahmnathan.localmovies.control.MovieInfoControl;
 import com.github.rahmnathan.localmovies.movieinfoapi.MovieInfo;
-import org.junit.Before;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 public class MovieInfoFacadeTest {
 
-//    private List<MovieInfo> movieInfoList = new ArrayList<>();
+//    private List<MovieInfoWithContext> movieInfoList = new ArrayList<>();
 //    private final MovieInfoFacade movieInfoFacade = new MovieInfoFacade(new MovieInfoControl(null, null, null));
 //
 //    @Before
@@ -18,7 +12,7 @@ public class MovieInfoFacadeTest {
 //        Random random = new Random();
 //        for(int i = 0; i < 10; i++){
 //            int randomInt = random.nextInt(50);
-//            movieInfoList.add(MovieInfo.Builder.newInstance()
+//            movieInfoList.add(MovieInfoWithContext.Builder.newInstance()
 //                    .setImage("")
 //                    .setIMDBRating(String.valueOf(randomInt))
 //                    .setMetaRating(String.valueOf(randomInt))
