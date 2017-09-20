@@ -1,8 +1,8 @@
 package com.github.rahmnathan.localmovies.web;
 
 import com.github.rahmnathan.localmovies.boundary.MovieInfoFacade;
+import com.github.rahmnathan.localmovies.data.MediaFile;
 import com.github.rahmnathan.localmovies.data.MovieSearchCriteria;
-import com.github.rahmnathan.localmovies.movieinfoapi.MovieInfo;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,7 +39,7 @@ public class MovieResource {
      * @return List of movie-info json objects
      */
     @RequestMapping(value = "/titlerequest", produces="application/json")
-    public List<MovieInfo> titleRequest(@RequestParam(value = "path") String path,
+    public List<MediaFile> titleRequest(@RequestParam(value = "path") String path,
                                         @RequestParam(value =  "page", required = false) Integer page,
                                         @RequestParam(value = "resultsPerPage", required = false) Integer itemsPerPage,
                                         @RequestParam(value = "order", required = false) String orderString,
@@ -62,7 +62,7 @@ public class MovieResource {
         if(searchCriteria.getPage() == 0)
             movieInfoCount(path, response, request);
 
-        List<MovieInfo> movieInfoList = movieInfoFacade.loadMovieList(searchCriteria);
+        List<MediaFile> movieInfoList = movieInfoFacade.loadMovieList(searchCriteria);
 
         MDC.clear();
         return movieInfoList;
@@ -96,7 +96,7 @@ public class MovieResource {
         // Using file-system specific file separator
         path = path.replace("/", File.separator);
 
-        MovieInfo movie = movieInfoFacade.loadSingleMovie(path);
+        MediaFile movie = movieInfoFacade.loadSingleMovie(path);
         movie.addView();
         logger.info("Received streaming request - " + path);
         for(String mediaPath : mediaPaths) {
@@ -122,7 +122,7 @@ public class MovieResource {
         path = path.replace("/", File.separator);
         logger.info("Streaming poster " + path);
 
-        String image = movieInfoFacade.loadSingleMovie(path).getImage();
+        String image = movieInfoFacade.loadSingleMovie(path).getMovieInfo().getImage();
         if(image == null)
             return new byte[0];
 

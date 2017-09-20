@@ -8,8 +8,6 @@
     <version>1.1-SNAPSHOT</version>
 
     <modules>
-        <module>local-movie-info-api</module>
-        <module>local-movie-info-omdb</module>
         <module>local-movie-service</module>
         <module>local-movie-web</module>
         <module>local-movie-standalone</module>
@@ -34,8 +32,8 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <video.converter.version>1.1-SNAPSHOT</video.converter.version>
-                <directory.monitor.version>1.1-SNAPSHOT</directory.monitor.version>
+                <video.converter.version>1.0-SNAPSHOT</video.converter.version>
+                <directory.monitor.version>1.0-SNAPSHOT</directory.monitor.version>
             </properties>
         </profile>
         <profile>

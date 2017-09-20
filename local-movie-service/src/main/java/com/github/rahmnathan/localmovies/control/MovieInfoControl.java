@@ -1,11 +1,11 @@
 package com.github.rahmnathan.localmovies.control;
 
-import com.github.rahmnathan.directorymonitor.DirectoryMonitor;
-import com.github.rahmnathan.directorymonitor.DirectoryMonitorObserver;
+import com.github.rahmnathan.directory.monitor.DirectoryMonitor;
+import com.github.rahmnathan.directory.monitor.DirectoryMonitorObserver;
+import com.github.rahmnathan.localmovies.data.MediaFile;
 import com.github.rahmnathan.localmovies.data.MovieClient;
 import com.github.rahmnathan.localmovies.data.MovieOrder;
 import com.github.rahmnathan.localmovies.data.MovieSearchCriteria;
-import com.github.rahmnathan.localmovies.movieinfoapi.MovieInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -37,7 +37,7 @@ public class MovieInfoControl {
         Arrays.stream(mediaPaths).forEach(directoryMonitor::registerDirectory);
     }
 
-    public MovieInfo loadSingleMovie(String filePath) {
+    public MediaFile loadSingleMovie(String filePath) {
         return movieInfoProvider.loadMovieInfoFromCache(filePath);
     }
 
@@ -53,7 +53,7 @@ public class MovieInfoControl {
         return total;
     }
 
-    public List<MovieInfo> loadMovieList(MovieSearchCriteria searchCriteria) {
+    public List<MediaFile> loadMovieList(MovieSearchCriteria searchCriteria) {
         List<String> relativeMoviePaths = new ArrayList<>();
 
         // List all files in provided path
@@ -63,14 +63,14 @@ public class MovieInfoControl {
                         .collect(Collectors.toList())));
 
         // Load movie info
-        List<MovieInfo> movies = relativeMoviePaths.parallelStream()
+        List<MediaFile> movies = relativeMoviePaths.parallelStream()
                     .sorted()
                     .map(movieInfoProvider::loadMovieInfoFromCache)
                     .collect(Collectors.toList());
 
         if(searchCriteria.getClient() == MovieClient.WEBAPP){
             movies = movies.stream()
-                    .map(MovieInfo.Builder::copyWithNoImage)
+                    .map(MediaFile.Builder::copyWithNoImage)
                     .collect(Collectors.toList());
         }
 
@@ -87,7 +87,7 @@ public class MovieInfoControl {
                 .collect(Collectors.toList());
     }
 
-    private List<MovieInfo> sortMovieInfoList(List<MovieInfo> movieInfoList, MovieOrder order){
+    private List<MediaFile> sortMovieInfoList(List<MediaFile> movieInfoList, MovieOrder order){
         switch (order){
             case DATE_ADDED:
                 return movieInfoList.parallelStream()
@@ -99,17 +99,19 @@ public class MovieInfoControl {
                         .collect(Collectors.toList());
             case RELEASE_YEAR:
                 return movieInfoList.parallelStream()
-                        .sorted((movie1, movie2) -> Long.valueOf(movie2.getReleaseYear()).compareTo(Long.valueOf(movie1.getReleaseYear())))
+                        .sorted((movie1, movie2) -> Long.valueOf(movie2.getMovieInfo().getReleaseYear())
+                                .compareTo(Long.valueOf(movie1.getMovieInfo().getReleaseYear())))
                         .collect(Collectors.toList());
             case RATING:
                 return movieInfoList.parallelStream()
-                        .sorted((movie1, movie2) -> Double.valueOf(movie2.getIMDBRating()).compareTo(Double.valueOf(movie1.getIMDBRating())))
+                        .sorted((movie1, movie2) -> Double.valueOf(movie2.getMovieInfo().getIMDBRating())
+                                .compareTo(Double.valueOf(movie1.getMovieInfo().getIMDBRating())))
                         .collect(Collectors.toList());
             case SEASONS_EPISODES:
                 return movieInfoList.parallelStream()
                         .sorted((movie1, movie2) -> {
-                            Integer current = Integer.parseInt(movie1.getTitle().split(" ")[1].split("\\.")[0]);
-                            Integer next = Integer.parseInt(movie2.getTitle().split(" ")[1].split("\\.")[0]);
+                            Integer current = Integer.parseInt(movie1.getMovieInfo().getTitle().split(" ")[1].split("\\.")[0]);
+                            Integer next = Integer.parseInt(movie2.getMovieInfo().getTitle().split(" ")[1].split("\\.")[0]);
                             return current.compareTo(next);
                         })
                         .collect(Collectors.toList());
