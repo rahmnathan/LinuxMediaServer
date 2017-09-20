@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 public class MovieInfoControl {
     @Value("${media.path}")
     private String[] mediaPaths;
+    private final String fileSeparator  = File.separatorChar=='\\' ? "\\\\" : File.separator;
     private final MovieInfoProvider movieInfoProvider;
     private final DirectoryMonitor directoryMonitor;
     private final FileListProvider fileListProvider;
@@ -75,7 +76,7 @@ public class MovieInfoControl {
         }
 
         // Sorting
-        if(searchCriteria.getPath().split(File.separator).length > 1)
+        if(searchCriteria.getPath().split(fileSeparator).length > 1)
             movies = sortMovieInfoList(movies, MovieOrder.SEASONS_EPISODES);
         else if (searchCriteria.getOrder() != null)
             movies = sortMovieInfoList(movies, searchCriteria.getOrder());

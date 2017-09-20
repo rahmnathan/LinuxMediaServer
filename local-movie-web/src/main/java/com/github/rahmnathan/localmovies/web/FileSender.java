@@ -26,7 +26,7 @@ public class FileSender {
         long startByte = 0L;
         String rangeHeader = request.getHeader("Range");
         if (rangeHeader != null) {
-            startByte = Long.valueOf(rangeHeader.split("-")[0].substring(6));
+            startByte = Long.parseLong(rangeHeader.split("-")[0].substring(6));
             response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
         }
 
