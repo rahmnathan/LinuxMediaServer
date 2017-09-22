@@ -70,6 +70,7 @@ public class MovieInfoProvider {
         logger.info("Loading MediaFile from provider - " + path);
         String[] pathArray = path.split(fileSeparator);
         String title = pathArray[pathArray.length - 1];
+
         MovieInfo movieInfo = movieInfoProvider.loadMovieInfo(title);
         MediaFile mediaFile = MediaFile.Builder.newInstance()
                 .setMovieInfo(movieInfo)
