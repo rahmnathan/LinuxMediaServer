@@ -14,6 +14,7 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,13 +22,12 @@ import java.util.stream.Collectors;
 public class MovieInfoControl {
     @Value("${media.path}")
     private String[] mediaPaths;
-    private final String fileSeparator  = File.separatorChar=='\\' ? "\\\\" : File.separator;
     private final MovieInfoProvider movieInfoProvider;
     private final DirectoryMonitor directoryMonitor;
     private final FileListProvider fileListProvider;
 
     @Autowired
-    public MovieInfoControl(MovieInfoProvider movieInfoProvider, List<DirectoryMonitorObserver> observers, FileListProvider fileListProvider){
+    public MovieInfoControl(MovieInfoProvider movieInfoProvider, Collection<DirectoryMonitorObserver> observers, FileListProvider fileListProvider){
         this.directoryMonitor = new DirectoryMonitor(observers);
         this.movieInfoProvider = movieInfoProvider;
         this.fileListProvider = fileListProvider;
@@ -40,10 +40,6 @@ public class MovieInfoControl {
 
     public MediaFile loadSingleMovie(String filePath) {
         return movieInfoProvider.loadMovieInfoFromCache(filePath);
-    }
-
-    public boolean hasUpdates(String date){
-        return fileListProvider.hasUpdates(date);
     }
 
     public int loadMovieListLength(String relativePath){
@@ -76,7 +72,7 @@ public class MovieInfoControl {
         }
 
         // Sorting
-        if(searchCriteria.getPath().split(fileSeparator).length > 1)
+        if(searchCriteria.getPath().split(File.separator).length > 1)
             movies = sortMovieInfoList(movies, MovieOrder.SEASONS_EPISODES);
         else if (searchCriteria.getOrder() != null)
             movies = sortMovieInfoList(movies, searchCriteria.getOrder());

@@ -29,8 +29,4 @@ public class MovieInfoFacade {
     public MediaFile loadSingleMovie(String path) {
         return movieInfoControl.loadSingleMovie(path);
     }
-
-    public boolean hasUpdates(String date){
-        return movieInfoControl.hasUpdates(date);
-    }
 }
