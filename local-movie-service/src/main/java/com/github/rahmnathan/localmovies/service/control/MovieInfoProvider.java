@@ -1,4 +1,4 @@
-package com.github.rahmnathan.localmovies.control;
+package com.github.rahmnathan.localmovies.service.control;
 
 import com.github.rahmnathan.localmovies.data.MediaFile;
 import com.github.rahmnathan.localmovies.omdb.info.provider.OmdbMovieInfoProvider;

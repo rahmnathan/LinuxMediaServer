@@ -1,8 +1,8 @@
 package com.github.rahmnathan.localmovies.web;
 
-import com.github.rahmnathan.localmovies.boundary.MovieInfoFacade;
+import com.github.rahmnathan.localmovies.service.boundary.MovieInfoFacade;
 import com.github.rahmnathan.localmovies.data.MediaFile;
-import com.github.rahmnathan.localmovies.data.MovieSearchCriteria;
+import com.github.rahmnathan.localmovies.service.data.MovieSearchCriteria;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,4 +1,4 @@
-package com.github.rahmnathan.localmovies.data;
+package com.github.rahmnathan.localmovies.service.data;
 
 public class MovieSearchCriteria {
     private final MovieOrder order;
