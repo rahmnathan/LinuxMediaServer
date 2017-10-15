@@ -11,13 +11,11 @@ import java.util.List;
 
 @Component
 public class MovieInfoFacade {
-    private final VideoConversionMonitor videoConversionMonitor;
     private final MovieInfoControl movieInfoControl;
 
     @Autowired
-    public MovieInfoFacade(MovieInfoControl movieInfoControl, VideoConversionMonitor videoConversionMonitor){
+    public MovieInfoFacade(MovieInfoControl movieInfoControl){
         this.movieInfoControl = movieInfoControl;
-        this.videoConversionMonitor = videoConversionMonitor;
     }
 
     public int loadMovieListLength(String directoryPath){
