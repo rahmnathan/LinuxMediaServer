@@ -3,7 +3,6 @@ package com.github.rahmnathan.localmovies.boundary;
 import com.github.rahmnathan.localmovies.control.MovieInfoControl;
 import com.github.rahmnathan.localmovies.data.MediaFile;
 import com.github.rahmnathan.localmovies.data.MovieSearchCriteria;
-import com.github.rahmnathan.video.control.VideoConversionMonitor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
