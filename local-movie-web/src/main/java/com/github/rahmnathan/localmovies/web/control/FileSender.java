@@ -1,4 +1,4 @@
-package com.github.rahmnathan.localmovies.web;
+package com.github.rahmnathan.localmovies.web.control;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

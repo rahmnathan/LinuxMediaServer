@@ -1,4 +1,4 @@
-package com.github.rahmnathan.localmovies.web;
+package com.github.rahmnathan.localmovies.web.control;
 
 import com.github.rahmnathan.localmovies.boundary.MovieInfoFacade;
 import com.github.rahmnathan.localmovies.data.MediaFile;
