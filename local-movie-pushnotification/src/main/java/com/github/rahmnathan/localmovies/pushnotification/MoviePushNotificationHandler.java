@@ -11,6 +11,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 
 @Component
@@ -18,6 +20,7 @@ public class MoviePushNotificationHandler implements DirectoryMonitorObserver {
     @Value("${push.notification.key}")
     private String pushKey;
     private PushNotificationHandler pushNotificationHandler;
+    private Set<String> pushTokens = new HashSet<>();
     private final Logger logger = Logger.getLogger(MoviePushNotificationHandler.class.getName());
 
     @PostConstruct
@@ -25,18 +28,28 @@ public class MoviePushNotificationHandler implements DirectoryMonitorObserver {
         pushNotificationHandler = new PushNotificationHandler(pushKey);
     }
 
+    public void addPushToken(String token){
+        if(!pushTokens.contains(token)){
+            pushTokens.add(token);
+        }
+    }
+
     @Override
     public void directoryModified(WatchEvent watchEvent, Path path) {
         if(watchEvent.kind() == StandardWatchEventKinds.ENTRY_CREATE && Files.isRegularFile(path)){
-            logger.info("PushNotification handler detected new file - " + path.getFileName());
-            PushNotification pushNotification = PushNotification.Builder.newInstance()
-                    .setNotificationTitle("New Movie")
-                    .setNotificationBody(path.getFileName().toString())
-                    .setRecipientToken("e2GZzaZjw1c:APA91bEjOc307sh1V9G2ZHRQeEjVzKoWRJWvE7UUqCaFqdd1gfp7HdhKFwJJTH1ctjlSpD" +
-                            "TBpQTfEnhaZg06_yf43AilM5rbAzKVOqUS3lAjbjkn8cR6wHRYwKOICDn2M2Sj5kUYTgPK")
-                    .build();
+            String fileName = path.getFileName().toString();
+            logger.info("PushNotification handler detected new file - " + fileName);
 
-            pushNotificationHandler.sendPushNotification(pushNotification);
+            String mediaName = fileName.substring(0, fileName.lastIndexOf('.'));
+            pushTokens.forEach(token -> {
+                PushNotification pushNotification = PushNotification.Builder.newInstance()
+                        .addData("Title", "New Movie!")
+                        .addData("Body", mediaName)
+                        .setRecipientToken(token)
+                        .build();
+
+                pushNotificationHandler.sendPushNotification(pushNotification);
+            });
         }
     }
 }

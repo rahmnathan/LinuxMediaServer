@@ -3,6 +3,7 @@ package com.github.rahmnathan.localmovies.web;
 import com.github.rahmnathan.localmovies.boundary.MovieInfoFacade;
 import com.github.rahmnathan.localmovies.data.MediaFile;
 import com.github.rahmnathan.localmovies.data.MovieSearchCriteria;
+import com.github.rahmnathan.localmovies.pushnotification.MoviePushNotificationHandler;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,12 +25,14 @@ public class MovieResource {
     @Value("${media.path}")
     private String[] mediaPaths;
     private final MovieInfoFacade movieInfoFacade;
+    private final MoviePushNotificationHandler notificationHandler;
     private final FileSender fileSender = new FileSender();
     private final Logger logger = Logger.getLogger(MovieResource.class.getName());
 
     @Autowired
-    public MovieResource(MovieInfoFacade movieInfoControl){
+    public MovieResource(MovieInfoFacade movieInfoControl, MoviePushNotificationHandler notificationHandler){
         this.movieInfoFacade = movieInfoControl;
+        this.notificationHandler = notificationHandler;
     }
 
     /**
@@ -44,9 +47,13 @@ public class MovieResource {
                                         @RequestParam(value = "resultsPerPage", required = false) Integer itemsPerPage,
                                         @RequestParam(value = "order", required = false) String orderString,
                                         @RequestParam(value = "client", required = false) String client,
+                                        @RequestParam(value = "pushToken", required = false) String pushToken,
                                         HttpServletRequest request, HttpServletResponse response) {
         response.addHeader("Access-Control-Allow-Origin", "*");
         MDC.put("Client-Address", request.getRemoteAddr());
+        if(pushToken != null){
+            notificationHandler.addPushToken(pushToken);
+        }
         // Using file-system specific file separator
         path = path.replace("/", File.separator);
         logger.log(Level.INFO, String.format("Received request for - %s page - %s resultsPerPage - %s", path, page, itemsPerPage));
