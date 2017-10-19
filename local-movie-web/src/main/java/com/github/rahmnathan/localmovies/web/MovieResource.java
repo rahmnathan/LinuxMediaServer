@@ -3,7 +3,8 @@ package com.github.rahmnathan.localmovies.web;
 import com.github.rahmnathan.localmovies.boundary.MovieInfoFacade;
 import com.github.rahmnathan.localmovies.data.MediaFile;
 import com.github.rahmnathan.localmovies.data.MovieSearchCriteria;
-import com.github.rahmnathan.localmovies.pushnotification.MoviePushNotificationHandler;
+import com.github.rahmnathan.localmovies.pushnotification.control.MoviePushNotificationHandler;
+import com.github.rahmnathan.localmovies.pushnotification.persistence.AndroidPushClient;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,11 +49,13 @@ public class MovieResource {
                                         @RequestParam(value = "order", required = false) String orderString,
                                         @RequestParam(value = "client", required = false) String client,
                                         @RequestParam(value = "pushToken", required = false) String pushToken,
+                                        @RequestParam(value = "deviceId", required = false) String deviceId,
                                         HttpServletRequest request, HttpServletResponse response) {
         response.addHeader("Access-Control-Allow-Origin", "*");
         MDC.put("Client-Address", request.getRemoteAddr());
-        if(pushToken != null){
-            notificationHandler.addPushToken(pushToken);
+        if(pushToken != null && deviceId != null){
+            AndroidPushClient pushClient = new AndroidPushClient(deviceId, pushToken);
+            notificationHandler.addPushToken(pushClient);
         }
         // Using file-system specific file separator
         path = path.replace("/", File.separator);
