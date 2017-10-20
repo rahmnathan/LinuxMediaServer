@@ -40,7 +40,7 @@ public class MovieResourceV2 {
     public List<MediaFile> titleRequest(@RequestBody MovieInfoRequest movieInfoRequest, HttpServletRequest request, HttpServletResponse response) {
         response.addHeader("Access-Control-Allow-Origin", "*");
         MDC.put("Client-Address", request.getRemoteAddr());
-        logger.info("Received request -> " + movieInfoRequest.toString());
+        logger.info("Received request: " + movieInfoRequest.toString());
 
         if(movieInfoRequest.getPushToken() != null && movieInfoRequest.getDeviceId() != null){
             AndroidPushClient pushClient = new AndroidPushClient(movieInfoRequest.getDeviceId(), movieInfoRequest.getPushToken());
@@ -49,8 +49,6 @@ public class MovieResourceV2 {
 
         // Using file-system specific file separator
         String path = movieInfoRequest.getPath().replace("/", File.separator);
-        logger.log(Level.INFO, String.format("Received request for - %s page - %s resultsPerPage - %s",
-                movieInfoRequest.getPath(), movieInfoRequest.getPage(), movieInfoRequest.getResultsPerPage()));
 
         MovieSearchCriteria searchCriteria = MovieSearchCriteria.Builder.newInstance()
                 .setItemsPerPage(movieInfoRequest.getResultsPerPage())
