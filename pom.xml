@@ -12,7 +12,7 @@
         <module>local-movie-web</module>
         <module>local-movie-standalone</module>
         <module>local-movie-video-converter</module>
-        <module>local-movie-info-provider</module>
+        <module>local-movie-info-persistence</module>
         <module>local-movie-pushnotification</module>
     </modules>
 

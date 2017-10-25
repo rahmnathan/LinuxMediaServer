@@ -45,6 +45,10 @@ public class MediaFile {
         return movieInfo;
     }
 
+    public void setMovieInfo(MovieInfo movieInfo){
+        this.movieInfo = movieInfo;
+    }
+
     @Override
     public String toString(){
         return movieInfo.getTitle();
