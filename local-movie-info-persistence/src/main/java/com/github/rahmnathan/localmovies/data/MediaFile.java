@@ -13,6 +13,8 @@ public class MediaFile {
     private long created;
     private int views;
     private MovieInfo movieInfo;
+    @Version
+    private long version;
 
     private MediaFile(String path, MovieInfo movieInfo, int views) {
         this.path = path;

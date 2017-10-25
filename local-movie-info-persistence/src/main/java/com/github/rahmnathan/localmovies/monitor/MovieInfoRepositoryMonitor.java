@@ -38,24 +38,25 @@ public class MovieInfoRepositoryMonitor {
         movieInfoRepository.findAll().forEach(movie -> {
             MovieInfo existingMovieInfo = movie.getMovieInfo();
             if(existingMovieInfo.hasMissingValues()){
-                logger.info(existingMovieInfo.getTitle() + " contains null fields");
+                logger.info(existingMovieInfo.toString());
 
                 String title;
                 if(existingMovieInfo.getTitle().charAt(existingMovieInfo.getTitle().length() - 4) == '.'){
-                    title = existingMovieInfo.getTitle().substring(existingMovieInfo.getTitle().length() - 4);
+                    title = existingMovieInfo.getTitle().substring(0, existingMovieInfo.getTitle().length() - 4);
                 } else {
                     title = existingMovieInfo.getTitle();
                 }
 
                 MovieInfo newMovieInfo = movieInfoProvider.loadMovieInfo(title);
 
+                logger.info("Merging MovieInfo objects");
                 MovieInfo mergedMovieInfo = MovieInfo.Builder.newInstance()
-                        .setGenre(newMovieInfo.getGenre() != null ? newMovieInfo.getGenre() : existingMovieInfo.getGenre())
-                        .setImage(newMovieInfo.getImage() != null ? newMovieInfo.getImage() : existingMovieInfo.getImage())
-                        .setIMDBRating(newMovieInfo.getIMDBRating() != null ? newMovieInfo.getIMDBRating() : existingMovieInfo.getIMDBRating())
-                        .setMetaRating(newMovieInfo.getMetaRating() != null ? newMovieInfo.getMetaRating() : existingMovieInfo.getMetaRating())
-                        .setReleaseYear(newMovieInfo.getReleaseYear() != null ? newMovieInfo.getReleaseYear() : existingMovieInfo.getReleaseYear())
-                        .setTitle(newMovieInfo.getTitle() != null ? newMovieInfo.getTitle() : existingMovieInfo.getTitle())
+                        .setGenre(newMovieInfo.getGenre() != null && !newMovieInfo.getGenre().equals("") ? newMovieInfo.getGenre() : existingMovieInfo.getGenre())
+                        .setImage(newMovieInfo.getImage() != null && !newMovieInfo.getImage().equals("") ? newMovieInfo.getImage() : existingMovieInfo.getImage())
+                        .setIMDBRating(newMovieInfo.getIMDBRating() != null && !newMovieInfo.getIMDBRating().equals("") ? newMovieInfo.getIMDBRating() : existingMovieInfo.getIMDBRating())
+                        .setMetaRating(newMovieInfo.getMetaRating() != null && !newMovieInfo.getMetaRating().equals("")? newMovieInfo.getMetaRating() : existingMovieInfo.getMetaRating())
+                        .setReleaseYear(newMovieInfo.getReleaseYear() != null && !newMovieInfo.getReleaseYear().equals("") ? newMovieInfo.getReleaseYear() : existingMovieInfo.getReleaseYear())
+                        .setTitle(newMovieInfo.getTitle() != null && !newMovieInfo.getTitle().equals("") ? newMovieInfo.getTitle() : existingMovieInfo.getTitle())
                         .build();
 
                 movie.setMovieInfo(mergedMovieInfo);
