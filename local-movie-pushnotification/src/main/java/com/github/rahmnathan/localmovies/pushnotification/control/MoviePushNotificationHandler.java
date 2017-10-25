@@ -1,15 +1,13 @@
 package com.github.rahmnathan.localmovies.pushnotification.control;
 
 import com.github.rahmnathan.directory.monitor.DirectoryMonitorObserver;
-import com.github.rahmnathan.google.pushnotification.control.PushNotificationHandler;
 import com.github.rahmnathan.google.pushnotification.data.PushNotification;
 import com.github.rahmnathan.localmovies.pushnotification.persistence.AndroidPushClient;
 import com.github.rahmnathan.localmovies.pushnotification.persistence.AndroidPushTokenRepository;
+import org.apache.camel.ProducerTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
@@ -18,26 +16,20 @@ import java.util.logging.Logger;
 
 @Component
 public class MoviePushNotificationHandler implements DirectoryMonitorObserver {
-    @Value("${push.notification.key}")
-    private String pushKey;
+    private final ProducerTemplate producerTemplate;
     private final AndroidPushTokenRepository pushTokenRepository;
-    private PushNotificationHandler pushNotificationHandler;
     private final Logger logger = Logger.getLogger(MoviePushNotificationHandler.class.getName());
 
     @Autowired
-    public MoviePushNotificationHandler(AndroidPushTokenRepository pushTokenRepository){
+    public MoviePushNotificationHandler(AndroidPushTokenRepository pushTokenRepository, ProducerTemplate producerTemplate) {
         this.pushTokenRepository = pushTokenRepository;
+        this.producerTemplate = producerTemplate;
     }
 
-    @PostConstruct
-    public void initialize(){
-        pushNotificationHandler = new PushNotificationHandler(pushKey);
-    }
-
-    public void addPushToken(AndroidPushClient pushClient){
-        if(pushTokenRepository.exists(pushClient.getDeviceId())){
+    public void addPushToken(AndroidPushClient pushClient) {
+        if (pushTokenRepository.exists(pushClient.getDeviceId())) {
             AndroidPushClient managedPushClient = pushTokenRepository.findOne(pushClient.getDeviceId());
-            if(!managedPushClient.getPushToken().equals(pushClient.getPushToken())){
+            if (!managedPushClient.getPushToken().equals(pushClient.getPushToken())) {
                 managedPushClient.setPushToken(pushClient.getPushToken());
             }
         } else {
@@ -47,7 +39,7 @@ public class MoviePushNotificationHandler implements DirectoryMonitorObserver {
 
     @Override
     public void directoryModified(WatchEvent watchEvent, Path path) {
-        if(watchEvent.kind() == StandardWatchEventKinds.ENTRY_CREATE && Files.isRegularFile(path)){
+        if (watchEvent.kind() == StandardWatchEventKinds.ENTRY_CREATE && Files.isRegularFile(path)) {
             String fileName = path.getFileName().toString();
             logger.info("PushNotification handler detected new file - " + fileName);
 
@@ -59,7 +51,7 @@ public class MoviePushNotificationHandler implements DirectoryMonitorObserver {
                         .setRecipientToken(token.getPushToken())
                         .build();
 
-                pushNotificationHandler.sendPushNotification(pushNotification);
+                producerTemplate.sendBody("seda:pushnotification", pushNotification);
             });
         }
     }
