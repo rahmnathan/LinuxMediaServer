@@ -5,8 +5,10 @@ Functionality Summary:
 - Downloads and stores metadata (year/rating/poster) based on filename
 - Metadata is stored in SQL database and cached for performance
 - Endpoints serve up metadata based on subdirectory query and incorporate pagination
-- Specified directories are monitored for new video files
-- New video files are converted to natively castable format (if not already the correct format)
 - Endpoint for video streaming supports seeking
+- An observable directory monitor kicks off the following for new files:
+  - Clears file list cache
+  - Converts file to natively castable format (if not already the correct format)
+  - Sends a push notification to known Android clients to notify them of the new video
 
 There is an example application.properties file in the standalone module for help with configuration.
