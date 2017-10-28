@@ -14,21 +14,14 @@ import java.util.logging.Logger;
 
 @Component
 public class MovieInfoRepositoryMonitor {
-
-    @Value("${omdb.api.key}")
-    private String apiKey;
     private final Logger logger = Logger.getLogger(MovieInfoRepositoryMonitor.class.getName());
     private final MovieInfoRepository movieInfoRepository;
     private IMovieInfoProvider movieInfoProvider;
 
     @Autowired
-    public MovieInfoRepositoryMonitor(MovieInfoRepository movieInfoRepository) {
+    public MovieInfoRepositoryMonitor(MovieInfoRepository movieInfoRepository, OmdbMovieInfoProvider movieInfoProvider) {
         this.movieInfoRepository = movieInfoRepository;
-    }
-
-    @PostConstruct
-    public void initialize(){
-        this.movieInfoProvider = new OmdbMovieInfoProvider(apiKey);
+        this.movieInfoProvider = movieInfoProvider;
     }
 
     @Scheduled(fixedRate = 86400000)

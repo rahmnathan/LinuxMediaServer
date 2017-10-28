@@ -20,9 +20,6 @@ import java.util.logging.Logger;
 
 @Component
 public class MovieInfoProvider {
-    @Value("${omdb.api.key}")
-    private String apiKey;
-    private final String fileSeparator  = File.separatorChar=='\\' ? "\\\\" : File.separator;
     private final Logger logger = Logger.getLogger(MovieInfoProvider.class.getName());
     private IMovieInfoProvider movieInfoProvider;
     private final MovieInfoRepository repository;
@@ -43,13 +40,9 @@ public class MovieInfoProvider {
                     });
 
     @Autowired
-    public MovieInfoProvider(MovieInfoRepository repository){
+    public MovieInfoProvider(MovieInfoRepository repository, OmdbMovieInfoProvider movieInfoProvider){
         this.repository = repository;
-    }
-
-    @PostConstruct
-    public void initialize(){
-        movieInfoProvider = new OmdbMovieInfoProvider(apiKey);
+        this.movieInfoProvider = movieInfoProvider;
     }
 
     public MediaFile loadMovieInfoFromCache(String path){
@@ -68,7 +61,7 @@ public class MovieInfoProvider {
 
     private MediaFile loadMovieInfoFromProvider(String path) {
         logger.info("Loading MediaFile from provider - " + path);
-        String[] pathArray = path.split(fileSeparator);
+        String[] pathArray = path.split(File.separator);
         String title = pathArray[pathArray.length - 1];
 
         MovieInfo movieInfo = movieInfoProvider.loadMovieInfo(title);
@@ -84,7 +77,7 @@ public class MovieInfoProvider {
 
     private MediaFile loadSeriesParentInfo(String path) {
         logger.info("Getting info from parent - " + path);
-        String[] pathArray = path.split(fileSeparator);
+        String[] pathArray = path.split(File.separator);
         int depth = pathArray.length > 2 ? pathArray.length - 2 : 0;
 
         StringBuilder sb = new StringBuilder();
@@ -97,6 +90,6 @@ public class MovieInfoProvider {
     }
 
     private boolean isViewingTopLevel(String currentPath){
-        return currentPath.split(fileSeparator).length == 2;
+        return currentPath.split(File.separator).length == 2;
     }
 }
