@@ -29,13 +29,7 @@ public class MovieInfoProvider {
                     new CacheLoader<String, MediaFile>() {
                         @Override
                         public MediaFile load(String currentPath) {
-                            if (repository.exists(currentPath)) {
-                                return loadMovieInfoFromDatabase(currentPath);
-                            } else if (isViewingTopLevel(currentPath)) {
-                                return loadMovieInfoFromProvider(currentPath);
-                            } else {
-                                return loadSeriesParentInfo(currentPath);
-                            }
+                            return loadMediaFile(currentPath);
                         }
                     });
 
@@ -43,6 +37,16 @@ public class MovieInfoProvider {
     public MovieInfoProvider(MovieInfoRepository repository, OmdbMovieInfoProvider movieInfoProvider){
         this.repository = repository;
         this.movieInfoProvider = movieInfoProvider;
+    }
+
+    private MediaFile loadMediaFile(String path){
+        if (repository.exists(path)) {
+            return loadMovieInfoFromDatabase(path);
+        } else if (isViewingTopLevel(path)) {
+            return loadMovieInfoFromProvider(path);
+        } else {
+            return loadSeriesParentInfo(path);
+        }
     }
 
     public MediaFile loadMovieInfoFromCache(String path){

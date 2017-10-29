@@ -29,7 +29,6 @@ public class MovieInfoControl {
     @Autowired
     public MovieInfoControl(MovieInfoProvider movieInfoProvider, Collection<DirectoryMonitorObserver> observers, FileListProvider fileListProvider){
         this.directoryMonitor = new DirectoryMonitor(observers);
-        System.out.println("SIZING" + observers.size());
         this.movieInfoProvider = movieInfoProvider;
         this.fileListProvider = fileListProvider;
     }
