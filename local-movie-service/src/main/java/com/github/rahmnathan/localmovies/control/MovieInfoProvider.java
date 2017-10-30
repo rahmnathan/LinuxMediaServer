@@ -66,10 +66,12 @@ public class MovieInfoProvider {
     private MediaFile loadMovieInfoFromProvider(String path) {
         logger.info("Loading MediaFile from provider - " + path);
         String[] pathArray = path.split(File.separator);
-        String title = pathArray[pathArray.length - 1];
+        String fileName = pathArray[pathArray.length - 1];
+        String title = getTitle(fileName);
 
         MovieInfo movieInfo = movieInfoProvider.loadMovieInfo(title);
         MediaFile mediaFile = MediaFile.Builder.newInstance()
+                .setFileName(fileName)
                 .setMovieInfo(movieInfo)
                 .setPath(path)
                 .setViews(0)
@@ -90,7 +92,17 @@ public class MovieInfoProvider {
                 .forEachOrdered(directory-> sb.append(directory).append(File.separator));
 
         MediaFile mediaFile = loadMovieInfoFromCache(sb.toString().substring(0, sb.length() - 1));
-        return MediaFile.Builder.copyWithNewTitle(mediaFile, pathArray[pathArray.length - 1]);
+        String fileName = pathArray[pathArray.length - 1];
+
+        return MediaFile.Builder.copyWithNewTitle(mediaFile, fileName, getTitle(fileName));
+    }
+
+    private String getTitle(String fileName){
+        if (fileName.charAt(fileName.length() - 4) == '.') {
+            return fileName.substring(0, fileName.length() - 4);
+        }
+
+        return fileName;
     }
 
     private boolean isViewingTopLevel(String currentPath){

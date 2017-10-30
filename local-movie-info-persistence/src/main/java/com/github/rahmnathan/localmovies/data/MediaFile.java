@@ -10,21 +10,27 @@ public class MediaFile {
 
     @Id
     private String path;
+    private String fileName;
     private long created;
     private int views;
     private MovieInfo movieInfo;
     @Version
     private long version;
 
-    private MediaFile(String path, MovieInfo movieInfo, int views) {
+    private MediaFile(String path, MovieInfo movieInfo, int views, String fileName) {
         this.path = path;
         this.movieInfo = movieInfo;
+        this.fileName = fileName;
         this.views = views;
         created = Calendar.getInstance().getTimeInMillis();
     }
 
     public MediaFile(){
         // Default constructor
+    }
+
+    public String getFileName() {
+        return fileName;
     }
 
     public String getPath() {
@@ -57,12 +63,18 @@ public class MediaFile {
     }
 
     public static class Builder {
+        private String fileName;
         private String path;
         private int views;
         private MovieInfo movieInfo;
 
         public static Builder newInstance(){
             return new Builder();
+        }
+
+        public Builder setFileName(String fileName) {
+            this.fileName = fileName;
+            return this;
         }
 
         public Builder setMovieInfo(MovieInfo movieInfo) {
@@ -81,16 +93,18 @@ public class MediaFile {
         }
 
         public MediaFile build(){
-            return new MediaFile(path, movieInfo, views);
+            return new MediaFile(path, movieInfo, views, fileName);
         }
 
-        public static MediaFile copyWithNewTitle(MediaFile mediaFile, String title){
+        public static MediaFile copyWithNewTitle(MediaFile mediaFile, String fileName, String title){
             if(mediaFile == null)
                 return Builder.newInstance()
+                        .setFileName(fileName)
                         .setMovieInfo(MovieInfo.Builder.newInstance().setTitle(title).build())
                         .build();
 
             return Builder.newInstance()
+                    .setFileName(fileName)
                     .setMovieInfo(MovieInfo.Builder.copyWithNewTitle(mediaFile.getMovieInfo(), title))
                     .setPath(mediaFile.getPath())
                     .setViews(mediaFile.getViews())
@@ -102,6 +116,7 @@ public class MediaFile {
                 return Builder.newInstance().build();
 
             return Builder.newInstance()
+                    .setFileName(mediaFile.getFileName())
                     .setMovieInfo(MovieInfo.Builder.copyWithNoImage(mediaFile.getMovieInfo()))
                     .setViews(mediaFile.getViews())
                     .setPath(mediaFile.getPath())

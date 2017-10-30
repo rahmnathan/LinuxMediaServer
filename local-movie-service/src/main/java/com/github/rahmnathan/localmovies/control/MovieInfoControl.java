@@ -16,12 +16,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Component
 public class MovieInfoControl {
     @Value("${media.path}")
     private String[] mediaPaths;
+    private final Logger logger = Logger.getLogger(MovieInfoControl.class.getName());
     private final MovieInfoProvider movieInfoProvider;
     private final DirectoryMonitor directoryMonitor;
     private final FileListProvider fileListProvider;
@@ -55,17 +57,23 @@ public class MovieInfoControl {
 
         // List all files in provided path
         Arrays.stream(mediaPaths)
-                .forEach(path -> relativeMoviePaths.addAll(Arrays.stream(fileListProvider.listFiles(path + searchCriteria.getPath()))
-                        .map(file -> file.getAbsolutePath().substring(path.length()))
-                        .collect(Collectors.toList())));
+                .forEach(path -> {
+                    logger.info("Listing files at: " + path);
+                    relativeMoviePaths.addAll(Arrays.stream(fileListProvider.listFiles(path + searchCriteria.getPath()))
+                            .map(file -> file.getAbsolutePath().substring(path.length()))
+                            .collect(Collectors.toList()));
+                }
+                );
 
         // Load movie info
+        logger.info("Loading movie info");
         List<MediaFile> movies = relativeMoviePaths.parallelStream()
                     .sorted()
                     .map(movieInfoProvider::loadMovieInfoFromCache)
                     .collect(Collectors.toList());
 
         if(searchCriteria.getClient() == MovieClient.WEBAPP){
+            logger.info("Removing images for webapp");
             movies = movies.stream()
                     .map(MediaFile.Builder::copyWithNoImage)
                     .collect(Collectors.toList());
@@ -85,6 +93,7 @@ public class MovieInfoControl {
     }
 
     private List<MediaFile> sortMovieInfoList(List<MediaFile> movieInfoList, MovieOrder order){
+        logger.info("Sorting movie list: " + order.name());
         switch (order){
             case DATE_ADDED:
                 return movieInfoList.parallelStream()
