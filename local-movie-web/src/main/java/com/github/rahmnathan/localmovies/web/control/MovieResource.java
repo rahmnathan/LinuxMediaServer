@@ -5,12 +5,11 @@ import com.github.rahmnathan.localmovies.data.MediaFile;
 import com.github.rahmnathan.localmovies.data.MovieSearchCriteria;
 import com.github.rahmnathan.localmovies.pushnotification.control.MoviePushNotificationHandler;
 import com.github.rahmnathan.localmovies.pushnotification.persistence.AndroidPushClient;
+import com.github.rahmnathan.localmovies.web.data.MovieInfoRequest;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -36,44 +35,34 @@ public class MovieResource {
         this.notificationHandler = notificationHandler;
     }
 
-    /**
-     * @param path Directory of videos to return
-     * @param page Page to return
-     * @param itemsPerPage Items to return per page
-     * @return List of movie-info json objects
-     */
-    @RequestMapping(value = "/titlerequest", produces="application/json")
-    public List<MediaFile> titleRequest(@RequestParam(value = "path") String path,
-                                        @RequestParam(value =  "page", required = false) Integer page,
-                                        @RequestParam(value = "resultsPerPage", required = false) Integer itemsPerPage,
-                                        @RequestParam(value = "order", required = false) String orderString,
-                                        @RequestParam(value = "client", required = false) String client,
-                                        @RequestParam(value = "pushToken", required = false) String pushToken,
-                                        @RequestParam(value = "deviceId", required = false) String deviceId,
-                                        HttpServletRequest request, HttpServletResponse response) {
+    @RequestMapping(value = "/titlerequest", method = RequestMethod.POST, produces="application/json", consumes = "application/json")
+    public List<MediaFile> titleRequest(@RequestBody MovieInfoRequest movieInfoRequest, HttpServletRequest request, HttpServletResponse response) {
         response.addHeader("Access-Control-Allow-Origin", "*");
         MDC.put("Client-Address", request.getRemoteAddr());
-        if(pushToken != null && deviceId != null){
-            AndroidPushClient pushClient = new AndroidPushClient(deviceId, pushToken);
+        logger.info("Received request: " + movieInfoRequest.toString());
+
+        if(movieInfoRequest.getPushToken() != null && movieInfoRequest.getDeviceId() != null){
+            AndroidPushClient pushClient = new AndroidPushClient(movieInfoRequest.getDeviceId(), movieInfoRequest.getPushToken());
             notificationHandler.addPushToken(pushClient);
         }
+
         // Using file-system specific file separator
-        path = path.replace("/", File.separator);
-        logger.log(Level.INFO, String.format("Received request for - %s page - %s resultsPerPage - %s", path, page, itemsPerPage));
+        String path = movieInfoRequest.getPath().replace("/", File.separator);
 
         MovieSearchCriteria searchCriteria = MovieSearchCriteria.Builder.newInstance()
-                .setItemsPerPage(itemsPerPage)
-                .setClient(client)
-                .setPage(page)
+                .setItemsPerPage(movieInfoRequest.getResultsPerPage())
+                .setOrder(movieInfoRequest.getOrder())
+                .setPage(movieInfoRequest.getPage())
                 .setPath(path)
-                .setOrder(orderString)
+                .setClient(movieInfoRequest.getClient())
                 .build();
 
         if(searchCriteria.getPage() == 0)
-            movieInfoCount(path, response, request);
+            movieInfoCount(movieInfoRequest.getPath(), response, request);
 
         List<MediaFile> movieInfoList = movieInfoFacade.loadMovieList(searchCriteria);
 
+        logger.info("Returning " + movieInfoList.size() + " movies");
         MDC.clear();
         return movieInfoList;
     }
