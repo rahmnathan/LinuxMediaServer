@@ -68,7 +68,7 @@ public class MovieSearchCriteria {
         }
 
         public Builder setItemsPerPage(Integer itemsPerPage) {
-            if(itemsPerPage != null)
+            if(itemsPerPage != null && itemsPerPage != 0)
                 this.itemsPerPage = itemsPerPage;
             else
                 this.itemsPerPage = 1000;

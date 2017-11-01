@@ -9,12 +9,10 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
+import javax.annotation.Nonnull;
 import java.io.File;
-import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
@@ -28,8 +26,14 @@ public class MovieInfoProvider {
             .build(
                     new CacheLoader<String, MediaFile>() {
                         @Override
-                        public MediaFile load(String currentPath) {
-                            return loadMediaFile(currentPath);
+                        public MediaFile load(@Nonnull String path) {
+                            if (repository.exists(path)) {
+                                return loadMediaInfoFromDatabase(path);
+                            } else if (MovieUtils.isTopLevel(path)) {
+                                return loadMediaInfoFromProvider(path);
+                            } else {
+                                return loadSeriesParentInfo(path);
+                            }
                         }
                     });
 
@@ -39,17 +43,7 @@ public class MovieInfoProvider {
         this.movieInfoProvider = movieInfoProvider;
     }
 
-    private MediaFile loadMediaFile(String path){
-        if (repository.exists(path)) {
-            return loadMovieInfoFromDatabase(path);
-        } else if (isViewingTopLevel(path)) {
-            return loadMovieInfoFromProvider(path);
-        } else {
-            return loadSeriesParentInfo(path);
-        }
-    }
-
-    public MediaFile loadMovieInfoFromCache(String path){
+    MediaFile loadMediaInfo(String path){
         try {
             return movieInfoCache.get(path);
         } catch (ExecutionException e){
@@ -58,16 +52,15 @@ public class MovieInfoProvider {
         }
     }
 
-    private MediaFile loadMovieInfoFromDatabase(String path){
+    private MediaFile loadMediaInfoFromDatabase(String path){
         logger.info("Getting from database - " + path);
         return repository.findOne(path);
     }
 
-    private MediaFile loadMovieInfoFromProvider(String path) {
+    private MediaFile loadMediaInfoFromProvider(String path) {
         logger.info("Loading MediaFile from provider - " + path);
-        String[] pathArray = path.split(File.separator);
-        String fileName = pathArray[pathArray.length - 1];
-        String title = getTitle(fileName);
+        String fileName = new File(path).getName();
+        String title = MovieUtils.getTitle(fileName);
 
         MovieInfo movieInfo = movieInfoProvider.loadMovieInfo(title);
         MediaFile mediaFile = MediaFile.Builder.newInstance()
@@ -83,29 +76,13 @@ public class MovieInfoProvider {
 
     private MediaFile loadSeriesParentInfo(String path) {
         logger.info("Getting info from parent - " + path);
-        String[] pathArray = path.split(File.separator);
-        int depth = pathArray.length > 2 ? pathArray.length - 2 : 0;
+        String filename = new File(path).getName();
 
-        StringBuilder sb = new StringBuilder();
-        Arrays.stream(pathArray)
-                .limit(pathArray.length - depth)
-                .forEachOrdered(directory-> sb.append(directory).append(File.separator));
+        File file = MovieUtils.getParentFile(path);
 
-        MediaFile mediaFile = loadMovieInfoFromCache(sb.toString().substring(0, sb.length() - 1));
-        String fileName = pathArray[pathArray.length - 1];
+        logger.info(path + " - Parent resolved to: " + file.getPath());
+        MediaFile parentInfo = loadMediaInfo(file.getPath());
 
-        return MediaFile.Builder.copyWithNewTitle(mediaFile, fileName, getTitle(fileName));
-    }
-
-    private String getTitle(String fileName){
-        if (fileName.charAt(fileName.length() - 4) == '.') {
-            return fileName.substring(0, fileName.length() - 4);
-        }
-
-        return fileName;
-    }
-
-    private boolean isViewingTopLevel(String currentPath){
-        return currentPath.split(File.separator).length == 2;
+        return MediaFile.Builder.copyWithNewTitle(parentInfo, filename, MovieUtils.getTitle(filename));
     }
 }

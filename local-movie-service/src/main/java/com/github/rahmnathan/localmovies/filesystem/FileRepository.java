@@ -1,4 +1,4 @@
-package com.github.rahmnathan.localmovies.control;
+package com.github.rahmnathan.localmovies.filesystem;
 
 import java.io.File;
 
