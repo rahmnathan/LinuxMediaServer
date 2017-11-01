@@ -76,13 +76,12 @@ public class MovieInfoProvider {
 
     private MediaFile loadSeriesParentInfo(String path) {
         logger.info("Getting info from parent - " + path);
+
         String filename = new File(path).getName();
-
         File file = MovieUtils.getParentFile(path);
-
         logger.info(path + " - Parent resolved to: " + file.getPath());
-        MediaFile parentInfo = loadMediaInfo(file.getPath());
 
+        MediaFile parentInfo = loadMediaInfo(file.getPath());
         return MediaFile.Builder.copyWithNewTitle(parentInfo, filename, MovieUtils.getTitle(filename));
     }
 }

@@ -31,18 +31,10 @@ public class MovieInfoRepositoryMonitor {
         movieInfoRepository.findAll().forEach(movie -> {
             MovieInfo existingMovieInfo = movie.getMovieInfo();
             if(existingMovieInfo.hasMissingValues()){
-                logger.info(existingMovieInfo.toString());
+                logger.info("Detected missing fields: " + existingMovieInfo.toString());
 
-                String title;
-                if(existingMovieInfo.getTitle().charAt(existingMovieInfo.getTitle().length() - 4) == '.'){
-                    title = existingMovieInfo.getTitle().substring(0, existingMovieInfo.getTitle().length() - 4);
-                } else {
-                    title = existingMovieInfo.getTitle();
-                }
+                MovieInfo newMovieInfo = movieInfoProvider.loadMovieInfo(existingMovieInfo.getTitle());
 
-                MovieInfo newMovieInfo = movieInfoProvider.loadMovieInfo(title);
-
-                logger.info("Merging MovieInfo objects");
                 MovieInfo mergedMovieInfo = MovieInfo.Builder.newInstance()
                         .setGenre(newMovieInfo.getGenre() != null && !newMovieInfo.getGenre().equals("") ? newMovieInfo.getGenre() : existingMovieInfo.getGenre())
                         .setImage(newMovieInfo.getImage() != null && !newMovieInfo.getImage().equals("") ? newMovieInfo.getImage() : existingMovieInfo.getImage())
