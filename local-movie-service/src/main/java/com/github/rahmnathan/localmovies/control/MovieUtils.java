@@ -17,7 +17,7 @@ class MovieUtils {
 
     static File getParentFile(String path){
         int directoryDepth = path.split(File.separator).length;
-        if(!MovieUtils.isTopLevel(path))
+        if(!isTopLevel(path))
             directoryDepth -= 2;
 
         File file = new File(path);
