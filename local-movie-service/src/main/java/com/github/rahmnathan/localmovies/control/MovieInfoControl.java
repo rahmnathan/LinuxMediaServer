@@ -1,7 +1,5 @@
 package com.github.rahmnathan.localmovies.control;
 
-import com.github.rahmnathan.directory.monitor.DirectoryMonitor;
-import com.github.rahmnathan.directory.monitor.DirectoryMonitorObserver;
 import com.github.rahmnathan.localmovies.data.MediaFile;
 import com.github.rahmnathan.localmovies.data.MovieClient;
 import com.github.rahmnathan.localmovies.data.MovieOrder;
@@ -11,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
 import java.util.*;
 import java.util.logging.Logger;
@@ -23,35 +20,17 @@ public class MovieInfoControl {
     private String[] mediaPaths;
     private final Logger logger = Logger.getLogger(MovieInfoControl.class.getName());
     private final MovieInfoProvider movieInfoProvider;
-    private final DirectoryMonitor directoryMonitor;
-    private final FileListProvider fileListProvider;
 
     @Autowired
-    public MovieInfoControl(MovieInfoProvider movieInfoProvider, Collection<DirectoryMonitorObserver> observers, FileListProvider fileListProvider) {
-        this.directoryMonitor = new DirectoryMonitor(observers);
+    public MovieInfoControl(MovieInfoProvider movieInfoProvider) {
         this.movieInfoProvider = movieInfoProvider;
-        this.fileListProvider = fileListProvider;
-    }
-
-    @PostConstruct
-    public void startDirectoryMonitor() {
-        Arrays.stream(mediaPaths).forEach(directoryMonitor::registerDirectory);
     }
 
     public MediaFile loadSingleMovie(String filePath) {
         return movieInfoProvider.loadMediaInfo(filePath);
     }
 
-    public int loadMovieListLength(String relativePath) {
-        int total = 0;
-        for (String mediaPath : mediaPaths) {
-            total += fileListProvider.listFiles(mediaPath + relativePath).length;
-        }
-        return total;
-    }
-
-    public List<MediaFile> loadMovieList(MovieSearchCriteria searchCriteria) {
-        Set<String> files = listFiles(searchCriteria.getPath());
+    public List<MediaFile> loadMediaFileList(MovieSearchCriteria searchCriteria, Set<String> files) {
         List<MediaFile> movies = loadMediaInfo(files);
 
         if (searchCriteria.getClient() == MovieClient.WEBAPP) {
@@ -62,45 +41,36 @@ public class MovieInfoControl {
         return paginateMediaFiles(movies, searchCriteria);
     }
 
-    private List<MediaFile> paginateMediaFiles(List<MediaFile> movies, MovieSearchCriteria searchCriteria){
-        return movies.stream()
-                .skip(searchCriteria.getPage() * searchCriteria.getItemsPerPage())
-                .limit(searchCriteria.getItemsPerPage())
-                .collect(Collectors.toList());
-    }
-
-    private List<MediaFile> sortMediaFiles(MovieSearchCriteria searchCriteria, List<MediaFile> movies){
-        if (searchCriteria.getPath().split(File.separator).length > 1) {
-            return MovieUtils.sortMovieInfoList(movies, MovieOrder.SEASONS_EPISODES);
-        } else if (searchCriteria.getOrder() != null) {
-            return MovieUtils.sortMovieInfoList(movies, searchCriteria.getOrder());
-        }
-
-        return movies;
-    }
-
-    private List<MediaFile> removePosterImages(List<MediaFile> movies){
-        logger.info("Removing images for webapp");
-        return movies.stream()
-                .map(MediaFile.Builder::copyWithNoImage)
-                .collect(Collectors.toList());
-    }
-
-    private List<MediaFile> loadMediaInfo(Set<String> files){
-        return files.parallelStream()
+    private List<MediaFile> loadMediaInfo(Set<String> relativePaths){
+        return relativePaths.parallelStream()
                 .sorted()
                 .map(movieInfoProvider::loadMediaInfo)
                 .collect(Collectors.toList());
     }
 
-    private Set<String> listFiles(String path) {
-        Set<String> files = new HashSet<>();
-        Arrays.stream(mediaPaths)
-                .forEach(mediaPath -> files.addAll(Arrays.stream(fileListProvider.listFiles(mediaPath + path))
-                        .map(file -> file.getAbsolutePath().substring(mediaPath.length()))
-                        .collect(Collectors.toList()))
-                );
+    private List<MediaFile> sortMediaFiles(MovieSearchCriteria searchCriteria, List<MediaFile> mediaFiles){
+        logger.info("Sorting movie list - order: " + searchCriteria.getOrder());
+        if (searchCriteria.getPath().split(File.separator).length > 1) {
+            return MovieUtils.sortMovieInfoList(mediaFiles, MovieOrder.SEASONS_EPISODES);
+        } else if (searchCriteria.getOrder() != null) {
+            return MovieUtils.sortMovieInfoList(mediaFiles, searchCriteria.getOrder());
+        }
 
-        return files;
+        return mediaFiles;
+    }
+
+    private List<MediaFile> paginateMediaFiles(List<MediaFile> mediaFiles, MovieSearchCriteria searchCriteria){
+        logger.info("Paginating movie list - page: " + searchCriteria.getPage() + " resultsPerPage: " + searchCriteria.getItemsPerPage());
+        return mediaFiles.stream()
+                .skip(searchCriteria.getPage() * searchCriteria.getItemsPerPage())
+                .limit(searchCriteria.getItemsPerPage())
+                .collect(Collectors.toList());
+    }
+
+    private List<MediaFile> removePosterImages(List<MediaFile> mediaFiles){
+        logger.info("Removing images for webapp");
+        return mediaFiles.stream()
+                .map(MediaFile.Builder::copyWithNoImage)
+                .collect(Collectors.toList());
     }
 }
