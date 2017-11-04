@@ -1,4 +1,4 @@
-package com.github.rahmnathan.localmovies.control;
+package com.github.rahmnathan.localmovies.config;
 
 import com.github.rahmnathan.directory.monitor.DirectoryMonitor;
 import com.github.rahmnathan.directory.monitor.DirectoryMonitorObserver;

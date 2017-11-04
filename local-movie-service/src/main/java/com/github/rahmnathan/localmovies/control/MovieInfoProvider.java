@@ -3,6 +3,7 @@ package com.github.rahmnathan.localmovies.control;
 import com.github.rahmnathan.localmovies.data.MediaFile;
 import com.github.rahmnathan.localmovies.omdb.info.provider.OmdbMovieInfoProvider;
 import com.github.rahmnathan.localmovies.persistence.MovieInfoRepository;
+import com.github.rahmnathan.localmovies.utils.PathUtils;
 import com.github.rahmnathan.movie.info.api.IMovieInfoProvider;
 import com.github.rahmnathan.movie.info.data.MovieInfo;
 import com.google.common.cache.CacheBuilder;

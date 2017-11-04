@@ -1,14 +1,14 @@
-package com.github.rahmnathan.localmovies.control;
+package com.github.rahmnathan.localmovies.utils;
 
 import java.io.File;
 
-class PathUtils {
+public class PathUtils {
 
-    static boolean isTopLevel(String currentPath){
+    public static boolean isTopLevel(String currentPath){
         return currentPath.split(File.separator).length == 2;
     }
 
-    static File getParentFile(String path){
+    public static File getParentFile(String path){
         int directoryDepth = path.split(File.separator).length;
         if(!isTopLevel(path))
             directoryDepth -= 2;
@@ -21,7 +21,7 @@ class PathUtils {
         return file;
     }
 
-    static String getTitle(String fileName){
+    public static String getTitle(String fileName){
         if (fileName.charAt(fileName.length() - 4) == '.') {
             return fileName.substring(0, fileName.length() - 4);
         }

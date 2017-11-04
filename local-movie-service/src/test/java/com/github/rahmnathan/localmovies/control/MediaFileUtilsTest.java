@@ -1,5 +1,6 @@
 package com.github.rahmnathan.localmovies.control;
 
+import com.github.rahmnathan.localmovies.utils.PathUtils;
 import org.junit.Assert;
 import org.junit.Test;
 

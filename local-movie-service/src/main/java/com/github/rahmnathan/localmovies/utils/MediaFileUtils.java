@@ -1,4 +1,4 @@
-package com.github.rahmnathan.localmovies.control;
+package com.github.rahmnathan.localmovies.utils;
 
 import com.github.rahmnathan.localmovies.data.MediaFile;
 import com.github.rahmnathan.localmovies.data.MovieOrder;
@@ -11,10 +11,10 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Component
-class MediaFileUtils {
+public class MediaFileUtils {
     private static final Logger logger = Logger.getLogger(MediaFileUtils.class.getName());
 
-    List<MediaFile> sortMediaFiles(MovieSearchCriteria searchCriteria, List<MediaFile> mediaFiles){
+    public List<MediaFile> sortMediaFiles(MovieSearchCriteria searchCriteria, List<MediaFile> mediaFiles){
         logger.info("Sorting movie list - order: " + searchCriteria.getOrder());
         if (searchCriteria.getPath().split(File.separator).length > 1) {
             return sortMovieInfoList(mediaFiles, MovieOrder.SEASONS_EPISODES);
@@ -25,7 +25,7 @@ class MediaFileUtils {
         return mediaFiles;
     }
 
-    List<MediaFile> paginateMediaFiles(List<MediaFile> mediaFiles, MovieSearchCriteria searchCriteria){
+    public List<MediaFile> paginateMediaFiles(List<MediaFile> mediaFiles, MovieSearchCriteria searchCriteria){
         logger.info("Paginating movie list - page: " + searchCriteria.getPage() + " resultsPerPage: " + searchCriteria.getItemsPerPage());
         return mediaFiles.stream()
                 .skip(searchCriteria.getPage() * searchCriteria.getItemsPerPage())
@@ -33,7 +33,7 @@ class MediaFileUtils {
                 .collect(Collectors.toList());
     }
 
-    List<MediaFile> removePosterImages(List<MediaFile> mediaFiles){
+    public List<MediaFile> removePosterImages(List<MediaFile> mediaFiles){
         logger.info("Removing images for webapp");
         return mediaFiles.stream()
                 .map(MediaFile.Builder::copyWithNoImage)
