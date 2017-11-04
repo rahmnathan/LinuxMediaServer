@@ -4,12 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>localmovie-server</artifactId>
-        <groupId>com.github.rahmnathan</groupId>
+        <groupId>com.github.rahmnathan.localmovie</groupId>
         <version>1.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>local-movie-info-provider</artifactId>
+    <artifactId>local-movie-info-persistence</artifactId>
 
     <dependencies>
         <dependency>
@@ -20,6 +20,7 @@
             <groupId>com.github.rahmnathan.adapters</groupId>
             <artifactId>movie-info-omdb</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax</groupId>

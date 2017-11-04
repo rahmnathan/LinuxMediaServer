@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>com.github.rahmnathan</groupId>
+        <groupId>com.github.rahmnathan.localmovie</groupId>
         <artifactId>localmovie-server</artifactId>
         <version>1.1-SNAPSHOT</version>
     </parent>
@@ -21,13 +21,13 @@
             <version>9.4.1211.jre7</version>
         </dependency>
         <dependency>
-            <groupId>com.github.rahmnathan</groupId>
+            <groupId>com.github.rahmnathan.localmovie</groupId>
             <artifactId>local-movie-web</artifactId>
             <version>1.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>com.github.rahmnathan</groupId>
-            <artifactId>local-movie-info-provider</artifactId>
+            <groupId>com.github.rahmnathan.localmovie</groupId>
+            <artifactId>local-movie-info-persistence</artifactId>
             <version>1.1-SNAPSHOT</version>
         </dependency>
         <dependency>
@@ -36,19 +36,24 @@
             <version>${directory.monitor.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.github.rahmnathan</groupId>
+            <groupId>com.github.rahmnathan.localmovie</groupId>
             <artifactId>local-movie-service</artifactId>
             <version>1.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>com.github.rahmnathan</groupId>
+            <groupId>com.github.rahmnathan.localmovie</groupId>
             <artifactId>local-movie-video-converter</artifactId>
             <version>1.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>com.github.rahmnathan</groupId>
+            <groupId>com.github.rahmnathan.localmovie</groupId>
             <artifactId>local-movie-pushnotification</artifactId>
             <version>1.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.rahmnathan.adapters</groupId>
+            <artifactId>movie-info-omdb</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
