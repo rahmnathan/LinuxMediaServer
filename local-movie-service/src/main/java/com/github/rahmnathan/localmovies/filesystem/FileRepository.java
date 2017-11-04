@@ -1,7 +1,7 @@
 package com.github.rahmnathan.localmovies.filesystem;
 
-import java.io.File;
+import java.util.Set;
 
 public interface FileRepository {
-    File[] listFiles(String directoryPath);
+    Set<String> listFiles(String directoryPath);
 }

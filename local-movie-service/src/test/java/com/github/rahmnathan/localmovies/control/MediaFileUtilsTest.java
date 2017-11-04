@@ -3,39 +3,39 @@ package com.github.rahmnathan.localmovies.control;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class MovieUtilsTest {
+public class MediaFileUtilsTest {
 
     @Test
     public void testTopLevel(){
         String path = "Movies/test-movie.mp4";
 
-        Assert.assertTrue(MovieUtils.isTopLevel(path));
+        Assert.assertTrue(PathUtils.isTopLevel(path));
 
         path = "Series/Game of Thrones/Season 1";
 
-        Assert.assertFalse(MovieUtils.isTopLevel(path));
+        Assert.assertFalse(PathUtils.isTopLevel(path));
     }
 
     @Test
     public void testGetTitle(){
         String title = "test-movie.mp4";
 
-        Assert.assertEquals("test-movie", MovieUtils.getTitle(title));
+        Assert.assertEquals("test-movie", PathUtils.getTitle(title));
 
         title = "Game of Thrones";
 
-        Assert.assertEquals("Game of Thrones", MovieUtils.getTitle(title));
+        Assert.assertEquals("Game of Thrones", PathUtils.getTitle(title));
     }
 
     @Test
     public void testGetParentFile(){
         String path = "Series/Game of Thrones/Season 1/test-episode.mp4";
 
-        Assert.assertEquals("Game of Thrones", MovieUtils.getParentFile(path).getName());
+        Assert.assertEquals("Game of Thrones", PathUtils.getParentFile(path).getName());
 
         path = "Series/Game of Thrones/Season 1";
 
-        Assert.assertEquals("Game of Thrones", MovieUtils.getParentFile(path).getName());
+        Assert.assertEquals("Game of Thrones", PathUtils.getParentFile(path).getName());
 
     }
 }

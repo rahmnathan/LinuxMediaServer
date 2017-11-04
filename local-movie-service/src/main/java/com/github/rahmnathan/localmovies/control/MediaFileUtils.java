@@ -2,41 +2,45 @@ package com.github.rahmnathan.localmovies.control;
 
 import com.github.rahmnathan.localmovies.data.MediaFile;
 import com.github.rahmnathan.localmovies.data.MovieOrder;
+import com.github.rahmnathan.localmovies.data.MovieSearchCriteria;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-class MovieUtils {
-    private static final Logger logger = Logger.getLogger(MovieUtils.class.getName());
+@Component
+class MediaFileUtils {
+    private static final Logger logger = Logger.getLogger(MediaFileUtils.class.getName());
 
-    static boolean isTopLevel(String currentPath){
-        return currentPath.split(File.separator).length == 2;
-    }
-
-    static File getParentFile(String path){
-        int directoryDepth = path.split(File.separator).length;
-        if(!isTopLevel(path))
-            directoryDepth -= 2;
-
-        File file = new File(path);
-        for(int i = 0; i < directoryDepth; i++){
-            file = file.getParentFile();
+    List<MediaFile> sortMediaFiles(MovieSearchCriteria searchCriteria, List<MediaFile> mediaFiles){
+        logger.info("Sorting movie list - order: " + searchCriteria.getOrder());
+        if (searchCriteria.getPath().split(File.separator).length > 1) {
+            return sortMovieInfoList(mediaFiles, MovieOrder.SEASONS_EPISODES);
+        } else if (searchCriteria.getOrder() != null) {
+            return sortMovieInfoList(mediaFiles, searchCriteria.getOrder());
         }
 
-        return file;
+        return mediaFiles;
     }
 
-    static String getTitle(String fileName){
-        if (fileName.charAt(fileName.length() - 4) == '.') {
-            return fileName.substring(0, fileName.length() - 4);
-        }
-
-        return fileName;
+    List<MediaFile> paginateMediaFiles(List<MediaFile> mediaFiles, MovieSearchCriteria searchCriteria){
+        logger.info("Paginating movie list - page: " + searchCriteria.getPage() + " resultsPerPage: " + searchCriteria.getItemsPerPage());
+        return mediaFiles.stream()
+                .skip(searchCriteria.getPage() * searchCriteria.getItemsPerPage())
+                .limit(searchCriteria.getItemsPerPage())
+                .collect(Collectors.toList());
     }
 
-    static List<MediaFile> sortMovieInfoList(List<MediaFile> movieInfoList, MovieOrder order){
+    List<MediaFile> removePosterImages(List<MediaFile> mediaFiles){
+        logger.info("Removing images for webapp");
+        return mediaFiles.stream()
+                .map(MediaFile.Builder::copyWithNoImage)
+                .collect(Collectors.toList());
+    }
+
+    private List<MediaFile> sortMovieInfoList(List<MediaFile> movieInfoList, MovieOrder order){
         logger.info("Sorting movie list: " + order.name());
         switch (order){
             case DATE_ADDED:

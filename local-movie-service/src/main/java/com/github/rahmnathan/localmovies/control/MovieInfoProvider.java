@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 @Component
 public class MovieInfoProvider {
     private final Logger logger = Logger.getLogger(MovieInfoProvider.class.getName());
-    private IMovieInfoProvider movieInfoProvider;
+    private final IMovieInfoProvider movieInfoProvider;
     private final MovieInfoRepository repository;
     private final LoadingCache<String, MediaFile> movieInfoCache = CacheBuilder.newBuilder()
             .maximumSize(500)
@@ -29,7 +29,7 @@ public class MovieInfoProvider {
                         public MediaFile load(@Nonnull String path) {
                             if (repository.exists(path)) {
                                 return loadMediaInfoFromDatabase(path);
-                            } else if (MovieUtils.isTopLevel(path)) {
+                            } else if (PathUtils.isTopLevel(path)) {
                                 return loadMediaInfoFromProvider(path);
                             } else {
                                 return loadSeriesParentInfo(path);
@@ -60,7 +60,7 @@ public class MovieInfoProvider {
     private MediaFile loadMediaInfoFromProvider(String path) {
         logger.info("Loading MediaFile from provider - " + path);
         String fileName = new File(path).getName();
-        String title = MovieUtils.getTitle(fileName);
+        String title = PathUtils.getTitle(fileName);
 
         MovieInfo movieInfo = movieInfoProvider.loadMovieInfo(title);
         MediaFile mediaFile = MediaFile.Builder.newInstance()
@@ -78,10 +78,10 @@ public class MovieInfoProvider {
         logger.info("Getting info from parent - " + path);
 
         String filename = new File(path).getName();
-        File file = MovieUtils.getParentFile(path);
+        File file = PathUtils.getParentFile(path);
         logger.info(path + " - Parent resolved to: " + file.getPath());
 
         MediaFile parentInfo = loadMediaInfo(file.getPath());
-        return MediaFile.Builder.copyWithNewTitle(parentInfo, filename, MovieUtils.getTitle(filename));
+        return MediaFile.Builder.copyWithNewTitle(parentInfo, filename, PathUtils.getTitle(filename));
     }
 }
