@@ -3,7 +3,7 @@ package com.github.rahmnathan.video.control;
 import com.github.rahmnathan.directory.monitor.DirectoryMonitorObserver;
 import com.github.rahmnathan.video.codec.AudioCodec;
 import com.github.rahmnathan.video.codec.VideoCodec;
-import com.github.rahmnathan.video.job.SimpleConversionJob;
+import com.github.rahmnathan.video.data.SimpleConversionJob;
 import net.bramp.ffmpeg.FFmpeg;
 import net.bramp.ffmpeg.FFprobe;
 import org.springframework.beans.factory.annotation.Value;
