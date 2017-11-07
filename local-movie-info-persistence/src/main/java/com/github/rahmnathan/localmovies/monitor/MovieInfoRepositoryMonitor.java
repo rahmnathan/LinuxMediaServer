@@ -5,18 +5,16 @@ import com.github.rahmnathan.localmovies.persistence.MovieInfoRepository;
 import com.github.rahmnathan.movie.info.api.IMovieInfoProvider;
 import com.github.rahmnathan.movie.info.data.MovieInfo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.logging.Logger;
 
 @Component
 public class MovieInfoRepositoryMonitor {
     private final Logger logger = Logger.getLogger(MovieInfoRepositoryMonitor.class.getName());
     private final MovieInfoRepository movieInfoRepository;
-    private IMovieInfoProvider movieInfoProvider;
+    private final IMovieInfoProvider movieInfoProvider;
 
     @Autowired
     public MovieInfoRepositoryMonitor(MovieInfoRepository movieInfoRepository, OmdbMovieInfoProvider movieInfoProvider) {
