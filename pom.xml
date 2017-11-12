@@ -8,12 +8,10 @@
     <version>1.1-SNAPSHOT</version>
 
     <modules>
-        <module>local-movie-service</module>
         <module>local-movie-web</module>
         <module>local-movie-standalone</module>
         <module>local-movie-video-converter</module>
-        <module>local-movie-info-persistence</module>
-        <module>local-movie-pushnotification</module>
+        <module>local-movie-file-list-provider</module>
     </modules>
 
     <parent>
@@ -24,6 +22,7 @@
 
     <properties>
         <java.version>1.9</java.version>
+        <camel.version>2.20.0</camel.version>
     </properties>
 
     <profiles>
@@ -59,6 +58,11 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-spring-boot-starter</artifactId>
+                <version>${camel.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>4.12</version>
@@ -67,6 +71,24 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>23.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.keycloak.bom</groupId>
+                <artifactId>keycloak-adapter-bom</artifactId>
+                <version>3.2.1.Final</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax</groupId>
+                <artifactId>javaee-api</artifactId>
+                <version>8.0</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-http4</artifactId>
+                <version>${camel.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
