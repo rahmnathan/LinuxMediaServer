@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Component
@@ -48,7 +49,7 @@ public class MovieInfoProvider {
         try {
             return movieInfoCache.get(path);
         } catch (ExecutionException e){
-            logger.severe(e.toString());
+            logger.log(Level.SEVERE, "Failed to load media info from cache", e);
             return MediaFile.Builder.newInstance().build();
         }
     }

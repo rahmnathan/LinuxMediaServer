@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class FileSender {
@@ -48,7 +49,7 @@ public class FileSender {
             }
 
         } catch (IOException e) {
-            logger.severe(e.toString());
+            logger.log(Level.SEVERE, "Failure streaming video", e);
         }
     }
 }
