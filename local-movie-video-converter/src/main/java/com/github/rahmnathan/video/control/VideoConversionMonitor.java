@@ -24,9 +24,9 @@ import java.util.logging.Logger;
 public class VideoConversionMonitor implements DirectoryMonitorObserver {
     private final Logger logger = Logger.getLogger(VideoConversionMonitor.class.getName());
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
-    @Value("${ffmpeg.location}")
+    @Value("${ffmpeg.location:/usr/bin/ffmpeg}")
     private String ffmpegLocation;
-    @Value("${ffprobe.location}")
+    @Value("${ffprobe.location:/usr/bin/ffprobe}")
     private String ffprobeLocation;
     private FFmpeg ffmpeg;
     private FFprobe ffprobe;
