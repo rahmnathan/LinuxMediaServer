@@ -16,6 +16,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
@@ -24,6 +26,7 @@ import java.util.logging.Logger;
 public class VideoConversionMonitor implements DirectoryMonitorObserver {
     private final Logger logger = Logger.getLogger(VideoConversionMonitor.class.getName());
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private volatile Set<String> activeConversions = ConcurrentHashMap.newKeySet();
     @Value("${ffmpeg.location:/usr/bin/ffmpeg}")
     private String ffmpegLocation;
     @Value("${ffprobe.location:/usr/bin/ffprobe}")
@@ -46,8 +49,11 @@ public class VideoConversionMonitor implements DirectoryMonitorObserver {
         if (ffmpeg == null || ffprobe == null)
             return;
 
-        if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE && Files.isRegularFile(absolutePath)) {
-            String newFilePath = absolutePath.toString().substring(0, absolutePath.toString().lastIndexOf('.')) + ".mp4";
+        if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE && Files.isRegularFile(absolutePath) &&
+                !activeConversions.contains(absolutePath.toString())) {
+
+            String outputExtension = absolutePath.toString().endsWith(".mp4") ? ".mkv" : ".mp4";
+            String newFilePath = absolutePath.toString().substring(0, absolutePath.toString().lastIndexOf('.')) + outputExtension;
 
             SimpleConversionJob conversionJob = SimpleConversionJob.Builder.newInstance()
                     .setFfmpeg(ffmpeg)
@@ -58,7 +64,7 @@ public class VideoConversionMonitor implements DirectoryMonitorObserver {
                     .setOutputFile(new File(newFilePath))
                     .build();
 
-            executorService.submit(new VideoController(conversionJob));
+            executorService.submit(new VideoController(conversionJob, activeConversions));
         }
     }
 }
