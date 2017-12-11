@@ -2,6 +2,7 @@ package com.github.rahmnathan.video.control;
 
 import com.github.rahmnathan.directory.monitor.DirectoryMonitorObserver;
 import com.github.rahmnathan.video.codec.AudioCodec;
+import com.github.rahmnathan.video.codec.ContainerFormat;
 import com.github.rahmnathan.video.codec.VideoCodec;
 import com.github.rahmnathan.video.data.SimpleConversionJob;
 import net.bramp.ffmpeg.FFmpeg;
@@ -52,14 +53,19 @@ public class VideoConversionMonitor implements DirectoryMonitorObserver {
         if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE && Files.isRegularFile(absolutePath) &&
                 !activeConversions.contains(absolutePath.toString())) {
 
-            String outputExtension = absolutePath.toString().endsWith(".mp4") ? ".mkv" : ".mp4";
-            String newFilePath = absolutePath.toString().substring(0, absolutePath.toString().lastIndexOf('.')) + outputExtension;
+            if(absolutePath.toString().endsWith(".mp4")) {
+                absolutePath.toFile().renameTo(new File(absolutePath.toString()
+                        .substring(0, absolutePath.toString().lastIndexOf('.')) + ".mkv"));
+            }
+
+            String newFilePath = absolutePath.toString().substring(0, absolutePath.toString().lastIndexOf('.')) + ".mp4";
 
             SimpleConversionJob conversionJob = SimpleConversionJob.Builder.newInstance()
                     .setFfmpeg(ffmpeg)
                     .setFfprobe(ffprobe)
                     .setAudioCodec(AudioCodec.AAC)
                     .setVideoCodec(VideoCodec.H264)
+                    .setContainerFormat(ContainerFormat.MP4)
                     .setInputFile(absolutePath.toFile())
                     .setOutputFile(new File(newFilePath))
                     .build();
