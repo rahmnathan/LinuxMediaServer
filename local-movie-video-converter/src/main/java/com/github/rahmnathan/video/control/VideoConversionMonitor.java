@@ -65,7 +65,6 @@ public class VideoConversionMonitor implements DirectoryMonitorObserver {
                     .setFfprobe(ffprobe)
                     .setAudioCodec(AudioCodec.AAC)
                     .setVideoCodec(VideoCodec.H264)
-                    .setContainerFormat(ContainerFormat.MP4)
                     .setInputFile(absolutePath.toFile())
                     .setOutputFile(new File(newFilePath))
                     .build();
