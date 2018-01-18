@@ -1,4 +1,4 @@
-package com.github.rahmnathan.localmovies.utils;
+package com.github.rahmnathan.localmovies.service.utils;
 
 import java.io.File;
 

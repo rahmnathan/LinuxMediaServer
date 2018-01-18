@@ -1,8 +1,8 @@
-package com.github.rahmnathan.localmovies.utils;
+package com.github.rahmnathan.localmovies.service.utils;
 
 import com.github.rahmnathan.localmovies.data.MediaFile;
-import com.github.rahmnathan.localmovies.data.MovieOrder;
-import com.github.rahmnathan.localmovies.data.MovieSearchCriteria;
+import com.github.rahmnathan.localmovies.service.data.MovieOrder;
+import com.github.rahmnathan.localmovies.service.data.MovieSearchCriteria;
 import org.springframework.stereotype.Component;
 
 import java.io.File;

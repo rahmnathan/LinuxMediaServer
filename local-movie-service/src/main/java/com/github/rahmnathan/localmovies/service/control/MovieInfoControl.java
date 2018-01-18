@@ -1,9 +1,9 @@
-package com.github.rahmnathan.localmovies.control;
+package com.github.rahmnathan.localmovies.service.control;
 
 import com.github.rahmnathan.localmovies.data.MediaFile;
-import com.github.rahmnathan.localmovies.data.MovieClient;
-import com.github.rahmnathan.localmovies.data.MovieSearchCriteria;
-import com.github.rahmnathan.localmovies.utils.MediaFileUtils;
+import com.github.rahmnathan.localmovies.service.data.MovieClient;
+import com.github.rahmnathan.localmovies.service.data.MovieSearchCriteria;
+import com.github.rahmnathan.localmovies.service.utils.MediaFileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

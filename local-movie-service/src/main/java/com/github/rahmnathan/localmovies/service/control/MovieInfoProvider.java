@@ -1,9 +1,9 @@
-package com.github.rahmnathan.localmovies.control;
+package com.github.rahmnathan.localmovies.service.control;
 
 import com.github.rahmnathan.localmovies.data.MediaFile;
 import com.github.rahmnathan.localmovies.omdb.info.provider.OmdbMovieInfoProvider;
 import com.github.rahmnathan.localmovies.persistence.MovieInfoRepository;
-import com.github.rahmnathan.localmovies.utils.PathUtils;
+import com.github.rahmnathan.localmovies.service.utils.PathUtils;
 import com.github.rahmnathan.movie.info.api.IMovieInfoProvider;
 import com.github.rahmnathan.movie.info.data.MovieInfo;
 import com.google.common.cache.CacheBuilder;
@@ -12,7 +12,6 @@ import com.google.common.cache.LoadingCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
@@ -28,7 +27,7 @@ public class MovieInfoProvider {
             .build(
                     new CacheLoader<String, MediaFile>() {
                         @Override
-                        public MediaFile load(@Nonnull String path) {
+                        public MediaFile load(String path) {
                             if (repository.exists(path)) {
                                 return loadMediaInfoFromDatabase(path);
                             } else if (PathUtils.isTopLevel(path)) {

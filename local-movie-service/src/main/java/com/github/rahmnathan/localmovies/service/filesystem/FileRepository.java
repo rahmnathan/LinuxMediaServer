@@ -1,4 +1,4 @@
-package com.github.rahmnathan.localmovies.filesystem;
+package com.github.rahmnathan.localmovies.service.filesystem;
 
 import java.util.Set;
 
