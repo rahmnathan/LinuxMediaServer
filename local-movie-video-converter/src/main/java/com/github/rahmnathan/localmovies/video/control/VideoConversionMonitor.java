@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Component
@@ -53,13 +54,14 @@ public class VideoConversionMonitor implements DirectoryMonitorObserver {
         if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE && Files.isRegularFile(absolutePath) &&
                 !activeConversions.contains(absolutePath.toString())) {
 
-            if(absolutePath.toString().endsWith(".mp4")) {
-                absolutePath.toFile().renameTo(new File(absolutePath.toString()
-                        .substring(0, absolutePath.toString().lastIndexOf('.')) + ".mkv"));
+            // I need to find a way to wait until a file is fully written before converting it
+            try {
+                Thread.sleep(7000);
+            } catch (InterruptedException e){
+                logger.log(Level.SEVERE, "Failed sleep", e);
             }
 
             String newFilePath = absolutePath.toString().substring(0, absolutePath.toString().lastIndexOf('.')) + ".mp4";
-
             SimpleConversionJob conversionJob = SimpleConversionJob.Builder.newInstance()
                     .setFfmpeg(ffmpeg)
                     .setFfprobe(ffprobe)
