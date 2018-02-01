@@ -1,6 +1,5 @@
 module local.movie.web {
     requires tomcat.embed.core;
-    requires java.logging;
     requires spring.web;
     requires spring.beans;
     requires local.movie.service;

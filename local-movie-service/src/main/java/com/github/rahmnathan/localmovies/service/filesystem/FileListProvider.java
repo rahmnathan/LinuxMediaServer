@@ -1,6 +1,8 @@
 package com.github.rahmnathan.localmovies.service.filesystem;
 
 import com.github.rahmnathan.directory.monitor.DirectoryMonitorObserver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -13,7 +15,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Component
@@ -21,17 +22,17 @@ public class FileListProvider implements FileRepository, DirectoryMonitorObserve
 
     @Value("${media.path}")
     private String[] mediaPaths;
-    private final Logger logger = Logger.getLogger(FileListProvider.class.getName());
+    private final Logger logger = LoggerFactory.getLogger(FileListProvider.class.getName());
 
     @CacheEvict(value = "files", allEntries = true)
     public void directoryModified(WatchEvent event, Path absolutePath) {
-        logger.info("Detected " + event.kind().name() + " " + absolutePath.toString());
+        logger.info("Detected {} {}", event.kind().name(), absolutePath.toString());
         logger.info("Purging cache");
     }
 
     @Cacheable(value = "files")
     public Set<String> listFiles(String path) {
-        logger.info("Listing files at - " + path);
+        logger.info("Listing files at - {}", path);
 
         Set<String> filePaths = new HashSet<>();
         Arrays.stream(mediaPaths).forEach(mediaPath -> {

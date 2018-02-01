@@ -7,6 +7,8 @@ import com.github.rahmnathan.video.control.VideoController;
 import com.github.rahmnathan.video.data.SimpleConversionJob;
 import net.bramp.ffmpeg.FFmpeg;
 import net.bramp.ffmpeg.FFprobe;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -21,12 +23,10 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Component
 public class VideoConversionMonitor implements DirectoryMonitorObserver {
-    private final Logger logger = Logger.getLogger(VideoConversionMonitor.class.getName());
+    private final Logger logger = LoggerFactory.getLogger(VideoConversionMonitor.class.getName());
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private volatile Set<String> activeConversions = ConcurrentHashMap.newKeySet();
     @Value("${ffmpeg.location:/usr/bin/ffmpeg}")
@@ -42,7 +42,7 @@ public class VideoConversionMonitor implements DirectoryMonitorObserver {
             ffmpeg = new FFmpeg(ffmpegLocation);
             ffprobe = new FFprobe(ffprobeLocation);
         } catch (IOException e) {
-            logger.severe(e.toString());
+            logger.error("Failure initializing ffmpeg", e);
         }
     }
 
@@ -58,7 +58,7 @@ public class VideoConversionMonitor implements DirectoryMonitorObserver {
             try {
                 Thread.sleep(7000);
             } catch (InterruptedException e){
-                logger.log(Level.SEVERE, "Failed sleep", e);
+                logger.error("Failed sleep", e);
             }
 
             String newFilePath = absolutePath.toString().substring(0, absolutePath.toString().lastIndexOf('.')) + ".mp4";

@@ -4,15 +4,15 @@ import com.github.rahmnathan.localmovies.omdb.info.provider.OmdbMovieInfoProvide
 import com.github.rahmnathan.localmovies.persistence.MovieInfoRepository;
 import com.github.rahmnathan.movie.info.api.IMovieInfoProvider;
 import com.github.rahmnathan.movie.info.data.MovieInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.logging.Logger;
-
 @Component
 public class MovieInfoRepositoryMonitor {
-    private final Logger logger = Logger.getLogger(MovieInfoRepositoryMonitor.class.getName());
+    private final Logger logger = LoggerFactory.getLogger(MovieInfoRepositoryMonitor.class.getName());
     private final MovieInfoRepository movieInfoRepository;
     private final IMovieInfoProvider movieInfoProvider;
 
@@ -29,7 +29,7 @@ public class MovieInfoRepositoryMonitor {
         movieInfoRepository.findAll().forEach(movie -> {
             MovieInfo existingMovieInfo = movie.getMovieInfo();
             if(existingMovieInfo.hasMissingValues()){
-                logger.info("Detected missing fields: " + existingMovieInfo.toString());
+                logger.info("Detected missing fields: {}", existingMovieInfo.toString());
 
                 MovieInfo newMovieInfo = movieInfoProvider.loadMovieInfo(existingMovieInfo.getTitle());
 

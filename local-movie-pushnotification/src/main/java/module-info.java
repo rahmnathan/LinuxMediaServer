@@ -4,8 +4,8 @@ module local.movie.pushnotification {
     requires spring.context;
     requires camel.core;
     requires directory.monitor;
-    requires java.logging;
     requires spring.beans;
     requires google.pushnotification;
     requires spring.data.commons;
+    requires slf4j.api;
 }

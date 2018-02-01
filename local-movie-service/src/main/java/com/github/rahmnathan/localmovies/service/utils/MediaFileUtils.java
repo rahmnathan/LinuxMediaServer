@@ -3,19 +3,20 @@ package com.github.rahmnathan.localmovies.service.utils;
 import com.github.rahmnathan.localmovies.data.MediaFile;
 import com.github.rahmnathan.localmovies.service.data.MovieOrder;
 import com.github.rahmnathan.localmovies.service.data.MovieSearchCriteria;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Component
 public class MediaFileUtils {
-    private static final Logger logger = Logger.getLogger(MediaFileUtils.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(MediaFileUtils.class.getName());
 
     public List<MediaFile> sortMediaFiles(MovieSearchCriteria searchCriteria, List<MediaFile> mediaFiles){
-        logger.info("Sorting movie list - order: " + searchCriteria.getOrder());
+        logger.info("Sorting movie list - order: {}", searchCriteria.getOrder());
         if (searchCriteria.getPath().split(File.separator).length > 1) {
             return sortMovieInfoList(mediaFiles, MovieOrder.SEASONS_EPISODES);
         } else if (searchCriteria.getOrder() != null) {
@@ -26,7 +27,7 @@ public class MediaFileUtils {
     }
 
     public List<MediaFile> paginateMediaFiles(List<MediaFile> mediaFiles, MovieSearchCriteria searchCriteria){
-        logger.info("Paginating movie list - page: " + searchCriteria.getPage() + " resultsPerPage: " + searchCriteria.getItemsPerPage());
+        logger.info("Paginating movie list - page: {} resultsPerPage: {}", searchCriteria.getPage(), searchCriteria.getItemsPerPage());
         return mediaFiles.stream()
                 .skip(searchCriteria.getPage() * searchCriteria.getItemsPerPage())
                 .limit(searchCriteria.getItemsPerPage())
@@ -41,7 +42,7 @@ public class MediaFileUtils {
     }
 
     private List<MediaFile> sortMovieInfoList(List<MediaFile> movieInfoList, MovieOrder order){
-        logger.info("Sorting movie list: " + order.name());
+        logger.info("Sorting movie list: {}", order.name());
         switch (order){
             case DATE_ADDED:
                 return movieInfoList.stream()

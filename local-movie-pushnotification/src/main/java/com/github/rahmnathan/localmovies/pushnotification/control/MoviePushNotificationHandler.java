@@ -5,6 +5,8 @@ import com.github.rahmnathan.google.pushnotification.data.PushNotification;
 import com.github.rahmnathan.localmovies.pushnotification.persistence.AndroidPushClient;
 import com.github.rahmnathan.localmovies.pushnotification.persistence.AndroidPushTokenRepository;
 import org.apache.camel.ProducerTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -12,13 +14,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
-import java.util.logging.Logger;
 
 @Component
 public class MoviePushNotificationHandler implements DirectoryMonitorObserver {
     private final ProducerTemplate producerTemplate;
     private final AndroidPushTokenRepository pushTokenRepository;
-    private final Logger logger = Logger.getLogger(MoviePushNotificationHandler.class.getName());
+    private final Logger logger = LoggerFactory.getLogger(MoviePushNotificationHandler.class.getName());
 
     @Autowired
     public MoviePushNotificationHandler(AndroidPushTokenRepository pushTokenRepository, ProducerTemplate producerTemplate) {
@@ -41,7 +42,7 @@ public class MoviePushNotificationHandler implements DirectoryMonitorObserver {
     public void directoryModified(WatchEvent watchEvent, Path path) {
         if (watchEvent.kind() == StandardWatchEventKinds.ENTRY_CREATE && Files.isRegularFile(path)) {
             String fileName = path.getFileName().toString();
-            logger.info("PushNotification handler detected new file - " + fileName);
+            logger.info("PushNotification handler detected new file - {}", fileName);
 
             String mediaName = fileName.substring(0, fileName.lastIndexOf('.'));
             pushTokenRepository.findAll().forEach(token -> {

@@ -5,8 +5,8 @@ module local.movie.service {
     requires spring.beans;
     requires local.movie.info.persistence;
     requires directory.monitor;
-    requires java.logging;
     requires movie.info.api;
     requires guava;
     requires movie.info.omdb;
+    requires slf4j.api;
 }

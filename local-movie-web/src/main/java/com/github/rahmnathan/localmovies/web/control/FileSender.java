@@ -1,17 +1,18 @@
 package com.github.rahmnathan.localmovies.web.control;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class FileSender {
 
     private static final int DEFAULT_BUFFER_SIZE = 16384;
-    private final Logger logger = Logger.getLogger(FileSender.class.getName());
+    private final Logger logger = LoggerFactory.getLogger(FileSender.class.getName());
 
     public void serveResource(Path file, HttpServletRequest request, HttpServletResponse response) {
         if (response == null || request == null || file == null)
@@ -21,7 +22,7 @@ public class FileSender {
         try {
             totalBytes = Files.size(file);
         } catch (IOException e) {
-            logger.severe(e.toString());
+            logger.error("Failure loading file size", e);
         }
 
         long startByte = 0L;
@@ -49,7 +50,7 @@ public class FileSender {
             }
 
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "Failure streaming video", e);
+            logger.error("Failure streaming video", e);
         }
     }
 }

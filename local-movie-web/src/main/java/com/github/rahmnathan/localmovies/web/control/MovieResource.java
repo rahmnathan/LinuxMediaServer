@@ -6,6 +6,8 @@ import com.github.rahmnathan.localmovies.service.data.MovieSearchCriteria;
 import com.github.rahmnathan.localmovies.pushnotification.control.MoviePushNotificationHandler;
 import com.github.rahmnathan.localmovies.pushnotification.persistence.AndroidPushClient;
 import com.github.rahmnathan.localmovies.web.data.MovieInfoRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,8 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @RestController
 public class MovieResource {
@@ -27,7 +27,7 @@ public class MovieResource {
     private final MovieInfoFacade movieInfoFacade;
     private final MoviePushNotificationHandler notificationHandler;
     private final FileSender fileSender = new FileSender();
-    private final Logger logger = Logger.getLogger(MovieResource.class.getName());
+    private final Logger logger = LoggerFactory.getLogger(MovieResource.class.getName());
 
     @Autowired
     public MovieResource(MovieInfoFacade movieInfoControl, MoviePushNotificationHandler notificationHandler){
@@ -39,7 +39,7 @@ public class MovieResource {
     public List<MediaFile> titleRequest(@RequestBody MovieInfoRequest movieInfoRequest, HttpServletRequest request, HttpServletResponse response) {
         response.addHeader("Access-Control-Allow-Origin", "*");
         MDC.put("Client-Address", request.getRemoteAddr());
-        logger.info("Received request: " + movieInfoRequest.toString());
+        logger.info("Received request: {}", movieInfoRequest.toString());
 
         if(movieInfoRequest.getPushToken() != null && movieInfoRequest.getDeviceId() != null){
             AndroidPushClient pushClient = new AndroidPushClient(movieInfoRequest.getDeviceId(), movieInfoRequest.getPushToken());
@@ -62,7 +62,7 @@ public class MovieResource {
 
         List<MediaFile> movieInfoList = movieInfoFacade.loadMovieList(searchCriteria);
 
-        logger.info("Returning " + movieInfoList.size() + " movies");
+        logger.info("Returning {} movies", movieInfoList.size());
         MDC.clear();
         return movieInfoList;
     }
@@ -76,10 +76,10 @@ public class MovieResource {
 
         // Using file-system specific file separator
         path = path.replace("/", File.separator);
-        logger.log(Level.INFO, "Received request for count for - " + path);
+        logger.info("Received count request for path - {}", path);
 
         int count = movieInfoFacade.loadMovieListLength(path);
-        logger.log(Level.INFO, "Returning count of - " + count);
+        logger.info("Returning count of - {}", count);
         response.setHeader("Count", String.valueOf(count));
         MDC.clear();
     }
@@ -97,10 +97,10 @@ public class MovieResource {
 
         MediaFile movie = movieInfoFacade.loadSingleMovie(path);
         movie.addView();
-        logger.info("Received streaming request - " + path);
+        logger.info("Received streaming request - {}", path);
         for(String mediaPath : mediaPaths) {
             if (new File(mediaPath + path).exists()) {
-                logger.info("Streaming - " + mediaPath + path);
+                logger.info("Streaming - {}", mediaPath + path);
                 fileSender.serveResource(Paths.get(mediaPath + path), request, response);
                 break;
             }
@@ -119,7 +119,7 @@ public class MovieResource {
 
         // Using file-system specific file separator
         path = path.replace("/", File.separator);
-        logger.info("Streaming poster " + path);
+        logger.info("Streaming poster - {}", path);
 
         String image = movieInfoFacade.loadSingleMovie(path).getMovieInfo().getImage();
         if(image == null)
