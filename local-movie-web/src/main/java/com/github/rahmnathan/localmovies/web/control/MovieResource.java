@@ -22,23 +22,22 @@ import java.util.*;
 @RestController
 public class MovieResource {
 
-    @Value("${media.path}")
-    private String[] mediaPaths;
+    private final String[] mediaPaths;
     private final MovieInfoFacade movieInfoFacade;
     private final MoviePushNotificationHandler notificationHandler;
     private final FileSender fileSender = new FileSender();
     private final Logger logger = LoggerFactory.getLogger(MovieResource.class.getName());
 
-    @Autowired
-    public MovieResource(MovieInfoFacade movieInfoControl, MoviePushNotificationHandler notificationHandler){
-        this.movieInfoFacade = movieInfoControl;
+    public MovieResource(MovieInfoFacade movieInfoControl, MoviePushNotificationHandler notificationHandler,
+                         @Value("${media.path}") String[] mediaPaths){
         this.notificationHandler = notificationHandler;
+        this.movieInfoFacade = movieInfoControl;
+        this.mediaPaths = mediaPaths;
     }
 
     @RequestMapping(value = "/titlerequest", method = RequestMethod.POST, produces="application/json", consumes = "application/json")
-    public List<MediaFile> titleRequest(@RequestBody MovieInfoRequest movieInfoRequest, HttpServletRequest request, HttpServletResponse response) {
-        response.addHeader("Access-Control-Allow-Origin", "*");
-        MDC.put("Client-Address", request.getRemoteAddr());
+    public List<MediaFile> titleRequest(@RequestBody MovieInfoRequest movieInfoRequest, HttpServletResponse response) {
+        MDC.put("TransactionId", "TransactionId: " + UUID.randomUUID().toString());
         logger.info("Received request: {}", movieInfoRequest.toString());
 
         if(movieInfoRequest.getPushToken() != null && movieInfoRequest.getDeviceId() != null){
@@ -58,7 +57,7 @@ public class MovieResource {
                 .build();
 
         if(searchCriteria.getPage() == 0)
-            movieInfoCount(movieInfoRequest.getPath(), response, request);
+            movieInfoCount(movieInfoRequest.getPath(), response);
 
         List<MediaFile> movieInfoList = movieInfoFacade.loadMovieList(searchCriteria);
 
@@ -71,8 +70,8 @@ public class MovieResource {
      * @param path - Path to directory you wish to count files from
      */
     @RequestMapping(value = "/movieinfocount")
-    public void movieInfoCount(@RequestParam(value = "path") String path, HttpServletResponse response, HttpServletRequest request){
-        MDC.put("Client-Address", request.getRemoteAddr());
+    public void movieInfoCount(@RequestParam(value = "path") String path, HttpServletResponse response){
+        MDC.put("TransactionId", "TransactionId: " + UUID.randomUUID().toString());
 
         // Using file-system specific file separator
         path = path.replace("/", File.separator);
@@ -89,8 +88,7 @@ public class MovieResource {
      */
     @RequestMapping(value = "/video.mp4", produces = "video/mp4")
     public void streamVideo(@RequestParam("path") String path, HttpServletResponse response, HttpServletRequest request) {
-        MDC.put("Client-Address", request.getRemoteAddr());
-        response.addHeader("Access-Control-Allow-Origin", "*");
+        MDC.put("TransactionId", "TransactionId: " + UUID.randomUUID().toString());
 
         // Using file-system specific file separator
         path = path.replace("/", File.separator);
@@ -100,7 +98,7 @@ public class MovieResource {
         logger.info("Received streaming request - {}", path);
         for(String mediaPath : mediaPaths) {
             if (new File(mediaPath + path).exists()) {
-                logger.info("Streaming - {}", mediaPath + path);
+                logger.info("Streaming - {}{}", mediaPath, path);
                 fileSender.serveResource(Paths.get(mediaPath + path), request, response);
                 break;
             }
@@ -113,9 +111,8 @@ public class MovieResource {
      * @return - Poster image for specified video file
      */
     @RequestMapping("/poster")
-    public byte[] servePoster(@RequestParam("path") String path, HttpServletResponse response, HttpServletRequest request) {
-        MDC.put("Client-Address", request.getRemoteAddr());
-        response.addHeader("Access-Control-Allow-Origin", "*");
+    public byte[] servePoster(@RequestParam("path") String path) {
+        MDC.put("TransactionId", "TransactionId: " + UUID.randomUUID().toString());
 
         // Using file-system specific file separator
         path = path.replace("/", File.separator);
