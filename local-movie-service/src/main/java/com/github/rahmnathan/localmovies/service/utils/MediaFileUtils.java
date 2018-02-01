@@ -5,13 +5,13 @@ import com.github.rahmnathan.localmovies.service.data.MovieOrder;
 import com.github.rahmnathan.localmovies.service.data.MovieSearchCriteria;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
+import javax.annotation.ManagedBean;
 import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Component
+@ManagedBean
 public class MediaFileUtils {
     private static final Logger logger = LoggerFactory.getLogger(MediaFileUtils.class.getName());
 

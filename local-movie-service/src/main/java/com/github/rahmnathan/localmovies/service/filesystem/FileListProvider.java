@@ -6,8 +6,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Component;
 
+import javax.annotation.ManagedBean;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.WatchEvent;
@@ -17,12 +17,15 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Component
+@ManagedBean
 public class FileListProvider implements FileRepository, DirectoryMonitorObserver {
 
-    @Value("${media.path}")
-    private String[] mediaPaths;
+    private final String[] mediaPaths;
     private final Logger logger = LoggerFactory.getLogger(FileListProvider.class.getName());
+
+    public FileListProvider(@Value("${media.path}") String[] mediaPaths) {
+        this.mediaPaths = mediaPaths;
+    }
 
     @CacheEvict(value = "files", allEntries = true)
     public void directoryModified(WatchEvent event, Path absolutePath) {

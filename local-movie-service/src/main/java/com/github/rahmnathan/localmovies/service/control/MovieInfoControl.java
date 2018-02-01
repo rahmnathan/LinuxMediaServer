@@ -4,24 +4,23 @@ import com.github.rahmnathan.localmovies.data.MediaFile;
 import com.github.rahmnathan.localmovies.service.data.MovieClient;
 import com.github.rahmnathan.localmovies.service.data.MovieSearchCriteria;
 import com.github.rahmnathan.localmovies.service.utils.MediaFileUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
+import javax.annotation.ManagedBean;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Component
+@ManagedBean
 public class MovieInfoControl {
-    @Value("${media.path}")
-    private String[] mediaPaths;
+    private final String[] mediaPaths;
     private final MovieInfoProvider movieInfoProvider;
     private final MediaFileUtils mediaFileUtils;
 
-    @Autowired
-    public MovieInfoControl(MovieInfoProvider movieInfoProvider, MediaFileUtils mediaFileUtils) {
+    public MovieInfoControl(MovieInfoProvider movieInfoProvider, MediaFileUtils mediaFileUtils,
+                            @Value("${media.path}") String[] mediaPaths) {
         this.movieInfoProvider = movieInfoProvider;
         this.mediaFileUtils = mediaFileUtils;
+        this.mediaPaths = mediaPaths;
     }
 
     public MediaFile loadSingleMovie(String filePath) {

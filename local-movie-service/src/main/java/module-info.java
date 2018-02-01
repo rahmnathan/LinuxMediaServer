@@ -8,5 +8,6 @@ module local.movie.service {
     requires movie.info.api;
     requires guava;
     requires movie.info.omdb;
+    requires javaee.api;
     requires slf4j.api;
 }

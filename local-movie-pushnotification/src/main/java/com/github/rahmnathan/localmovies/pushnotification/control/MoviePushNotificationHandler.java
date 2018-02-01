@@ -7,21 +7,19 @@ import com.github.rahmnathan.localmovies.pushnotification.persistence.AndroidPus
 import org.apache.camel.ProducerTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
+import javax.annotation.ManagedBean;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 
-@Component
+@ManagedBean
 public class MoviePushNotificationHandler implements DirectoryMonitorObserver {
     private final ProducerTemplate producerTemplate;
     private final AndroidPushTokenRepository pushTokenRepository;
     private final Logger logger = LoggerFactory.getLogger(MoviePushNotificationHandler.class.getName());
 
-    @Autowired
     public MoviePushNotificationHandler(AndroidPushTokenRepository pushTokenRepository, ProducerTemplate producerTemplate) {
         this.pushTokenRepository = pushTokenRepository;
         this.producerTemplate = producerTemplate;

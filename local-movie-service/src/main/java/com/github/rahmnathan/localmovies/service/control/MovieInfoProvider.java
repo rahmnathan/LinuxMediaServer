@@ -1,47 +1,23 @@
 package com.github.rahmnathan.localmovies.service.control;
 
 import com.github.rahmnathan.localmovies.data.MediaFile;
-import com.github.rahmnathan.localmovies.omdb.info.provider.OmdbMovieInfoProvider;
-import com.github.rahmnathan.localmovies.persistence.MovieInfoRepository;
-import com.github.rahmnathan.localmovies.service.utils.PathUtils;
-import com.github.rahmnathan.movie.info.api.IMovieInfoProvider;
-import com.github.rahmnathan.movie.info.data.MovieInfo;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-import java.io.File;
+import javax.annotation.ManagedBean;
 import java.util.concurrent.ExecutionException;
 
-@Component
+@ManagedBean
 public class MovieInfoProvider {
     private final Logger logger = LoggerFactory.getLogger(MovieInfoProvider.class.getName());
-    private final IMovieInfoProvider movieInfoProvider;
-    private final MovieInfoRepository repository;
-    private final LoadingCache<String, MediaFile> movieInfoCache = CacheBuilder.newBuilder()
-            .maximumSize(500)
-            .build(
-                    new CacheLoader<String, MediaFile>() {
-                        @Override
-                        public MediaFile load(String path) {
-                            if (repository.exists(path)) {
-                                return loadMediaInfoFromDatabase(path);
-                            } else if (PathUtils.isTopLevel(path)) {
-                                return loadMediaInfoFromProvider(path);
-                            } else {
-                                return loadSeriesParentInfo(path);
-                            }
-                        }
-                    });
+    private LoadingCache<String, MediaFile> movieInfoCache;
 
-    @Autowired
-    public MovieInfoProvider(MovieInfoRepository repository, OmdbMovieInfoProvider movieInfoProvider){
-        this.repository = repository;
-        this.movieInfoProvider = movieInfoProvider;
+    public MovieInfoProvider(MovieCacheLoader cacheLoader){
+        movieInfoCache = CacheBuilder.newBuilder()
+                .maximumSize(500)
+                .build(cacheLoader);
     }
 
     MediaFile loadMediaInfo(String path){
@@ -51,38 +27,5 @@ public class MovieInfoProvider {
             logger.error("Failed to load media info from cache", e);
             return MediaFile.Builder.newInstance().build();
         }
-    }
-
-    private MediaFile loadMediaInfoFromDatabase(String path){
-        logger.info("Getting from database - {}", path);
-        return repository.findOne(path);
-    }
-
-    private MediaFile loadMediaInfoFromProvider(String path) {
-        logger.info("Loading MediaFile from provider - {}", path);
-        String fileName = new File(path).getName();
-        String title = PathUtils.getTitle(fileName);
-
-        MovieInfo movieInfo = movieInfoProvider.loadMovieInfo(title);
-        MediaFile mediaFile = MediaFile.Builder.newInstance()
-                .setFileName(fileName)
-                .setMovieInfo(movieInfo)
-                .setPath(path)
-                .setViews(0)
-                .build();
-
-        repository.save(mediaFile);
-        return mediaFile;
-    }
-
-    private MediaFile loadSeriesParentInfo(String path) {
-        logger.info("Getting info from parent - {}", path);
-
-        String filename = new File(path).getName();
-        File file = PathUtils.getParentFile(path);
-        logger.info("{} - Parent resolved to: {}", path, file.getPath());
-
-        MediaFile parentInfo = loadMediaInfo(file.getPath());
-        return MediaFile.Builder.copyWithNewTitle(parentInfo, filename, PathUtils.getTitle(filename));
     }
 }

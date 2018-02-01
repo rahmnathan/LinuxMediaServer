@@ -10,9 +10,8 @@ import net.bramp.ffmpeg.FFprobe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
+import javax.annotation.ManagedBean;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -24,25 +23,21 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Component
+@ManagedBean
 public class VideoConversionMonitor implements DirectoryMonitorObserver {
     private final Logger logger = LoggerFactory.getLogger(VideoConversionMonitor.class.getName());
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private volatile Set<String> activeConversions = ConcurrentHashMap.newKeySet();
-    @Value("${ffmpeg.location:/usr/bin/ffmpeg}")
-    private String ffmpegLocation;
-    @Value("${ffprobe.location:/usr/bin/ffprobe}")
-    private String ffprobeLocation;
     private FFmpeg ffmpeg;
     private FFprobe ffprobe;
 
-    @PostConstruct
-    private void initialize() {
+    public VideoConversionMonitor(@Value("${ffmpeg.location:/usr/bin/ffmpeg}") String ffmpegLocation,
+                                  @Value("${ffprobe.location:/usr/bin/ffprobe}") String ffprobeLocation){
         try {
-            ffmpeg = new FFmpeg(ffmpegLocation);
-            ffprobe = new FFprobe(ffprobeLocation);
-        } catch (IOException e) {
-            logger.error("Failure initializing ffmpeg", e);
+            this.ffmpeg = new FFmpeg(ffmpegLocation);
+            this.ffprobe = new FFprobe(ffprobeLocation);
+        } catch (IOException e){
+            logger.error("Failed to instantiate VideoConversionMonitor", e);
         }
     }
 

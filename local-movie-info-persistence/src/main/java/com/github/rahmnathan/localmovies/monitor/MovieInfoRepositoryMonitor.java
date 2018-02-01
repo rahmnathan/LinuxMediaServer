@@ -6,17 +6,16 @@ import com.github.rahmnathan.movie.info.api.IMovieInfoProvider;
 import com.github.rahmnathan.movie.info.data.MovieInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
-@Component
+import javax.annotation.ManagedBean;
+
+@ManagedBean
 public class MovieInfoRepositoryMonitor {
     private final Logger logger = LoggerFactory.getLogger(MovieInfoRepositoryMonitor.class.getName());
     private final MovieInfoRepository movieInfoRepository;
     private final IMovieInfoProvider movieInfoProvider;
 
-    @Autowired
     public MovieInfoRepositoryMonitor(MovieInfoRepository movieInfoRepository, OmdbMovieInfoProvider movieInfoProvider) {
         this.movieInfoRepository = movieInfoRepository;
         this.movieInfoProvider = movieInfoProvider;

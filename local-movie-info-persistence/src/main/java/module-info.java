@@ -6,5 +6,6 @@ module local.movie.info.persistence {
     requires spring.beans;
     requires movie.info.omdb;
     requires spring.data.commons;
+    requires javaee.api;
     requires slf4j.api;
 }
