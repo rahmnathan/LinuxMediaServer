@@ -4,6 +4,10 @@ import java.io.File;
 
 public class PathUtils {
 
+    private PathUtils(){
+        // No need to instantiate this
+    }
+
     public static boolean isTopLevel(String currentPath){
         return currentPath.split(File.separator).length == 2;
     }
