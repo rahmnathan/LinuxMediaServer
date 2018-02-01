@@ -12,15 +12,12 @@ import java.util.stream.Collectors;
 
 @ManagedBean
 public class MovieInfoControl {
-    private final String[] mediaPaths;
     private final MovieInfoProvider movieInfoProvider;
     private final MediaFileUtils mediaFileUtils;
 
-    public MovieInfoControl(MovieInfoProvider movieInfoProvider, MediaFileUtils mediaFileUtils,
-                            @Value("${media.path}") String[] mediaPaths) {
+    public MovieInfoControl(MovieInfoProvider movieInfoProvider, MediaFileUtils mediaFileUtils) {
         this.movieInfoProvider = movieInfoProvider;
         this.mediaFileUtils = mediaFileUtils;
-        this.mediaPaths = mediaPaths;
     }
 
     public MediaFile loadSingleMovie(String filePath) {
