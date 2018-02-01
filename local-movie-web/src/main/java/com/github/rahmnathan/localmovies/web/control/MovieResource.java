@@ -37,7 +37,7 @@ public class MovieResource {
 
     @RequestMapping(value = "/titlerequest", method = RequestMethod.POST, produces="application/json", consumes = "application/json")
     public List<MediaFile> titleRequest(@RequestBody MovieInfoRequest movieInfoRequest, HttpServletResponse response) {
-        MDC.put(TRANSACTION_ID, TRANSACTION_ID + ": " + UUID.randomUUID().toString());
+        MDC.put(TRANSACTION_ID, UUID.randomUUID().toString());
         logger.info("Received request: {}", movieInfoRequest.toString());
 
         if(movieInfoRequest.getPushToken() != null && movieInfoRequest.getDeviceId() != null){
@@ -71,7 +71,7 @@ public class MovieResource {
      */
     @RequestMapping(value = "/movieinfocount")
     public void movieInfoCount(@RequestParam(value = "path") String path, HttpServletResponse response){
-        MDC.put(TRANSACTION_ID, TRANSACTION_ID + ": " + UUID.randomUUID().toString());
+        MDC.put(TRANSACTION_ID, UUID.randomUUID().toString());
 
         // Using file-system specific file separator
         path = path.replace("/", File.separator);
@@ -88,7 +88,7 @@ public class MovieResource {
      */
     @RequestMapping(value = "/video.mp4", produces = "video/mp4")
     public void streamVideo(@RequestParam("path") String path, HttpServletResponse response, HttpServletRequest request) {
-        MDC.put(TRANSACTION_ID, TRANSACTION_ID + ": " + UUID.randomUUID().toString());
+        MDC.put(TRANSACTION_ID, UUID.randomUUID().toString());
 
         // Using file-system specific file separator
         path = path.replace("/", File.separator);
@@ -112,7 +112,7 @@ public class MovieResource {
      */
     @RequestMapping("/poster")
     public byte[] servePoster(@RequestParam("path") String path) {
-        MDC.put(TRANSACTION_ID, TRANSACTION_ID + ": " + UUID.randomUUID().toString());
+        MDC.put(TRANSACTION_ID, UUID.randomUUID().toString());
 
         // Using file-system specific file separator
         path = path.replace("/", File.separator);
