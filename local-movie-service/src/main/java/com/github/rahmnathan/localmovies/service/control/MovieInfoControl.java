@@ -4,7 +4,6 @@ import com.github.rahmnathan.localmovies.data.MediaFile;
 import com.github.rahmnathan.localmovies.service.data.MovieClient;
 import com.github.rahmnathan.localmovies.service.data.MovieSearchCriteria;
 import com.github.rahmnathan.localmovies.service.utils.MediaFileUtils;
-import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.ManagedBean;
 import java.util.*;
