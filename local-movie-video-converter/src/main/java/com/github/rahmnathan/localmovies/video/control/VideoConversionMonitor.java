@@ -2,6 +2,7 @@ package com.github.rahmnathan.localmovies.video.control;
 
 import com.github.rahmnathan.directory.monitor.DirectoryMonitorObserver;
 import com.github.rahmnathan.video.codec.AudioCodec;
+import com.github.rahmnathan.video.codec.ContainerFormat;
 import com.github.rahmnathan.video.codec.VideoCodec;
 import com.github.rahmnathan.video.control.VideoController;
 import com.github.rahmnathan.video.data.SimpleConversionJob;
@@ -19,6 +20,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -62,6 +64,7 @@ public class VideoConversionMonitor implements DirectoryMonitorObserver {
                     .setFfprobe(ffprobe)
                     .setAudioCodec(AudioCodec.AAC)
                     .setVideoCodec(VideoCodec.H264)
+                    .setContainerFormat(ContainerFormat.MP4)
                     .setInputFile(absolutePath.toFile())
                     .setOutputFile(new File(newFilePath))
                     .build();
