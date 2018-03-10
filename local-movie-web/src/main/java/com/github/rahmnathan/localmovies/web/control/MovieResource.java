@@ -89,6 +89,7 @@ public class MovieResource {
     @RequestMapping(value = "/video.mp4", produces = "video/mp4")
     public void streamVideo(@RequestParam("path") String path, HttpServletResponse response, HttpServletRequest request) {
         MDC.put(TRANSACTION_ID, UUID.randomUUID().toString());
+        response.setHeader("Access-Control-Allow-Origin", "*");
 
         // Using file-system specific file separator
         path = path.replace("/", File.separator);
