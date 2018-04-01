@@ -1,10 +1,10 @@
 package com.github.rahmnathan.localmovies.pushnotification.control;
 
 import com.github.rahmnathan.directory.monitor.DirectoryMonitorObserver;
+import com.github.rahmnathan.google.pushnotification.boundary.FirebaseNotificationService;
 import com.github.rahmnathan.google.pushnotification.data.PushNotification;
 import com.github.rahmnathan.localmovies.pushnotification.persistence.AndroidPushClient;
 import com.github.rahmnathan.localmovies.pushnotification.persistence.AndroidPushTokenRepository;
-import org.apache.camel.ProducerTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,13 +16,13 @@ import java.nio.file.WatchEvent;
 
 @ManagedBean
 public class MoviePushNotificationHandler implements DirectoryMonitorObserver {
-    private final ProducerTemplate producerTemplate;
-    private final AndroidPushTokenRepository pushTokenRepository;
     private final Logger logger = LoggerFactory.getLogger(MoviePushNotificationHandler.class.getName());
+    private final FirebaseNotificationService notificationService;
+    private final AndroidPushTokenRepository pushTokenRepository;
 
-    public MoviePushNotificationHandler(AndroidPushTokenRepository pushTokenRepository, ProducerTemplate producerTemplate) {
+    public MoviePushNotificationHandler(AndroidPushTokenRepository pushTokenRepository, FirebaseNotificationService notificationService) {
+        this.notificationService = notificationService;
         this.pushTokenRepository = pushTokenRepository;
-        this.producerTemplate = producerTemplate;
     }
 
     public void addPushToken(AndroidPushClient pushClient) {
@@ -50,7 +50,7 @@ public class MoviePushNotificationHandler implements DirectoryMonitorObserver {
                         .setRecipientToken(token.getPushToken())
                         .build();
 
-                producerTemplate.sendBody("seda:pushnotification", pushNotification);
+                notificationService.sendPushNotification(pushNotification);
             });
         }
     }
