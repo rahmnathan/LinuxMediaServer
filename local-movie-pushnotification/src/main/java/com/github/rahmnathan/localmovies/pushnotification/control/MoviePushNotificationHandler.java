@@ -26,8 +26,8 @@ public class MoviePushNotificationHandler implements DirectoryMonitorObserver {
     }
 
     public void addPushToken(AndroidPushClient pushClient) {
-        if (pushTokenRepository.exists(pushClient.getDeviceId())) {
-            AndroidPushClient managedPushClient = pushTokenRepository.findOne(pushClient.getDeviceId());
+        if (pushTokenRepository.existsById(pushClient.getDeviceId())) {
+            AndroidPushClient managedPushClient = pushTokenRepository.findById(pushClient.getDeviceId()).get();
             if (!managedPushClient.getPushToken().equals(pushClient.getPushToken())) {
                 managedPushClient.setPushToken(pushClient.getPushToken());
             }
