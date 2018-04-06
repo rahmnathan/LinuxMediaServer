@@ -45,8 +45,8 @@ public class MoviePushNotificationHandler implements DirectoryMonitorObserver {
             String mediaName = fileName.substring(0, fileName.lastIndexOf('.'));
             pushTokenRepository.findAll().forEach(token -> {
                 PushNotification pushNotification = PushNotification.Builder.newInstance()
-                        .addData("Title", "New Movie!")
-                        .addData("Body", mediaName)
+                        .addData("title", "New Movie!")
+                        .addData("body", mediaName)
                         .setRecipientToken(token.getPushToken())
                         .build();
 
