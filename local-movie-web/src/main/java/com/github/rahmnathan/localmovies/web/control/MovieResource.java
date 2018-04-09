@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,13 +21,12 @@ import java.util.*;
 
 @RestController
 public class MovieResource {
-
-    private final String[] mediaPaths;
-    private final MovieInfoFacade movieInfoFacade;
-    private final MoviePushNotificationHandler notificationHandler;
-    private final FileSender fileSender = new FileSender();
     private final Logger logger = LoggerFactory.getLogger(MovieResource.class.getName());
+    private final MoviePushNotificationHandler notificationHandler;
     private static final String TRANSACTION_ID = "TransactionID";
+    private final FileSender fileSender = new FileSender();
+    private final MovieInfoFacade movieInfoFacade;
+    private final String[] mediaPaths;
 
     public MovieResource(MovieInfoFacade movieInfoControl, MoviePushNotificationHandler notificationHandler,
                          @Value("${media.path}") String[] mediaPaths){
@@ -35,7 +35,7 @@ public class MovieResource {
         this.mediaPaths = mediaPaths;
     }
 
-    @RequestMapping(value = "/titlerequest", method = RequestMethod.POST, produces="application/json", consumes = "application/json")
+    @RequestMapping(value = "/titlerequest", method = RequestMethod.POST, produces=MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public List<MediaFile> titleRequest(@RequestBody MovieInfoRequest movieInfoRequest, HttpServletResponse response) {
         MDC.put(TRANSACTION_ID, UUID.randomUUID().toString());
         logger.info("Received request: {}", movieInfoRequest.toString());
@@ -119,7 +119,7 @@ public class MovieResource {
         path = path.replace("/", File.separator);
         logger.info("Streaming poster - {}", path);
 
-        String image = movieInfoFacade.loadSingleMovie(path).getMovieInfo().getImage();
+        String image = movieInfoFacade.loadSingleMovie(path).getMovie().getImage();
         if(image == null)
             return new byte[0];
 

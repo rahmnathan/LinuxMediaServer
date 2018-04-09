@@ -11,8 +11,8 @@ import java.nio.file.Path;
 
 public class FileSender {
 
-    private static final int DEFAULT_BUFFER_SIZE = 16384;
     private final Logger logger = LoggerFactory.getLogger(FileSender.class.getName());
+    private static final int DEFAULT_BUFFER_SIZE = 16384;
 
     public void serveResource(Path file, HttpServletRequest request, HttpServletResponse response) {
         if (response == null || request == null || file == null)

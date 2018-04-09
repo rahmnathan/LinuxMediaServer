@@ -1,6 +1,6 @@
 package com.github.rahmnathan.localmovies.data;
 
-import com.github.rahmnathan.movie.info.data.MovieInfo;
+import com.github.rahmnathan.movie.data.Movie;
 
 import javax.persistence.*;
 import java.util.Calendar;
@@ -13,13 +13,13 @@ public class MediaFile {
     private String fileName;
     private long created;
     private int views;
-    private MovieInfo movieInfo;
+    private Movie movie;
     @Version
     private long version;
 
-    private MediaFile(String path, MovieInfo movieInfo, int views, String fileName) {
+    private MediaFile(String path, Movie movie, int views, String fileName) {
         this.path = path;
-        this.movieInfo = movieInfo;
+        this.movie = movie;
         this.fileName = fileName;
         this.views = views;
         created = Calendar.getInstance().getTimeInMillis();
@@ -49,24 +49,24 @@ public class MediaFile {
         return created;
     }
 
-    public MovieInfo getMovieInfo() {
-        return movieInfo;
+    public Movie getMovie() {
+        return movie;
     }
 
-    public void setMovieInfo(MovieInfo movieInfo){
-        this.movieInfo = movieInfo;
+    public void setMovie(Movie movie){
+        this.movie = movie;
     }
 
     @Override
     public String toString(){
-        return movieInfo.getTitle();
+        return movie.getTitle();
     }
 
     public static class Builder {
         private String fileName;
         private String path;
         private int views;
-        private MovieInfo movieInfo;
+        private Movie movieInfo;
 
         public static Builder newInstance(){
             return new Builder();
@@ -77,8 +77,8 @@ public class MediaFile {
             return this;
         }
 
-        public Builder setMovieInfo(MovieInfo movieInfo) {
-            this.movieInfo = movieInfo;
+        public Builder setMovie(Movie movie) {
+            this.movieInfo = movie;
             return this;
         }
 
@@ -100,12 +100,12 @@ public class MediaFile {
             if(mediaFile == null)
                 return Builder.newInstance()
                         .setFileName(fileName)
-                        .setMovieInfo(MovieInfo.Builder.newInstance().setTitle(title).build())
+                        .setMovie(Movie.Builder.newInstance().setTitle(title).build())
                         .build();
 
             return Builder.newInstance()
                     .setFileName(fileName)
-                    .setMovieInfo(MovieInfo.Builder.copyWithNewTitle(mediaFile.getMovieInfo(), title))
+                    .setMovie(Movie.Builder.copyWithNewTitle(mediaFile.getMovie(), title))
                     .setPath(mediaFile.getPath())
                     .setViews(mediaFile.getViews())
                     .build();
@@ -117,7 +117,7 @@ public class MediaFile {
 
             return Builder.newInstance()
                     .setFileName(mediaFile.getFileName())
-                    .setMovieInfo(MovieInfo.Builder.copyWithNoImage(mediaFile.getMovieInfo()))
+                    .setMovie(Movie.Builder.copyWithNoImage(mediaFile.getMovie()))
                     .setViews(mediaFile.getViews())
                     .setPath(mediaFile.getPath())
                     .build();

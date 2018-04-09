@@ -5,6 +5,6 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface MovieInfoRepository extends CrudRepository<MediaFile, String> {
+public interface MovieRepository extends CrudRepository<MediaFile, String> {
 
 }

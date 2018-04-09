@@ -1,10 +1,10 @@
 package com.github.rahmnathan.localmovies.service.control;
 
 import com.github.rahmnathan.localmovies.data.MediaFile;
-import com.github.rahmnathan.localmovies.persistence.MovieInfoRepository;
+import com.github.rahmnathan.localmovies.persistence.MovieRepository;
 import com.github.rahmnathan.localmovies.service.utils.PathUtils;
-import com.github.rahmnathan.movie.info.api.IMovieInfoProvider;
-import com.github.rahmnathan.movie.info.data.MovieInfo;
+import com.github.rahmnathan.movie.api.MovieProvider;
+import com.github.rahmnathan.movie.data.Movie;
 import com.google.common.cache.CacheLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,11 +15,11 @@ import java.io.File;
 @ManagedBean
 public class MovieCacheLoader extends CacheLoader<String, MediaFile> {
     private final Logger logger = LoggerFactory.getLogger(MovieCacheLoader.class.getName());
-    private final IMovieInfoProvider movieInfoProvider;
-    private final MovieInfoRepository repository;
+    private final MovieProvider movieProvider;
+    private final MovieRepository repository;
 
-    public MovieCacheLoader(IMovieInfoProvider movieInfoProvider, MovieInfoRepository repository) {
-        this.movieInfoProvider = movieInfoProvider;
+    public MovieCacheLoader(MovieProvider movieProvider, MovieRepository repository) {
+        this.movieProvider = movieProvider;
         this.repository = repository;
     }
 
@@ -44,10 +44,10 @@ public class MovieCacheLoader extends CacheLoader<String, MediaFile> {
         String fileName = new File(path).getName();
         String title = PathUtils.getTitle(fileName);
 
-        MovieInfo movieInfo = movieInfoProvider.loadMovieInfo(title);
+        Movie movieInfo = movieProvider.loadMovieInfo(title);
         MediaFile mediaFile = MediaFile.Builder.newInstance()
                 .setFileName(fileName)
-                .setMovieInfo(movieInfo)
+                .setMovie(movieInfo)
                 .setPath(path)
                 .setViews(0)
                 .build();

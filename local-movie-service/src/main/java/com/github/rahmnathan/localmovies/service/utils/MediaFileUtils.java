@@ -54,19 +54,19 @@ public class MediaFileUtils {
                         .collect(Collectors.toList());
             case RELEASE_YEAR:
                 return movieInfoList.stream()
-                        .sorted((movie1, movie2) -> Long.valueOf(movie2.getMovieInfo().getReleaseYear())
-                                .compareTo(Long.valueOf(movie1.getMovieInfo().getReleaseYear())))
+                        .sorted((movie1, movie2) -> Long.valueOf(movie2.getMovie().getReleaseYear())
+                                .compareTo(Long.valueOf(movie1.getMovie().getReleaseYear())))
                         .collect(Collectors.toList());
             case RATING:
                 return movieInfoList.stream()
-                        .sorted((movie1, movie2) -> Double.valueOf(movie2.getMovieInfo().getIMDBRating())
-                                .compareTo(Double.valueOf(movie1.getMovieInfo().getIMDBRating())))
+                        .sorted((movie1, movie2) -> Double.valueOf(movie2.getMovie().getIMDBRating())
+                                .compareTo(Double.valueOf(movie1.getMovie().getIMDBRating())))
                         .collect(Collectors.toList());
             case SEASONS_EPISODES:
                 return movieInfoList.stream()
                         .sorted((movie1, movie2) -> {
-                            Integer current = Integer.parseInt(movie1.getMovieInfo().getTitle().split(" ")[1]);
-                            Integer next = Integer.parseInt(movie2.getMovieInfo().getTitle().split(" ")[1]);
+                            Integer current = Integer.parseInt(movie1.getMovie().getTitle().split(" ")[1]);
+                            Integer next = Integer.parseInt(movie2.getMovie().getTitle().split(" ")[1]);
                             return current.compareTo(next);
                         })
                         .collect(Collectors.toList());
