@@ -1,12 +1,8 @@
 package com.github.rahmnathan.localmovies.video.control;
 
 import com.github.rahmnathan.directory.monitor.DirectoryMonitorObserver;
-import com.github.rahmnathan.video.codec.AudioCodec;
-import com.github.rahmnathan.video.codec.ContainerFormat;
-import com.github.rahmnathan.video.codec.VideoCodec;
-import com.github.rahmnathan.video.control.VideoController;
-import com.github.rahmnathan.video.data.SimpleConversionJob;
-import net.bramp.ffmpeg.FFmpeg;
+import com.github.rahmnathan.video.cast.handbrake.control.VideoController;
+import com.github.rahmnathan.video.cast.handbrake.data.SimpleConversionJob;
 import net.bramp.ffmpeg.FFprobe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,13 +25,10 @@ public class VideoConversionMonitor implements DirectoryMonitorObserver {
     private final Logger logger = LoggerFactory.getLogger(VideoConversionMonitor.class.getName());
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private volatile Set<String> activeConversions = ConcurrentHashMap.newKeySet();
-    private FFmpeg ffmpeg;
     private FFprobe ffprobe;
 
-    public VideoConversionMonitor(@Value("${ffmpeg.location:/usr/bin/ffmpeg}") String ffmpegLocation,
-                                  @Value("${ffprobe.location:/usr/bin/ffprobe}") String ffprobeLocation){
+    public VideoConversionMonitor(@Value("${ffprobe.location:/usr/bin/ffprobe}") String ffprobeLocation){
         try {
-            this.ffmpeg = new FFmpeg(ffmpegLocation);
             this.ffprobe = new FFprobe(ffprobeLocation);
         } catch (IOException e){
             logger.error("Failed to instantiate VideoConversionMonitor", e);
@@ -44,7 +37,7 @@ public class VideoConversionMonitor implements DirectoryMonitorObserver {
 
     @Override
     public void directoryModified(WatchEvent event, Path absolutePath) {
-        if (ffmpeg == null || ffprobe == null)
+        if (ffprobe == null)
             return;
 
         if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE && Files.isRegularFile(absolutePath) &&
@@ -59,11 +52,7 @@ public class VideoConversionMonitor implements DirectoryMonitorObserver {
 
             String newFilePath = absolutePath.toString().substring(0, absolutePath.toString().lastIndexOf('.')) + ".mp4";
             SimpleConversionJob conversionJob = SimpleConversionJob.Builder.newInstance()
-                    .setFfmpeg(ffmpeg)
                     .setFfprobe(ffprobe)
-                    .setAudioCodec(AudioCodec.AAC)
-                    .setVideoCodec(VideoCodec.H264)
-                    .setContainerFormat(Set.of(ContainerFormat.MP4, ContainerFormat.MKV))
                     .setInputFile(absolutePath.toFile())
                     .setOutputFile(new File(newFilePath))
                     .build();
