@@ -60,4 +60,8 @@ public class VideoConversionMonitor implements DirectoryMonitorObserver {
             executorService.submit(new VideoController(conversionJob, activeConversions));
         }
     }
+
+    public Set<String> getActiveConversions() {
+        return activeConversions;
+    }
 }

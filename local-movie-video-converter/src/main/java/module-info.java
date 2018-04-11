@@ -1,4 +1,5 @@
 module local.movie.video.converter {
+    exports com.github.rahmnathan.localmovies.video.control;
     requires spring.context;
     requires directory.monitor;
     requires spring.beans;
