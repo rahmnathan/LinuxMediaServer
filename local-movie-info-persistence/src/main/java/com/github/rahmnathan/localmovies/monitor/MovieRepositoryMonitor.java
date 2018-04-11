@@ -33,15 +33,16 @@ public class MovieRepositoryMonitor {
                 Movie newMovie = movieProvider.loadMovieInfo(existingMovie.getTitle());
 
                 Movie mergedMovie = Movie.Builder.newInstance()
-                        .setGenre(newMovie.getGenre() != null && !newMovie.getGenre().equals("") ? newMovie.getGenre() : existingMovie.getGenre())
-                        .setImage(newMovie.getImage() != null && !newMovie.getImage().equals("") ? newMovie.getImage() : existingMovie.getImage())
-                        .setIMDBRating(newMovie.getIMDBRating() != null && !newMovie.getIMDBRating().equals("") ? newMovie.getIMDBRating() : existingMovie.getIMDBRating())
-                        .setMetaRating(newMovie.getMetaRating() != null && !newMovie.getMetaRating().equals("")? newMovie.getMetaRating() : existingMovie.getMetaRating())
-                        .setReleaseYear(newMovie.getReleaseYear() != null && !newMovie.getReleaseYear().equals("") ? newMovie.getReleaseYear() : existingMovie.getReleaseYear())
-                        .setTitle(newMovie.getTitle() != null && !newMovie.getTitle().equals("") ? newMovie.getTitle() : existingMovie.getTitle())
+                        .setGenre(newMovie.getGenre() != null && !newMovie.getGenre().equals("null") ? newMovie.getGenre() : existingMovie.getGenre())
+                        .setImage(newMovie.getImage() != null && !newMovie.getImage().equals("null") ? newMovie.getImage() : existingMovie.getImage())
+                        .setIMDBRating(newMovie.getIMDBRating() != null && !newMovie.getIMDBRating().equals("null") ? newMovie.getIMDBRating() : existingMovie.getIMDBRating())
+                        .setMetaRating(newMovie.getMetaRating() != null && !newMovie.getMetaRating().equals("null")? newMovie.getMetaRating() : existingMovie.getMetaRating())
+                        .setReleaseYear(newMovie.getReleaseYear() != null && !newMovie.getReleaseYear().equals("null") ? newMovie.getReleaseYear() : existingMovie.getReleaseYear())
+                        .setTitle(newMovie.getTitle() != null && !newMovie.getTitle().equals("null") ? newMovie.getTitle() : existingMovie.getTitle())
                         .build();
 
                 mediaFile.setMovie(mergedMovie);
+                movieRepository.save(mediaFile);
             }
         });
     }
