@@ -52,7 +52,7 @@ public class VideoConversionMonitor implements DirectoryMonitorObserver {
 
             String newFilePath = absolutePath.toString().substring(0, absolutePath.toString().lastIndexOf('.')) + ".mp4";
 
-            SimpleConversionJob conversionJob = new SimpleConversionJob(ffprobe, absolutePath.toFile(), new File(newFilePath));
+            SimpleConversionJob conversionJob = new SimpleConversionJob(ffprobe, new File(newFilePath), absolutePath.toFile());
 
             executorService.submit(new VideoController(conversionJob, activeConversions));
         }
