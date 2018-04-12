@@ -2,9 +2,9 @@ package com.github.rahmnathan.localmovies.web.control;
 
 import com.github.rahmnathan.localmovies.service.boundary.MovieInfoFacade;
 import com.github.rahmnathan.localmovies.data.MediaFile;
-import com.github.rahmnathan.localmovies.service.data.MovieSearchCriteria;
 import com.github.rahmnathan.localmovies.pushnotification.control.MoviePushNotificationHandler;
 import com.github.rahmnathan.localmovies.pushnotification.persistence.AndroidPushClient;
+import com.github.rahmnathan.localmovies.service.data.MovieSearchCriteria;
 import com.github.rahmnathan.localmovies.web.data.MovieInfoRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,15 +48,11 @@ public class MovieResource {
         // Using file-system specific file separator
         String path = movieInfoRequest.getPath().replace("/", File.separator);
 
-        MovieSearchCriteria searchCriteria = MovieSearchCriteria.Builder.newInstance()
-                .setItemsPerPage(movieInfoRequest.getResultsPerPage())
-                .setOrder(movieInfoRequest.getOrder())
-                .setPage(movieInfoRequest.getPage())
-                .setPath(path)
-                .setClient(movieInfoRequest.getClient())
-                .build();
+        MovieSearchCriteria searchCriteria = new MovieSearchCriteria(path, movieInfoRequest.getPage(),
+                movieInfoRequest.getResultsPerPage(), movieInfoRequest.getClient(), movieInfoRequest.getOrder());
 
-        if(searchCriteria.getPage() == 0)
+        Integer page = searchCriteria.getPage();
+        if(page != null && page == 0)
             movieInfoCount(movieInfoRequest.getPath(), response);
 
         List<MediaFile> movieInfoList = movieInfoFacade.loadMovieList(searchCriteria);
