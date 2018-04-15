@@ -39,6 +39,8 @@ public class MovieRepositoryMonitor {
                         .setMetaRating(newMovie.getMetaRating() != null && !newMovie.getMetaRating().equals("null")? newMovie.getMetaRating() : existingMovie.getMetaRating())
                         .setReleaseYear(newMovie.getReleaseYear() != null && !newMovie.getReleaseYear().equals("null") ? newMovie.getReleaseYear() : existingMovie.getReleaseYear())
                         .setTitle(newMovie.getTitle() != null && !newMovie.getTitle().equals("null") ? newMovie.getTitle() : existingMovie.getTitle())
+                        .setActors(newMovie.getActors() != null && !newMovie.getActors().equals("null") ? newMovie.getActors() : existingMovie.getActors())
+                        .setPlot(newMovie.getPlot() != null && !newMovie.getPlot().equals("null") ? newMovie.getPlot() : existingMovie.getPlot())
                         .build();
 
                 mediaFile.setMovie(mergedMovie);
