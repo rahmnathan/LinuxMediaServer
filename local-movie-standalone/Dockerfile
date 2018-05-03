@@ -9,8 +9,10 @@ RUN /opt/localmovies/ssl-gen.sh
 
 RUN apt-get update && \
     apt-get -y install software-properties-common && \
-    apt-get -y install gnupg && \
-    add-apt-repository ppa:stebbins/handbrake-releases && \
+    apt-get -y install gnupg
+
+RUN echo "deb http://ppa.launchpad.net/stebbins/handbrake-releases/ubuntu bionic main" >> /etc/apt/sources.list && \
+    echo "deb-src http://ppa.launchpad.net/stebbins/handbrake-releases/ubuntu bionic main" >> /etc/apt/sources.list && \
     apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 8771ADB0816950D8
 
 RUN apt-get update && \
