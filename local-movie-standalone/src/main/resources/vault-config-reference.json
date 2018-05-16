@@ -1,0 +1,37 @@
+{
+  "ffmpeg.location": "/usr/bin/ffmpeg",
+  "ffprobe.location": "/usr/bin/ffprobe",
+  "keycloak.auth-server-url": "https://localmovies.hopto.org/auth",
+  "keycloak.bearer-only": "true",
+  "keycloak.realm": "LocalMovies",
+  "keycloak.resource": "local-movie-endpoints",
+  "keycloak.securityConstraints": [
+    {
+      "authRoles": [
+        "user"
+      ],
+      "securityCollections": [
+        {
+          "name": "secure stuff",
+          "patterns": [
+            "/"
+          ]
+        }
+      ]
+    }
+  ],
+  "keycloak.ssl-required": "external",
+  "logging.pattern.level": "%5p %mdc",
+  "media.path": "/home/nathan/LocalMedia/,/mnt/storage/LocalMedia/",
+  "omdb.api.key": "your-key",
+  "push.notification.key": "your-key",
+  "server.port": "8444",
+  "server.servlet-path": "/movie-api",
+  "server.ssl.enabled": true,
+  "spring.datasource.password": "password",
+  "spring.datasource.url": "jdbc:postgresql://<your-host>/localmovies",
+  "spring.datasource.username": "username",
+  "spring.jpa.database-platform": "org.hibernate.dialect.PostgreSQLDialect",
+  "spring.jpa.hibernate.ddl-auto": "validate",
+  "spring.jpa.show-sql": "false"
+}
