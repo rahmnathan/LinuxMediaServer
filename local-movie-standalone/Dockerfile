@@ -21,6 +21,9 @@ RUN apt-get update && \
     apt-get -y install handbrake-cli && \
     apt-get clean
 
+ADD src/main/resources/vault.cer /opt/localmovies/vault.cer
+RUN keytool -importcert -file /opt/localmovies/vault.cer -keystore $JAVA_HOME/lib/security/cacerts -storepass changeit -noprompt -alias "vault"
+
 ARG JAR_FILE
 ADD target/$JAR_FILE /opt/localmovies/localmovies.jar
 
