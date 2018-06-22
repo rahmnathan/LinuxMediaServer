@@ -7,11 +7,11 @@ import java.security.KeyStore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
+import org.springframework.boot.context.embedded.Ssl;
+import org.springframework.boot.context.embedded.SslStoreProvider;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
-import org.springframework.boot.web.server.Ssl;
-import org.springframework.boot.web.server.SslStoreProvider;
-import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.cloud.vault.config.VaultProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,7 +53,7 @@ public class VaultPkiConfiguration {
         return new SslCertificateEmbeddedServletContainerCustomizer(certificateBundle);
     }
 
-    private static class SslCertificateEmbeddedServletContainerCustomizer implements WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
+    private static class SslCertificateEmbeddedServletContainerCustomizer implements EmbeddedServletContainerCustomizer {
 
         private final CertificateBundle certificateBundle;
 
@@ -62,7 +62,7 @@ public class VaultPkiConfiguration {
         }
 
         @Override
-        public void customize(TomcatServletWebServerFactory container) {
+        public void customize(ConfigurableEmbeddedServletContainer container) {
             try {
                 final KeyStore keyStore = certificateBundle.createKeyStore("vault");
                 final KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());

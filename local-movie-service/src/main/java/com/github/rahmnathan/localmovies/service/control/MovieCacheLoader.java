@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
 import java.io.File;
-import java.util.Optional;
 
 @ManagedBean
 public class MovieCacheLoader extends CacheLoader<String, MediaFile> {
@@ -26,20 +25,18 @@ public class MovieCacheLoader extends CacheLoader<String, MediaFile> {
 
     @Override
     public MediaFile load(String path) {
-        Optional<MediaFile> mediaFile = loadMediaInfoFromDatabase(path);
-
-        return mediaFile.orElseGet(() -> {
-            if (PathUtils.isTopLevel(path)) {
-                return loadMediaInfoFromProvider(path);
-            } else {
-                return loadSeriesParentInfo(path);
-            }
-        });
+        if (repository.exists(path)) {
+            return loadMediaInfoFromDatabase(path);
+        } else if (PathUtils.isTopLevel(path)) {
+            return loadMediaInfoFromProvider(path);
+        } else {
+            return loadSeriesParentInfo(path);
+        }
     }
 
-    private Optional<MediaFile> loadMediaInfoFromDatabase(String path){
+    private MediaFile loadMediaInfoFromDatabase(String path){
         logger.info("Getting from database - {}", path);
-        return repository.findById(path);
+        return repository.findOne(path);
     }
 
     private MediaFile loadMediaInfoFromProvider(String path) {
