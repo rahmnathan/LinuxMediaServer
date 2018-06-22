@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
+import java.util.Optional;
 import java.util.Set;
 
 @ManagedBean
@@ -31,8 +32,10 @@ public class MoviePushNotificationHandler implements DirectoryMonitorObserver {
     }
 
     public void addPushToken(AndroidPushClient pushClient) {
-        if (pushTokenRepository.exists(pushClient.getDeviceId())) {
-            AndroidPushClient managedPushClient = pushTokenRepository.findOne(pushClient.getDeviceId());
+        Optional<AndroidPushClient> existingPushClient = pushTokenRepository.findById(pushClient.getDeviceId());
+
+        if (existingPushClient.isPresent()) {
+            AndroidPushClient managedPushClient = existingPushClient.get();
             if (!managedPushClient.getPushToken().equals(pushClient.getPushToken())) {
                 managedPushClient.setPushToken(pushClient.getPushToken());
             }

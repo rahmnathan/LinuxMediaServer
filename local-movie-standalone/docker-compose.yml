@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  localmovies:
+    image: 192.168.1.8:5000/localmovies-server:latest
+    volumes:
+     - /opt/localmovies/config:/opt/localmovies/config
+     - /media/nathan/LocalMedia/:/home/nathan/LocalMedia/
+     - /mnt/storage/LocalMedia/:/mnt/storage/LocalMedia/
+    ports:
+      - 8080:8080
+  postgres:
+    image: postgres:alpine
+    environment:
+      POSTGRES_PASSWORD: pw123
+      POSTGRES_USER: localmovies
+      POSTGRES_DATABASE: localmovies
