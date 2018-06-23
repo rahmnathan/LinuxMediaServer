@@ -1,6 +1,7 @@
-package com.github.localmovies.event;
+package com.github.rahmnathan.localmovies.event;
 
 import com.github.rahmnathan.directory.monitor.DirectoryMonitorObserver;
+import com.github.rahmnathan.localmovies.data.MediaFile;
 import com.github.rahmnathan.localmovies.service.control.MovieInfoProvider;
 import com.github.rahmnathan.video.cast.handbrake.control.VideoController;
 import com.github.rahmnathan.video.cast.handbrake.data.SimpleConversionJob;
@@ -8,34 +9,44 @@ import net.bramp.ffmpeg.FFprobe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
-import javax.annotation.ManagedBean;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
-@ManagedBean
-public class VideoConversionMonitor implements DirectoryMonitorObserver {
-    private final Logger logger = LoggerFactory.getLogger(VideoConversionMonitor.class.getName());
+@Component
+public class MediaFileEventManager implements DirectoryMonitorObserver {
+    private final Logger logger = LoggerFactory.getLogger(MediaFileEventManager.class);
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private volatile Set<String> activeConversions = ConcurrentHashMap.newKeySet();
+    private final List<MediaFileEvent> mediaFileEvents = new ArrayList<>();
+    private final MediaEventRepository eventRepository;
     private final MovieInfoProvider movieInfoProvider;
     private FFprobe ffprobe;
 
-    public VideoConversionMonitor(@Value("${ffprobe.location:/usr/bin/ffprobe}") String ffprobeLocation, MovieInfoProvider movieInfoProvider){
+    public MediaFileEventManager(@Value("${ffprobe.location:/usr/bin/ffprobe}") String ffprobeLocation, MovieInfoProvider movieInfoProvider,
+                                 MediaEventRepository eventRepository) {
+        this.eventRepository = eventRepository;
+        eventRepository.findAll().forEach(mediaFileEvents::add);
         this.movieInfoProvider = movieInfoProvider;
 
         try {
             this.ffprobe = new FFprobe(ffprobeLocation);
         } catch (IOException e){
-            logger.error("Failed to instantiate VideoConversionMonitor", e);
+            logger.error("Failed to instantiate MediaFileEventManager", e);
         }
     }
 
@@ -64,7 +75,19 @@ public class VideoConversionMonitor implements DirectoryMonitorObserver {
             executorService.submit(new VideoController(conversionJob, activeConversions));
         }
 
-        movieInfoProvider.loadMediaInfo(resultFilePath.split("/LocalMedia/")[1]);
+        MediaFile newMediaFileEvent = movieInfoProvider.loadMediaInfo(resultFilePath.split("/LocalMedia/")[1]);
+        MediaFileEvent event1 = new MediaFileEvent(event.kind(), newMediaFileEvent);
+
+        mediaFileEvents.add(event1);
+        eventRepository.save(event1);
+
+    }
+
+    public List<MediaFileEvent> getMediaFileEvents(LocalDateTime localDateTime){
+        return mediaFileEvents.stream()
+                .sorted(Comparator.comparing(MediaFileEvent::getLocalDateTime))
+                .filter(mediaFileEvent -> mediaFileEvent.getLocalDateTime().isAfter(localDateTime))
+                .collect(Collectors.toList());
     }
 
     public Set<String> getActiveConversions() {
