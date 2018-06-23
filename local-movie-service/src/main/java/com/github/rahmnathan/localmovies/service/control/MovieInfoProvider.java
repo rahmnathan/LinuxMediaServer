@@ -20,7 +20,7 @@ public class MovieInfoProvider {
                 .build(cacheLoader);
     }
 
-    MediaFile loadMediaInfo(String path){
+    public MediaFile loadMediaInfo(String path){
         try {
             return movieInfoCache.get(path);
         } catch (ExecutionException e){

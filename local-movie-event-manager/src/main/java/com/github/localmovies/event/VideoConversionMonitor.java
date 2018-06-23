@@ -1,6 +1,7 @@
-package com.github.rahmnathan.localmovies.video.control;
+package com.github.localmovies.event;
 
 import com.github.rahmnathan.directory.monitor.DirectoryMonitorObserver;
+import com.github.rahmnathan.localmovies.service.control.MovieInfoProvider;
 import com.github.rahmnathan.video.cast.handbrake.control.VideoController;
 import com.github.rahmnathan.video.cast.handbrake.data.SimpleConversionJob;
 import net.bramp.ffmpeg.FFprobe;
@@ -25,9 +26,12 @@ public class VideoConversionMonitor implements DirectoryMonitorObserver {
     private final Logger logger = LoggerFactory.getLogger(VideoConversionMonitor.class.getName());
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private volatile Set<String> activeConversions = ConcurrentHashMap.newKeySet();
+    private final MovieInfoProvider movieInfoProvider;
     private FFprobe ffprobe;
 
-    public VideoConversionMonitor(@Value("${ffprobe.location:/usr/bin/ffprobe}") String ffprobeLocation){
+    public VideoConversionMonitor(@Value("${ffprobe.location:/usr/bin/ffprobe}") String ffprobeLocation, MovieInfoProvider movieInfoProvider){
+        this.movieInfoProvider = movieInfoProvider;
+
         try {
             this.ffprobe = new FFprobe(ffprobeLocation);
         } catch (IOException e){
@@ -40,6 +44,8 @@ public class VideoConversionMonitor implements DirectoryMonitorObserver {
         if (ffprobe == null)
             return;
 
+        String resultFilePath = absolutePath.toString();
+
         if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE && Files.isRegularFile(absolutePath) &&
                 !activeConversions.contains(absolutePath.toString())) {
 
@@ -51,11 +57,14 @@ public class VideoConversionMonitor implements DirectoryMonitorObserver {
             }
 
             String newFilePath = absolutePath.toString().substring(0, absolutePath.toString().lastIndexOf('.')) + ".mp4";
+            resultFilePath = newFilePath;
 
             SimpleConversionJob conversionJob = new SimpleConversionJob(ffprobe, new File(newFilePath), absolutePath.toFile());
 
             executorService.submit(new VideoController(conversionJob, activeConversions));
         }
+
+        movieInfoProvider.loadMediaInfo(resultFilePath.split("/LocalMedia/")[1]);
     }
 
     public Set<String> getActiveConversions() {

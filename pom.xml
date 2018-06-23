@@ -11,9 +11,9 @@
         <module>local-movie-service</module>
         <module>local-movie-web</module>
         <module>local-movie-standalone</module>
-        <module>local-movie-video-converter</module>
         <module>local-movie-info-persistence</module>
         <module>local-movie-pushnotification</module>
+        <module>local-movie-event-manager</module>
     </modules>
 
     <parent>
@@ -26,6 +26,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
 
+        <springfox.version>2.7.0</springfox.version>
         <kotlin.version>1.2.31</kotlin.version>
     </properties>
 
@@ -93,6 +94,16 @@
                 <artifactId>javaee-api</artifactId>
                 <version>8.0</version>
                 <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger2</artifactId>
+                <version>${springfox.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger-ui</artifactId>
+                <version>${springfox.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
