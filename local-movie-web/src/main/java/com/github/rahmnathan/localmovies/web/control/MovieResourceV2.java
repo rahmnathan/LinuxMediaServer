@@ -1,6 +1,8 @@
 package com.github.rahmnathan.localmovies.web.control;
 
 import com.github.rahmnathan.localmovies.data.MediaFile;
+import com.github.rahmnathan.localmovies.event.MediaFileEvent;
+import com.github.rahmnathan.localmovies.event.MediaFileEventManager;
 import com.github.rahmnathan.localmovies.pushnotification.control.MoviePushNotificationHandler;
 import com.github.rahmnathan.localmovies.pushnotification.persistence.AndroidPushClient;
 import com.github.rahmnathan.localmovies.service.boundary.MovieInfoFacade;
@@ -11,12 +13,16 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.nio.file.Paths;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
@@ -27,13 +33,16 @@ public class MovieResourceV2 {
     private final MoviePushNotificationHandler notificationHandler;
     private static final String TRANSACTION_ID = "TransactionID";
     private final FileSender fileSender = new FileSender();
+    private final MediaFileEventManager eventManager;
     private final MovieInfoFacade movieInfoFacade;
     private final String[] mediaPaths;
 
     public MovieResourceV2(MovieInfoFacade movieInfoControl, MoviePushNotificationHandler notificationHandler,
-                           @Value("${media.path}") String[] mediaPaths){
+                           @Value("${media.path}") String[] mediaPaths,
+                           MediaFileEventManager eventManager){
         this.notificationHandler = notificationHandler;
         this.movieInfoFacade = movieInfoControl;
+        this.eventManager = eventManager;
         this.mediaPaths = mediaPaths;
     }
 
@@ -99,19 +108,28 @@ public class MovieResourceV2 {
      * @return - Poster image for specified video file
      */
     @RequestMapping("/v2/movie/poster")
-    public byte[] servePoster(@RequestParam("path") String path) {
+    public ResponseEntity<byte[]> servePoster(@RequestParam("path") String path) {
         MDC.put(TRANSACTION_ID, UUID.randomUUID().toString());
 
-        // Using file-system specific file separator
-        path = path.replace("/", File.separator);
         logger.info("Streaming poster - {}", path);
 
         String image = movieInfoFacade.loadSingleMovie(path).getMovie().getImage();
         if(image == null)
-            return new byte[0];
+            return ResponseEntity.ok(new byte[0]);
 
         byte[] poster = Base64.getDecoder().decode(image);
         MDC.clear();
-        return poster;
+        return ResponseEntity.ok(poster);
+    }
+
+    @RequestMapping("/v2/movie/events")
+    public ResponseEntity<List<MediaFileEvent>> servePoster(@RequestParam("timestamp") Long epoch) {
+        MDC.put(TRANSACTION_ID, UUID.randomUUID().toString());
+
+        logger.info("Request for events since: {}", epoch);
+        List<MediaFileEvent> events = eventManager.getMediaFileEvents(LocalDateTime.ofInstant(Instant.ofEpochMilli(epoch), ZoneId.systemDefault()));
+
+        MDC.clear();
+        return ResponseEntity.ok(events);
     }
 }
