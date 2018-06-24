@@ -46,8 +46,8 @@ public class MovieResourceV2 {
         this.mediaPaths = mediaPaths;
     }
 
-    @RequestMapping(value = "/v2/movies", method = RequestMethod.POST, produces=MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public List<MediaFile> titleRequest(@RequestBody MovieInfoRequest movieInfoRequest, HttpServletResponse response) {
+    @RequestMapping(value = "/localmovies/v2/movies", method = RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public List<MediaFile> getMovies(@RequestBody MovieInfoRequest movieInfoRequest, HttpServletResponse response) {
         MDC.put(TRANSACTION_ID, UUID.randomUUID().toString());
         logger.info("Received request: {}", movieInfoRequest.toString());
 
@@ -61,7 +61,7 @@ public class MovieResourceV2 {
 
         Integer page = searchCriteria.getPage();
         if(page != null && page == 0)
-            movieInfoCount(movieInfoRequest.getPath(), response);
+            getMovieCount(movieInfoRequest.getPath(), response);
 
         List<MediaFile> movieInfoList = movieInfoFacade.loadMovieList(searchCriteria);
 
@@ -70,8 +70,8 @@ public class MovieResourceV2 {
         return movieInfoList;
     }
 
-    @RequestMapping(value = "/v2/movies/count")
-    public void movieInfoCount(@RequestParam(value = "path") String path, HttpServletResponse response){
+    @RequestMapping(value = "/localmovies/v2/movies/count")
+    public void getMovieCount(@RequestParam(value = "path") String path, HttpServletResponse response){
         MDC.put(TRANSACTION_ID, UUID.randomUUID().toString());
 
         logger.info("Received count request for path - {}", path);
@@ -85,7 +85,7 @@ public class MovieResourceV2 {
     /**
      * @param path - Path to video file to stream
      */
-    @RequestMapping(value = "/v2/movie/stream.mp4", produces = "video/mp4")
+    @RequestMapping(value = "/localmovies/v2/movie/stream.mp4", produces = "video/mp4")
     public void streamVideo(@RequestParam("path") String path, HttpServletResponse response, HttpServletRequest request) {
         MDC.put(TRANSACTION_ID, UUID.randomUUID().toString());
         response.setHeader("Access-Control-Allow-Origin", "*");
@@ -107,8 +107,8 @@ public class MovieResourceV2 {
      * @param path - Path to video file
      * @return - Poster image for specified video file
      */
-    @RequestMapping("/v2/movie/poster")
-    public ResponseEntity<byte[]> servePoster(@RequestParam("path") String path) {
+    @RequestMapping(path = "/localmovies/v2/movie/poster", method = RequestMethod.GET)
+    public ResponseEntity<byte[]> getPoster(@RequestParam("path") String path) {
         MDC.put(TRANSACTION_ID, UUID.randomUUID().toString());
 
         logger.info("Streaming poster - {}", path);
@@ -122,8 +122,8 @@ public class MovieResourceV2 {
         return ResponseEntity.ok(poster);
     }
 
-    @RequestMapping("/v2/movie/events")
-    public ResponseEntity<List<MediaFileEvent>> servePoster(@RequestParam("timestamp") Long epoch) {
+    @RequestMapping(path = "/localmovies/v2/movie/events", method = RequestMethod.GET)
+    public ResponseEntity<List<MediaFileEvent>> getPoster(@RequestParam("timestamp") Long epoch) {
         MDC.put(TRANSACTION_ID, UUID.randomUUID().toString());
 
         logger.info("Request for events since: {}", epoch);

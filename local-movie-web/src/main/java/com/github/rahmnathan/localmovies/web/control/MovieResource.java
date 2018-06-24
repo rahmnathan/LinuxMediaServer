@@ -35,7 +35,7 @@ public class MovieResource {
         this.mediaPaths = mediaPaths;
     }
 
-    @RequestMapping(value = "/titlerequest", method = RequestMethod.POST, produces=MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/movie-api/titlerequest", method = RequestMethod.POST, produces=MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public List<MediaFile> titleRequest(@RequestBody MovieInfoRequest movieInfoRequest, HttpServletResponse response) {
         MDC.put(TRANSACTION_ID, UUID.randomUUID().toString());
         logger.info("Received request: {}", movieInfoRequest.toString());
@@ -65,7 +65,7 @@ public class MovieResource {
     /**
      * @param path - Path to directory you wish to count files from
      */
-    @RequestMapping(value = "/movieinfocount")
+    @RequestMapping(value = "/movie-api/movieinfocount")
     public void movieInfoCount(@RequestParam(value = "path") String path, HttpServletResponse response){
         MDC.put(TRANSACTION_ID, UUID.randomUUID().toString());
 
@@ -82,7 +82,7 @@ public class MovieResource {
     /**
      * @param path - Path to video file to stream
      */
-    @RequestMapping(value = "/video.mp4", produces = "video/mp4")
+    @RequestMapping(value = "/movie-api/video.mp4", produces = "video/mp4")
     public void streamVideo(@RequestParam("path") String path, HttpServletResponse response, HttpServletRequest request) {
         MDC.put(TRANSACTION_ID, UUID.randomUUID().toString());
         response.setHeader("Access-Control-Allow-Origin", "*");
@@ -107,7 +107,7 @@ public class MovieResource {
      * @param path - Path to video file
      * @return - Poster image for specified video file
      */
-    @RequestMapping("/poster")
+    @RequestMapping("/movie-api/poster")
     public byte[] servePoster(@RequestParam("path") String path) {
         MDC.put(TRANSACTION_ID, UUID.randomUUID().toString());
 

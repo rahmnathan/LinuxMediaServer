@@ -1,10 +1,9 @@
 package com.github.rahmnathan.localmovies.event;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.github.rahmnathan.localmovies.data.MediaFile;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.nio.file.WatchEvent;
 import java.time.LocalDateTime;
 
@@ -13,12 +12,14 @@ public class MediaFileEvent {
     @Id
     @GeneratedValue
     private Long id;
+    @JsonSerialize()
     private final LocalDateTime localDateTime = LocalDateTime.now();
-    private final WatchEvent.Kind event;
+    private final String event;
+    @Lob
     private final MediaFile mediaFile;
 
     public MediaFileEvent(WatchEvent.Kind event, MediaFile mediaFile) {
-        this.event = event;
+        this.event = event.toString();
         this.mediaFile = mediaFile;
     }
 
@@ -26,7 +27,7 @@ public class MediaFileEvent {
         return id;
     }
 
-    public WatchEvent.Kind getEvent() {
+    public String getEvent() {
         return event;
     }
 
