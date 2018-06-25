@@ -46,7 +46,7 @@ public class MovieResourceV2 {
         this.mediaPaths = mediaPaths;
     }
 
-    @RequestMapping(value = "/localmovies/v2/movies", method = RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/localmovies/v2/movies", produces=MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public List<MediaFile> getMovies(@RequestBody MovieInfoRequest movieInfoRequest, HttpServletResponse response) {
         MDC.put(TRANSACTION_ID, UUID.randomUUID().toString());
         logger.info("Received request: {}", movieInfoRequest.toString());
@@ -70,7 +70,7 @@ public class MovieResourceV2 {
         return movieInfoList;
     }
 
-    @RequestMapping(value = "/localmovies/v2/movies/count")
+    @GetMapping(value = "/localmovies/v2/movies/count")
     public void getMovieCount(@RequestParam(value = "path") String path, HttpServletResponse response){
         MDC.put(TRANSACTION_ID, UUID.randomUUID().toString());
 
@@ -85,7 +85,7 @@ public class MovieResourceV2 {
     /**
      * @param path - Path to video file to stream
      */
-    @RequestMapping(value = "/localmovies/v2/movie/stream.mp4", produces = "video/mp4")
+    @GetMapping(value = "/localmovies/v2/movie/stream.mp4", produces = "video/mp4")
     public void streamVideo(@RequestParam("path") String path, HttpServletResponse response, HttpServletRequest request) {
         MDC.put(TRANSACTION_ID, UUID.randomUUID().toString());
         response.setHeader("Access-Control-Allow-Origin", "*");
@@ -107,7 +107,7 @@ public class MovieResourceV2 {
      * @param path - Path to video file
      * @return - Poster image for specified video file
      */
-    @RequestMapping(path = "/localmovies/v2/movie/poster", method = RequestMethod.GET)
+    @GetMapping(path = "/localmovies/v2/movie/poster")
     public ResponseEntity<byte[]> getPoster(@RequestParam("path") String path) {
         MDC.put(TRANSACTION_ID, UUID.randomUUID().toString());
 
@@ -122,7 +122,7 @@ public class MovieResourceV2 {
         return ResponseEntity.ok(poster);
     }
 
-    @RequestMapping(path = "/localmovies/v2/movie/events", method = RequestMethod.GET)
+    @GetMapping(path = "/localmovies/v2/movie/events")
     public ResponseEntity<List<MediaFileEvent>> getPoster(@RequestParam("timestamp") Long epoch) {
         MDC.put(TRANSACTION_ID, UUID.randomUUID().toString());
 
