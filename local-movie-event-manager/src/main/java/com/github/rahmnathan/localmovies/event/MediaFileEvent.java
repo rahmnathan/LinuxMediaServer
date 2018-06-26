@@ -12,14 +12,21 @@ public class MediaFileEvent {
     @GeneratedValue
     @JsonIgnore
     private Long id;
+    @JsonIgnore
     private final LocalDateTime timestamp = LocalDateTime.now();
+    private final String relativePath;
     private final String event;
     @Lob
     private final MediaFile mediaFile;
 
-    public MediaFileEvent(String event, MediaFile mediaFile) {
-        this.event = event;
+    public MediaFileEvent(String event, MediaFile mediaFile, String relativePath) {
+        this.relativePath = relativePath;
         this.mediaFile = mediaFile;
+        this.event = event;
+    }
+
+    public String getRelativePath() {
+        return relativePath;
     }
 
     public String getEvent() {

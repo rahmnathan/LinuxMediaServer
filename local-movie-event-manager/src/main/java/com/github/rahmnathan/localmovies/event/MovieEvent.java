@@ -2,7 +2,7 @@ package com.github.rahmnathan.localmovies.event;
 
 public enum MovieEvent {
     ENTRY_CREATE("CREATE"),
-    DELETE("DELETE");
+    ENTRY_DELETE("DELETE");
 
     private final String movieEventString;
 
