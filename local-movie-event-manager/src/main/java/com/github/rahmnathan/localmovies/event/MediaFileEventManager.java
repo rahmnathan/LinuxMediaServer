@@ -76,17 +76,20 @@ public class MediaFileEventManager implements DirectoryMonitorObserver {
         }
 
         MediaFile newMediaFileEvent = movieInfoProvider.loadMediaInfo(resultFilePath.split("/LocalMedia/")[1]);
-        MediaFileEvent event1 = new MediaFileEvent(event.kind(), newMediaFileEvent);
+        if(event.kind() == StandardWatchEventKinds.ENTRY_DELETE){
+            newMediaFileEvent = MediaFile.Builder.copyWithNoImage(newMediaFileEvent);
+        }
+        MediaFileEvent event1 = new MediaFileEvent(MovieEvent.valueOf(event.kind().name()).getMovieEventString(), newMediaFileEvent);
 
         mediaFileEvents.add(event1);
         eventRepository.save(event1);
 
     }
 
-    public List<MediaFileEvent> getMediaFileEvents(LocalDateTime localDateTime){
+    public List<MediaFileEvent> getMediaFileEvents(LocalDateTime lastQueryTime){
         return mediaFileEvents.stream()
-                .sorted(Comparator.comparing(MediaFileEvent::getLocalDateTime))
-                .filter(mediaFileEvent -> mediaFileEvent.getLocalDateTime().isAfter(localDateTime))
+                .sorted(Comparator.comparing(MediaFileEvent::getTimestamp))
+                .filter(mediaFileEvent -> mediaFileEvent.getTimestamp().isAfter(lastQueryTime))
                 .collect(Collectors.toList());
     }
 
