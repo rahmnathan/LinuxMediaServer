@@ -71,7 +71,6 @@ public class MediaFileEventManager implements DirectoryMonitorObserver {
             resultFilePath = newFilePath;
 
             SimpleConversionJob conversionJob = new SimpleConversionJob(ffprobe, new File(newFilePath), absolutePath.toFile());
-
             executorService.submit(new VideoController(conversionJob, activeConversions));
         }
 
@@ -79,8 +78,8 @@ public class MediaFileEventManager implements DirectoryMonitorObserver {
         if(event.kind() == StandardWatchEventKinds.ENTRY_DELETE){
             newMediaFileEvent = MediaFile.Builder.copyWithNoImage(newMediaFileEvent);
         }
-        MediaFileEvent event1 = new MediaFileEvent(MovieEvent.valueOf(event.kind().name()).getMovieEventString(), newMediaFileEvent, resultFilePath.split("/LocalMedia/")[1]);
 
+        MediaFileEvent event1 = new MediaFileEvent(MovieEvent.valueOf(event.kind().name()).getMovieEventString(), newMediaFileEvent, resultFilePath.split("/LocalMedia/")[1]);
         mediaFileEvents.add(event1);
         eventRepository.save(event1);
 
