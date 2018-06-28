@@ -22,15 +22,13 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 @Component
 public class MediaFileEventManager implements DirectoryMonitorObserver {
     private final Logger logger = LoggerFactory.getLogger(MediaFileEventManager.class);
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private volatile Set<String> activeConversions = ConcurrentHashMap.newKeySet();
     private final List<MediaFileEvent> mediaFileEvents = new ArrayList<>();
     private final MediaEventRepository eventRepository;
@@ -39,9 +37,10 @@ public class MediaFileEventManager implements DirectoryMonitorObserver {
 
     public MediaFileEventManager(@Value("${ffprobe.location:/usr/bin/ffprobe}") String ffprobeLocation, MovieInfoProvider movieInfoProvider,
                                  MediaEventRepository eventRepository) {
-        this.eventRepository = eventRepository;
-        eventRepository.findAll().forEach(mediaFileEvents::add);
         this.movieInfoProvider = movieInfoProvider;
+        this.eventRepository = eventRepository;
+
+        eventRepository.findAll().forEach(mediaFileEvents::add);
 
         try {
             this.ffprobe = new FFprobe(ffprobeLocation);
@@ -52,28 +51,20 @@ public class MediaFileEventManager implements DirectoryMonitorObserver {
 
     @Override
     public void directoryModified(WatchEvent event, Path absolutePath) {
-        if (ffprobe == null)
-            return;
-
         String resultFilePath = absolutePath.toString();
 
-        if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE && Files.isRegularFile(absolutePath) &&
-                !activeConversions.contains(absolutePath.toString())) {
+        if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE
+                && !activeConversions.contains(resultFilePath)
+                && Files.isRegularFile(absolutePath)
+                && ffprobe != null) {
 
-            // I need to find a way to wait until a file is fully written before converting it
-            try {
-                Thread.sleep(7000);
-            } catch (InterruptedException e){
-                logger.error("Failed sleep", e);
-            }
-
-            String newFilePath = absolutePath.toString().substring(0, absolutePath.toString().lastIndexOf('.')) + ".mp4";
-            resultFilePath = newFilePath;
-
-            SimpleConversionJob conversionJob = new SimpleConversionJob(ffprobe, new File(newFilePath), absolutePath.toFile());
-            executorService.submit(new VideoController(conversionJob, activeConversions));
+            launchVideoConverter(resultFilePath, event);
+        } else {
+            addEvent(event, resultFilePath);
         }
+    }
 
+    private void addEvent(WatchEvent event, String resultFilePath){
         MediaFile newMediaFileEvent = movieInfoProvider.loadMediaInfo(resultFilePath.split("/LocalMedia/")[1]);
         if(event.kind() == StandardWatchEventKinds.ENTRY_DELETE){
             newMediaFileEvent = MediaFile.Builder.copyWithNoImage(newMediaFileEvent);
@@ -82,7 +73,21 @@ public class MediaFileEventManager implements DirectoryMonitorObserver {
         MediaFileEvent event1 = new MediaFileEvent(MovieEvent.valueOf(event.kind().name()).getMovieEventString(), newMediaFileEvent, resultFilePath.split("/LocalMedia/")[1]);
         mediaFileEvents.add(event1);
         eventRepository.save(event1);
+    }
 
+    private void launchVideoConverter(String inputFilePath, WatchEvent event){
+        // I need to find a way to wait until a file is fully written before converting it
+        try {
+            Thread.sleep(7000);
+        } catch (InterruptedException e){
+            logger.error("Failed sleep", e);
+        }
+
+        String resultFilePath = inputFilePath.substring(0, inputFilePath.lastIndexOf('.')) + ".mp4";
+
+        SimpleConversionJob conversionJob = new SimpleConversionJob(ffprobe, new File(resultFilePath), new File(inputFilePath));
+        CompletableFuture.supplyAsync(new VideoController(conversionJob, activeConversions))
+                .thenAccept(path -> addEvent(event, path));
     }
 
     public List<MediaFileEvent> getMediaFileEvents(LocalDateTime lastQueryTime){
@@ -90,9 +95,5 @@ public class MediaFileEventManager implements DirectoryMonitorObserver {
                 .sorted(Comparator.comparing(MediaFileEvent::getTimestamp))
                 .filter(mediaFileEvent -> mediaFileEvent.getTimestamp().isAfter(lastQueryTime))
                 .collect(Collectors.toList());
-    }
-
-    public Set<String> getActiveConversions() {
-        return activeConversions;
     }
 }

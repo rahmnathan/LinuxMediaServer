@@ -11,10 +11,8 @@ import java.util.Collection;
 @ManagedBean
 public class DirectoryMonitorConfig {
 
-    private final DirectoryMonitor directoryMonitor;
-
     public DirectoryMonitorConfig(Collection<DirectoryMonitorObserver> observers, @Value("${media.path}") String[] mediaPaths) {
-        this.directoryMonitor = new DirectoryMonitor(observers);
+        DirectoryMonitor directoryMonitor = new DirectoryMonitor(observers);
         Arrays.stream(mediaPaths).forEach(directoryMonitor::registerDirectory);
     }
 }

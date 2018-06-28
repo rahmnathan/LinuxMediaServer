@@ -110,7 +110,6 @@ public class MovieResource {
     @GetMapping(path = "/localmovies/v2/movie/poster")
     public ResponseEntity<byte[]> getPoster(@RequestParam("path") String path) {
         MDC.put(TRANSACTION_ID, UUID.randomUUID().toString());
-
         logger.info("Streaming poster - {}", path);
 
         String image = movieInfoFacade.loadSingleMovie(path).getMovie().getImage();

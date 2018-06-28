@@ -12,11 +12,11 @@ import java.util.concurrent.ExecutionException;
 @ManagedBean
 public class MovieInfoProvider {
     private final Logger logger = LoggerFactory.getLogger(MovieInfoProvider.class.getName());
-    private LoadingCache<String, MediaFile> movieInfoCache;
+    private final LoadingCache<String, MediaFile> movieInfoCache;
 
     public MovieInfoProvider(MovieCacheLoader cacheLoader){
         movieInfoCache = CacheBuilder.newBuilder()
-                .maximumSize(500)
+                .maximumSize(1000)
                 .build(cacheLoader);
     }
 

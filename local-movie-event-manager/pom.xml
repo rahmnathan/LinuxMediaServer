@@ -19,19 +19,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>com.github.rahmnathan.utils</groupId>
             <artifactId>cast-video-converter-handbrake</artifactId>
             <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-api</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.github.rahmnathan.localmovie</groupId>
@@ -44,5 +34,4 @@
             <version>${project.parent.version}</version>
         </dependency>
     </dependencies>
-
 </project>
