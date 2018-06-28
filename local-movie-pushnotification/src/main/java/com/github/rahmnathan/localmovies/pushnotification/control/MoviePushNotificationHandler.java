@@ -11,7 +11,6 @@ import javax.annotation.ManagedBean;
 
 @ManagedBean
 public class MoviePushNotificationHandler {
-    private final Logger logger = LoggerFactory.getLogger(MoviePushNotificationHandler.class.getName());
     private final FirebaseNotificationService notificationService;
     private final AndroidPushTokenRepository pushTokenRepository;
 
@@ -32,14 +31,12 @@ public class MoviePushNotificationHandler {
     }
 
     public void sendPushNotifications(String fileName) {
-        logger.info("PushNotification handler detected new file - {}", fileName);
-
         String mediaName = fileName.substring(0, fileName.lastIndexOf('.'));
         pushTokenRepository.findAll().forEach(token -> {
             PushNotification pushNotification = PushNotification.Builder.newInstance()
+                    .setRecipientToken(token.getPushToken())
                     .addData("title", "New Movie!")
                     .addData("body", mediaName)
-                    .setRecipientToken(token.getPushToken())
                     .build();
 
             notificationService.sendPushNotification(pushNotification);

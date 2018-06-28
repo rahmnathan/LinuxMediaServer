@@ -9,6 +9,7 @@ import com.github.rahmnathan.video.cast.handbrake.data.SimpleConversionJob;
 import net.bramp.ffmpeg.FFprobe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -51,6 +52,8 @@ public class MediaFileEventManager implements DirectoryMonitorObserver {
 
     @Override
     public void directoryModified(WatchEvent event, Path absolutePath) {
+        MDC.put("Path", absolutePath.toString());
+        logger.info("Detected movie event.");
         String resultFilePath = absolutePath.toString();
 
         if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE
@@ -65,16 +68,19 @@ public class MediaFileEventManager implements DirectoryMonitorObserver {
     }
 
     private void addEvent(WatchEvent watchEvent, String resultFilePath){
-        MediaFile mediaFile = movieInfoProvider.loadMediaInfo(resultFilePath.split("/LocalMedia/")[1]);
+        String relativePath = resultFilePath.split("/LocalMedia/")[1];
+        MediaFile mediaFile = movieInfoProvider.loadMediaInfo(relativePath);
         if(watchEvent.kind() == StandardWatchEventKinds.ENTRY_DELETE){
             mediaFile = MediaFile.Builder.copyWithNoImage(mediaFile);
         }
 
+        logger.info("Adding event to repository.");
         MediaFileEvent event = new MediaFileEvent(MovieEvent.valueOf(watchEvent.kind().name()).getMovieEventString(), mediaFile, resultFilePath.split("/LocalMedia/")[1]);
         mediaFileEvents.add(event);
-        eventRepository.save(event);
+        CompletableFuture.runAsync(() -> eventRepository.save(event));
 
-        notificationHandler.sendPushNotifications(Paths.get(resultFilePath).getFileName().toString());
+        logger.info("Sending push notification.");
+        notificationHandler.sendPushNotifications(mediaFile.getMovie().getTitle());
     }
 
     private void launchVideoConverter(String inputFilePath, WatchEvent event){
@@ -86,8 +92,9 @@ public class MediaFileEventManager implements DirectoryMonitorObserver {
         }
 
         String resultFilePath = inputFilePath.substring(0, inputFilePath.lastIndexOf('.')) + ".mp4";
-
         SimpleConversionJob conversionJob = new SimpleConversionJob(ffprobe, new File(resultFilePath), new File(inputFilePath));
+
+        logger.info("Launching video converter.");
         CompletableFuture.supplyAsync(new VideoController(conversionJob, activeConversions))
                 .thenAccept(path -> addEvent(event, path));
     }
