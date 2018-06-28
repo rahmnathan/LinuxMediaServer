@@ -2,6 +2,7 @@ package com.github.rahmnathan.localmovies.event;
 
 import com.github.rahmnathan.directory.monitor.DirectoryMonitorObserver;
 import com.github.rahmnathan.localmovies.data.MediaFile;
+import com.github.rahmnathan.localmovies.pushnotification.control.MoviePushNotificationHandler;
 import com.github.rahmnathan.localmovies.service.control.MovieInfoProvider;
 import com.github.rahmnathan.video.cast.handbrake.control.VideoController;
 import com.github.rahmnathan.video.cast.handbrake.data.SimpleConversionJob;
@@ -13,10 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardWatchEventKinds;
-import java.nio.file.WatchEvent;
+import java.nio.file.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -31,12 +29,14 @@ public class MediaFileEventManager implements DirectoryMonitorObserver {
     private final Logger logger = LoggerFactory.getLogger(MediaFileEventManager.class);
     private volatile Set<String> activeConversions = ConcurrentHashMap.newKeySet();
     private final List<MediaFileEvent> mediaFileEvents = new ArrayList<>();
+    private final MoviePushNotificationHandler notificationHandler;
     private final MediaEventRepository eventRepository;
     private final MovieInfoProvider movieInfoProvider;
     private FFprobe ffprobe;
 
     public MediaFileEventManager(@Value("${ffprobe.location:/usr/bin/ffprobe}") String ffprobeLocation, MovieInfoProvider movieInfoProvider,
-                                 MediaEventRepository eventRepository) {
+                                 MediaEventRepository eventRepository, MoviePushNotificationHandler notificationHandler) {
+        this.notificationHandler = notificationHandler;
         this.movieInfoProvider = movieInfoProvider;
         this.eventRepository = eventRepository;
 
@@ -64,15 +64,17 @@ public class MediaFileEventManager implements DirectoryMonitorObserver {
         }
     }
 
-    private void addEvent(WatchEvent event, String resultFilePath){
-        MediaFile newMediaFileEvent = movieInfoProvider.loadMediaInfo(resultFilePath.split("/LocalMedia/")[1]);
-        if(event.kind() == StandardWatchEventKinds.ENTRY_DELETE){
-            newMediaFileEvent = MediaFile.Builder.copyWithNoImage(newMediaFileEvent);
+    private void addEvent(WatchEvent watchEvent, String resultFilePath){
+        MediaFile mediaFile = movieInfoProvider.loadMediaInfo(resultFilePath.split("/LocalMedia/")[1]);
+        if(watchEvent.kind() == StandardWatchEventKinds.ENTRY_DELETE){
+            mediaFile = MediaFile.Builder.copyWithNoImage(mediaFile);
         }
 
-        MediaFileEvent event1 = new MediaFileEvent(MovieEvent.valueOf(event.kind().name()).getMovieEventString(), newMediaFileEvent, resultFilePath.split("/LocalMedia/")[1]);
-        mediaFileEvents.add(event1);
-        eventRepository.save(event1);
+        MediaFileEvent event = new MediaFileEvent(MovieEvent.valueOf(watchEvent.kind().name()).getMovieEventString(), mediaFile, resultFilePath.split("/LocalMedia/")[1]);
+        mediaFileEvents.add(event);
+        eventRepository.save(event);
+
+        notificationHandler.sendPushNotifications(Paths.get(resultFilePath).getFileName().toString());
     }
 
     private void launchVideoConverter(String inputFilePath, WatchEvent event){

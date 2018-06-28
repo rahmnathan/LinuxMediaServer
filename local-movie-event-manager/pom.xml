@@ -33,5 +33,10 @@
             <artifactId>local-movie-info-persistence</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.rahmnathan.localmovie</groupId>
+            <artifactId>local-movie-pushnotification</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
     </dependencies>
 </project>
