@@ -14,15 +14,35 @@ public class MediaFileEvent {
     private Long id;
     @JsonIgnore
     private final LocalDateTime timestamp = LocalDateTime.now();
-    private final String relativePath;
-    private final String event;
-    @Lob
-    private final MediaFile mediaFile;
+    private String relativePath;
+    private String event;
+    @JoinColumn
+    @ManyToOne
+    private MediaFile mediaFile;
+
+    public MediaFileEvent() {
+    }
 
     public MediaFileEvent(String event, MediaFile mediaFile, String relativePath) {
         this.relativePath = relativePath;
         this.mediaFile = mediaFile;
         this.event = event;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setRelativePath(String relativePath) {
+        this.relativePath = relativePath;
+    }
+
+    public void setEvent(String event) {
+        this.event = event;
+    }
+
+    public void setMediaFile(MediaFile mediaFile) {
+        this.mediaFile = mediaFile;
     }
 
     public String getRelativePath() {

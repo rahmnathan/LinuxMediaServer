@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -29,6 +28,7 @@ import java.util.stream.Collectors;
 public class MediaFileEventManager implements DirectoryMonitorObserver {
     private final Logger logger = LoggerFactory.getLogger(MediaFileEventManager.class);
     private volatile Set<String> activeConversions = ConcurrentHashMap.newKeySet();
+    private final VideoController videoController = new VideoController();
     private final List<MediaFileEvent> mediaFileEvents = new ArrayList<>();
     private final MoviePushNotificationHandler notificationHandler;
     private final MediaEventRepository eventRepository;
@@ -52,38 +52,44 @@ public class MediaFileEventManager implements DirectoryMonitorObserver {
 
     @Override
     public void directoryModified(WatchEvent event, Path absolutePath) {
-        MDC.put("Path", absolutePath.toString());
+        String relativePath = absolutePath.toString().split("/LocalMedia/")[1];
+        MDC.put("Path", relativePath);
         logger.info("Detected movie event.");
+
         String resultFilePath = absolutePath.toString();
+        if(!activeConversions.contains(resultFilePath)) {
+            MediaFile mediaFile = null;
 
-        if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE
-                && !activeConversions.contains(resultFilePath)
-                && Files.isRegularFile(absolutePath)
-                && ffprobe != null) {
+            if(event.kind() == StandardWatchEventKinds.ENTRY_CREATE) {
+                if (Files.isRegularFile(absolutePath) && ffprobe != null) {
+                    resultFilePath = launchVideoConverter(resultFilePath);
+                }
 
-            launchVideoConverter(resultFilePath, event);
-        } else {
-            addEvent(event, resultFilePath);
+                mediaFile = getMediaFile(event, relativePath);
+                notificationHandler.sendPushNotifications(mediaFile.getMovie().getTitle());
+            }
+
+            addEvent(event, mediaFile, resultFilePath);
         }
     }
 
-    private void addEvent(WatchEvent watchEvent, String resultFilePath){
-        String relativePath = resultFilePath.split("/LocalMedia/")[1];
+    private MediaFile getMediaFile(WatchEvent watchEvent, String relativePath){
         MediaFile mediaFile = movieInfoProvider.loadMediaInfo(relativePath);
         if(watchEvent.kind() == StandardWatchEventKinds.ENTRY_DELETE){
-            mediaFile = MediaFile.Builder.copyWithNoImage(mediaFile);
+            return MediaFile.Builder.copyWithNoImage(mediaFile);
         }
 
+        return mediaFile;
+    }
+
+    private void addEvent(WatchEvent watchEvent, MediaFile mediaFile, String resultFilePath){
         logger.info("Adding event to repository.");
         MediaFileEvent event = new MediaFileEvent(MovieEvent.valueOf(watchEvent.kind().name()).getMovieEventString(), mediaFile, resultFilePath.split("/LocalMedia/")[1]);
         mediaFileEvents.add(event);
-        CompletableFuture.runAsync(() -> eventRepository.save(event));
-
-        logger.info("Sending push notification.");
-        notificationHandler.sendPushNotifications(mediaFile.getMovie().getTitle());
+        eventRepository.save(event);
     }
 
-    private void launchVideoConverter(String inputFilePath, WatchEvent event){
+    private String launchVideoConverter(String inputFilePath){
         // I need to find a way to wait until a file is fully written before converting it
         try {
             Thread.sleep(7000);
@@ -95,8 +101,7 @@ public class MediaFileEventManager implements DirectoryMonitorObserver {
         SimpleConversionJob conversionJob = new SimpleConversionJob(ffprobe, new File(resultFilePath), new File(inputFilePath));
 
         logger.info("Launching video converter.");
-        CompletableFuture.supplyAsync(new VideoController(conversionJob, activeConversions))
-                .thenAccept(path -> addEvent(event, path));
+        return videoController.convertVideo(conversionJob, activeConversions);
     }
 
     public List<MediaFileEvent> getMediaFileEvents(LocalDateTime lastQueryTime){

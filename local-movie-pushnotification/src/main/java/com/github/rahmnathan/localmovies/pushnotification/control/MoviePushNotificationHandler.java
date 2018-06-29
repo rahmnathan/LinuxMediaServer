@@ -11,6 +11,7 @@ import javax.annotation.ManagedBean;
 
 @ManagedBean
 public class MoviePushNotificationHandler {
+    private final Logger logger = LoggerFactory.getLogger(MoviePushNotificationHandler.class);
     private final FirebaseNotificationService notificationService;
     private final AndroidPushTokenRepository pushTokenRepository;
 
@@ -31,12 +32,12 @@ public class MoviePushNotificationHandler {
     }
 
     public void sendPushNotifications(String fileName) {
-        String mediaName = fileName.substring(0, fileName.lastIndexOf('.'));
+        logger.info("Sending notification of new movie: {} to {} clients", fileName, pushTokenRepository.count());
         pushTokenRepository.findAll().forEach(token -> {
             PushNotification pushNotification = PushNotification.Builder.newInstance()
                     .setRecipientToken(token.getPushToken())
                     .addData("title", "New Movie!")
-                    .addData("body", mediaName)
+                    .addData("body", fileName)
                     .build();
 
             notificationService.sendPushNotification(pushNotification);
