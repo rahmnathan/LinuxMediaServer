@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.ManagedBean;
+import java.util.Optional;
 
 @ManagedBean
 public class MoviePushNotificationHandler {
@@ -21,8 +22,9 @@ public class MoviePushNotificationHandler {
     }
 
     public void addPushToken(AndroidPushClient pushClient) {
-        if (pushTokenRepository.exists(pushClient.getDeviceId())) {
-            AndroidPushClient managedPushClient = pushTokenRepository.findOne(pushClient.getDeviceId());
+        Optional<AndroidPushClient> optionalPushClient = pushTokenRepository.findById(pushClient.getDeviceId());
+        if (optionalPushClient.isPresent()) {
+            AndroidPushClient managedPushClient = optionalPushClient.get();
             if (!managedPushClient.getPushToken().equals(pushClient.getPushToken())) {
                 managedPushClient.setPushToken(pushClient.getPushToken());
             }
