@@ -21,22 +21,26 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 @Component
 public class MediaFileEventManager implements DirectoryMonitorObserver {
     private final Logger logger = LoggerFactory.getLogger(MediaFileEventManager.class);
     private volatile Set<String> activeConversions = ConcurrentHashMap.newKeySet();
-    private final VideoController videoController = new VideoController();
     private final List<MediaFileEvent> mediaFileEvents = new ArrayList<>();
     private final MoviePushNotificationHandler notificationHandler;
     private final MediaEventRepository eventRepository;
     private final MovieInfoProvider movieInfoProvider;
+    private final ExecutorService executorService;
     private FFprobe ffprobe;
 
-    public MediaFileEventManager(@Value("${ffprobe.location:/usr/bin/ffprobe}") String ffprobeLocation, MovieInfoProvider movieInfoProvider,
-                                 MediaEventRepository eventRepository, MoviePushNotificationHandler notificationHandler) {
+    public MediaFileEventManager(@Value("${ffprobe.location:/usr/bin/ffprobe}") String ffprobeLocation,
+                                 @Value("${concurrent.conversion.limit:1}") Integer concurrentConversions,
+                                 MovieInfoProvider movieInfoProvider, MediaEventRepository eventRepository,
+                                 MoviePushNotificationHandler notificationHandler) {
+        logger.info("Number of concurrent video conversions allowed: {}", concurrentConversions);
+        this.executorService = Executors.newFixedThreadPool(concurrentConversions);
         this.notificationHandler = notificationHandler;
         this.movieInfoProvider = movieInfoProvider;
         this.eventRepository = eventRepository;
@@ -62,7 +66,11 @@ public class MediaFileEventManager implements DirectoryMonitorObserver {
 
             if(event.kind() == StandardWatchEventKinds.ENTRY_CREATE) {
                 if (Files.isRegularFile(absolutePath) && ffprobe != null) {
-                    resultFilePath = launchVideoConverter(resultFilePath);
+                    try {
+                        resultFilePath = launchVideoConverter(resultFilePath).get();
+                    } catch (InterruptedException | ExecutionException e){
+                        logger.error("Failuring launching video converter", e);
+                    }
                 }
 
                 mediaFile = getMediaFile(event, relativePath);
@@ -89,7 +97,7 @@ public class MediaFileEventManager implements DirectoryMonitorObserver {
         eventRepository.save(event);
     }
 
-    private String launchVideoConverter(String inputFilePath){
+    private CompletableFuture<String> launchVideoConverter(String inputFilePath){
         // I need to find a way to wait until a file is fully written before converting it
         try {
             Thread.sleep(7000);
@@ -101,7 +109,7 @@ public class MediaFileEventManager implements DirectoryMonitorObserver {
         SimpleConversionJob conversionJob = new SimpleConversionJob(ffprobe, new File(resultFilePath), new File(inputFilePath));
 
         logger.info("Launching video converter.");
-        return videoController.convertVideo(conversionJob, activeConversions);
+        return CompletableFuture.supplyAsync(new VideoController(conversionJob, activeConversions), executorService);
     }
 
     public List<MediaFileEvent> getMediaFileEvents(LocalDateTime lastQueryTime){
