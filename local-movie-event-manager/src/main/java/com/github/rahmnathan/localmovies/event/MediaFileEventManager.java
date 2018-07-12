@@ -74,7 +74,7 @@ public class MediaFileEventManager implements DirectoryMonitorObserver {
                 }
 
                 mediaFile = getMediaFile(event, relativePath);
-                notificationHandler.sendPushNotifications(mediaFile.getMovie().getTitle());
+                notificationHandler.sendPushNotifications(mediaFile.getMovie().getTitle(), mediaFile.getPath());
             }
 
             addEvent(event, mediaFile, resultFilePath);

@@ -33,13 +33,14 @@ public class MoviePushNotificationHandler {
         }
     }
 
-    public void sendPushNotifications(String fileName) {
-        logger.info("Sending notification of new movie: {} to {} clients", fileName, pushTokenRepository.count());
+    public void sendPushNotifications(String fileName, String path) {
+        logger.info("Sending notification of new movie: {} to {} clients", path, pushTokenRepository.count());
         pushTokenRepository.findAll().forEach(token -> {
             PushNotification pushNotification = PushNotification.Builder.newInstance()
                     .setRecipientToken(token.getPushToken())
-                    .addData("title", "New Movie!")
-                    .addData("body", fileName)
+                    .setTitle("New Movie!")
+                    .setBody(fileName)
+                    .addData("path", path)
                     .build();
 
             notificationService.sendPushNotification(pushNotification);
