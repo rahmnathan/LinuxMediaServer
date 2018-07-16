@@ -1,5 +1,6 @@
 package com.github.rahmnathan.localmovies.web.control;
 
+import org.apache.http.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,8 +33,8 @@ public class FileSender {
             response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
         }
 
-        response.setHeader("Content-Range", "bytes " + startByte + "-" + (totalBytes - 1) + "/" + totalBytes);
-        response.setHeader("Content-Length", String.valueOf(totalBytes - startByte));
+        response.setHeader(HttpHeaders.CONTENT_RANGE, "bytes " + startByte + "-" + (totalBytes - 1) + "/" + totalBytes);
+        response.setHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(totalBytes - startByte));
 
         streamFile(file, response, startByte);
     }
