@@ -1,13 +1,16 @@
 package com.github.rahmnathan.localmovies.service.control;
 
-import com.github.rahmnathan.localmovies.data.MediaFile;
+import com.github.rahmnathan.localmovies.persistence.data.MediaFile;
+import com.github.rahmnathan.omdb.boundary.OmdbMovieProvider;
+import com.github.rahmnathan.omdb.exception.MovieProviderException;
 import com.github.rahmnathan.localmovies.persistence.MovieRepository;
 import com.github.rahmnathan.localmovies.service.utils.PathUtils;
-import com.github.rahmnathan.movie.api.MovieProvider;
-import com.github.rahmnathan.movie.data.Movie;
 import com.google.common.cache.CacheLoader;
+import org.apache.camel.CamelContext;
+import org.apache.camel.ProducerTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.ManagedBean;
 import java.io.File;
@@ -16,10 +19,10 @@ import java.util.Optional;
 @ManagedBean
 public class MovieCacheLoader extends CacheLoader<String, MediaFile> {
     private final Logger logger = LoggerFactory.getLogger(MovieCacheLoader.class.getName());
-    private final MovieProvider movieProvider;
+    private final OmdbMovieProvider movieProvider;
     private final MovieRepository repository;
 
-    public MovieCacheLoader(MovieProvider movieProvider, MovieRepository repository) {
+    public MovieCacheLoader(MovieRepository repository, OmdbMovieProvider movieProvider) {
         this.movieProvider = movieProvider;
         this.repository = repository;
     }
@@ -46,14 +49,17 @@ public class MovieCacheLoader extends CacheLoader<String, MediaFile> {
         String fileName = new File(path).getName();
         String title = PathUtils.getTitle(fileName);
 
-        Movie movieInfo = movieProvider.loadMovieInfo(title);
-        MediaFile mediaFile = MediaFile.Builder.newInstance()
+        MediaFile.Builder builder = MediaFile.Builder.newInstance()
                 .setFileName(fileName)
-                .setMovie(movieInfo)
                 .setPath(path)
-                .setViews(0)
-                .build();
+                .setViews(0);
+        try {
+            builder.setMovie(movieProvider.getMovie(title));
+        } catch (MovieProviderException e){
+            logger.error("Error getting movie from provider", e);
+        }
 
+        MediaFile mediaFile = builder.build();
         repository.save(mediaFile);
         return mediaFile;
     }

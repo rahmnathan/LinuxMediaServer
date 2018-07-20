@@ -1,6 +1,6 @@
 package com.github.rahmnathan.localmovies.web.control;
 
-import com.github.rahmnathan.localmovies.data.MediaFile;
+import com.github.rahmnathan.localmovies.persistence.data.MediaFile;
 import com.github.rahmnathan.localmovies.event.MediaFileEvent;
 import com.github.rahmnathan.localmovies.event.MediaFileEventManager;
 import com.github.rahmnathan.localmovies.pushnotification.control.MoviePushNotificationHandler;

@@ -11,9 +11,6 @@
         <module>local-movie-service</module>
         <module>local-movie-web</module>
         <module>local-movie-standalone</module>
-        <module>local-movie-info-persistence</module>
-        <module>local-movie-pushnotification</module>
-        <module>local-movie-event-manager</module>
     </modules>
 
     <parent>

@@ -1,6 +1,6 @@
-package com.github.rahmnathan.localmovies.data;
+package com.github.rahmnathan.localmovies.persistence.data;
 
-import com.github.rahmnathan.movie.data.Movie;
+import com.github.rahmnathan.omdb.data.Movie;
 
 import javax.persistence.*;
 import java.util.Calendar;

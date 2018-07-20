@@ -1,7 +1,7 @@
 package com.github.rahmnathan.localmovies.event;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.github.rahmnathan.localmovies.data.MediaFile;
+import com.github.rahmnathan.localmovies.persistence.data.MediaFile;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
