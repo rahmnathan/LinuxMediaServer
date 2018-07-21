@@ -29,19 +29,15 @@ public class MovieCacheLoader extends CacheLoader<String, MediaFile> {
 
     @Override
     public MediaFile load(String path) {
-        Optional<MediaFile> mediaFile = loadMediaInfoFromDatabase(path);
+        Optional<MediaFile> mediaFile = repository.findById(path);
         if (mediaFile.isPresent()) {
+            logger.info("Getting from database - {}", path);
             return mediaFile.get();
         } else if (PathUtils.isTopLevel(path)) {
             return loadMediaInfoFromProvider(path);
         } else {
             return loadSeriesParentInfo(path);
         }
-    }
-
-    private Optional<MediaFile> loadMediaInfoFromDatabase(String path){
-        logger.info("Getting from database - {}", path);
-        return repository.findById(path);
     }
 
     private MediaFile loadMediaInfoFromProvider(String path) {
