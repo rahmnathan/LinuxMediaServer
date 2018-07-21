@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:18.10
 
 MAINTAINER nathan
 
@@ -12,7 +12,8 @@ RUN mkdir /opt/localmovies && mkdir /opt/localmovies/config
 
 RUN apt-get update && \
     apt-get -y install software-properties-common && \
-    apt-get -y install openjdk-8-jre
+    apt-get -y install openjdk-8-jre && \
+    apt-get clean
 
 # Java 10 install logic
 #    add-apt-repository -y ppa:linuxuprising/java && \
