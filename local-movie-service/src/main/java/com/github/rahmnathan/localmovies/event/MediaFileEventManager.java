@@ -4,6 +4,7 @@ import com.github.rahmnathan.directory.monitor.DirectoryMonitorObserver;
 import com.github.rahmnathan.localmovies.persistence.data.MediaFile;
 import com.github.rahmnathan.localmovies.pushnotification.control.MoviePushNotificationHandler;
 import com.github.rahmnathan.localmovies.service.control.MovieInfoProvider;
+import com.github.rahmnathan.localmovies.service.filesystem.FileListProvider;
 import com.github.rahmnathan.video.cast.handbrake.control.VideoController;
 import com.github.rahmnathan.video.cast.handbrake.data.SimpleConversionJob;
 import net.bramp.ffmpeg.FFprobe;
@@ -32,17 +33,18 @@ public class MediaFileEventManager implements DirectoryMonitorObserver {
     private final MoviePushNotificationHandler notificationHandler;
     private final MediaEventRepository eventRepository;
     private final MovieInfoProvider movieInfoProvider;
+    private final FileListProvider fileListProvider;
     private final ExecutorService executorService;
     private FFprobe ffprobe;
 
-    public MediaFileEventManager(@Value("${ffprobe.location:/usr/bin/ffprobe}") String ffprobeLocation,
-                                 @Value("${concurrent.conversion.limit:1}") Integer concurrentConversions,
+    public MediaFileEventManager(@Value("${ffprobe.location:/usr/bin/ffprobe}") String ffprobeLocation, @Value("${concurrent.conversion.limit:1}") Integer concurrentConversions,
                                  MovieInfoProvider movieInfoProvider, MediaEventRepository eventRepository,
-                                 MoviePushNotificationHandler notificationHandler) {
+                                 MoviePushNotificationHandler notificationHandler, FileListProvider fileListProvider) {
         logger.info("Number of concurrent video conversions allowed: {}", concurrentConversions);
         this.executorService = Executors.newFixedThreadPool(concurrentConversions);
         this.notificationHandler = notificationHandler;
         this.movieInfoProvider = movieInfoProvider;
+        this.fileListProvider = fileListProvider;
         this.eventRepository = eventRepository;
 
         eventRepository.findAll().forEach(mediaFileEvents::add);
@@ -73,11 +75,14 @@ public class MediaFileEventManager implements DirectoryMonitorObserver {
                     }
                 }
 
+                fileListProvider.addFile(relativePath);
                 mediaFile = getMediaFile(event, relativePath);
                 notificationHandler.sendPushNotifications(mediaFile.getMovie().getTitle(), mediaFile.getPath());
             }
 
             addEvent(event, mediaFile, resultFilePath);
+        } else if (event.kind() == StandardWatchEventKinds.ENTRY_DELETE){
+            fileListProvider.removeFile(relativePath);
         }
     }
 

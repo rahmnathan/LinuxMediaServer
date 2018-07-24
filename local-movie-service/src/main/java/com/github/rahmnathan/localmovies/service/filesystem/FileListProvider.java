@@ -1,40 +1,50 @@
 package com.github.rahmnathan.localmovies.service.filesystem;
 
-import com.github.rahmnathan.directory.monitor.DirectoryMonitorObserver;
+import com.github.rahmnathan.localmovies.persistence.data.MediaFile;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 
 import javax.annotation.ManagedBean;
 import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.WatchEvent;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @ManagedBean
-public class FileListProvider implements FileRepository, DirectoryMonitorObserver {
-
-    private final String[] mediaPaths;
+public class FileListProvider {
     private final Logger logger = LoggerFactory.getLogger(FileListProvider.class.getName());
+    private final LoadingCache<String, Set<String>> files;
+    private final String[] mediaPaths;
 
     public FileListProvider(@Value("${media.path}") String[] mediaPaths) {
         this.mediaPaths = mediaPaths;
+        this.files  = CacheBuilder.newBuilder()
+                .maximumSize(1000)
+                .build(new CacheLoader<String, Set<String>>() {
+                    @Override
+                    public Set<String> load(String path) {
+                        return listFilesNoCache(path);
+                    }
+                });
     }
 
-    @CacheEvict(value = "files", allEntries = true)
-    public void directoryModified(WatchEvent event, Path absolutePath) {
-        logger.info("Detected {} {}", event.kind().name(), absolutePath.toString());
-        logger.info("Purging cache");
+    public Set<String> listFiles(String path){
+        try {
+            return files.get(path);
+        } catch (ExecutionException e){
+            logger.error("Failure loading file list from cache", e);
+            return new HashSet<>();
+        }
     }
 
-    @Cacheable(value = "files")
-    public Set<String> listFiles(String path) {
+    private Set<String> listFilesNoCache(String path) {
         logger.info("Listing files at - {}", path);
 
         Set<String> filePaths = new HashSet<>();
@@ -51,5 +61,30 @@ public class FileListProvider implements FileRepository, DirectoryMonitorObserve
                 });
 
         return filePaths;
+    }
+
+    public void addFile(String relativePath){
+        try {
+            Set<String> fileSet = files.get(upOneDir(relativePath));
+            fileSet.add(relativePath);
+        } catch (ExecutionException e){
+            logger.error("Error adding media file to cache", e);
+        }
+    }
+
+    public void removeFile(String relativePath){
+        try {
+            Set<String> fileSet = files.get(upOneDir(relativePath));
+            fileSet.remove(relativePath);
+        } catch (ExecutionException e){
+            logger.error("Error adding media file to cache", e);
+        }
+    }
+
+    private String upOneDir(String path){
+        String[] dirs = path.split(File.separator);
+        return Arrays.stream(dirs)
+                .limit(dirs.length - 1)
+                .collect(Collectors.joining(File.separator));
     }
 }
