@@ -78,11 +78,11 @@ public class MediaFileEventManager implements DirectoryMonitorObserver {
                 fileListProvider.addFile(relativePath);
                 mediaFile = getMediaFile(event, relativePath);
                 notificationHandler.sendPushNotifications(mediaFile.getMovie().getTitle(), mediaFile.getPath());
+            } else if (event.kind() == StandardWatchEventKinds.ENTRY_DELETE){
+                fileListProvider.removeFile(relativePath);
             }
 
             addEvent(event, mediaFile, resultFilePath);
-        } else if (event.kind() == StandardWatchEventKinds.ENTRY_DELETE){
-            fileListProvider.removeFile(relativePath);
         }
     }
 
