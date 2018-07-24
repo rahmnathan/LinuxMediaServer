@@ -64,6 +64,7 @@ public class FileListProvider {
     }
 
     public void addFile(String relativePath){
+        logger.info("Adding file to fileListCache: {}", relativePath);
         try {
             Set<String> fileSet = files.get(upOneDir(relativePath));
             fileSet.add(relativePath);
@@ -73,6 +74,7 @@ public class FileListProvider {
     }
 
     public void removeFile(String relativePath){
+        logger.info("Removing file to fileListCache: {}", relativePath);
         try {
             Set<String> fileSet = files.get(upOneDir(relativePath));
             fileSet.remove(relativePath);
