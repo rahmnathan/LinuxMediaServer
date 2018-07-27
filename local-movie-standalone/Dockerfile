@@ -3,17 +3,10 @@ FROM ubuntu:18.04
 MAINTAINER nathan
 
 RUN apt-get update && \
-    apt-get -y install apt-utils && \
-    apt-get -y install ffmpeg && \
-    apt-get -y install handbrake-cli && \
+    apt-get -y install apt-utils ffmpeg handbrake-cli software-properties-common openjdk-8-jre && \
     apt-get clean
 
 RUN mkdir /opt/localmovies && mkdir /opt/localmovies/config
-
-RUN apt-get update && \
-    apt-get -y install software-properties-common && \
-    apt-get -y install openjdk-8-jre && \
-    apt-get clean
 
 # Java 10 install logic
 #    add-apt-repository -y ppa:linuxuprising/java && \
