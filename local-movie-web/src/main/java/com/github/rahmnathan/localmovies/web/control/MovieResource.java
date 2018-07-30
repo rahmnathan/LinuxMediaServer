@@ -1,13 +1,15 @@
 package com.github.rahmnathan.localmovies.web.control;
 
-import com.github.rahmnathan.localmovies.persistence.data.MediaFile;
-import com.github.rahmnathan.localmovies.event.MediaFileEvent;
-import com.github.rahmnathan.localmovies.event.MediaFileEventManager;
-import com.github.rahmnathan.localmovies.pushnotification.control.MoviePushNotificationHandler;
-import com.github.rahmnathan.localmovies.pushnotification.persistence.AndroidPushClient;
+import com.github.rahmnathan.localmovies.service.persistence.data.MediaFile;
+import com.github.rahmnathan.localmovies.event.data.MediaFileEvent;
+import com.github.rahmnathan.localmovies.event.control.MediaFileEventManager;
+import com.github.rahmnathan.localmovies.event.control.MoviePushNotificationHandler;
+import com.github.rahmnathan.localmovies.event.data.AndroidPushClient;
 import com.github.rahmnathan.localmovies.service.boundary.MovieInfoFacade;
 import com.github.rahmnathan.localmovies.service.data.MovieSearchCriteria;
 import com.github.rahmnathan.localmovies.web.data.MovieInfoRequest;
+import org.apache.http.HttpHeaders;
+import org.apache.http.client.methods.HttpHead;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -96,6 +98,7 @@ public class MovieResource {
         for(String mediaPath : mediaPaths) {
             if (new File(mediaPath + path).exists()) {
                 logger.info("Streaming - {}{}", mediaPath, path);
+                response.setHeader(HttpHeaders.CONTENT_TYPE, "video/mp4");
                 fileSender.serveResource(Paths.get(mediaPath + path), request, response);
                 break;
             }

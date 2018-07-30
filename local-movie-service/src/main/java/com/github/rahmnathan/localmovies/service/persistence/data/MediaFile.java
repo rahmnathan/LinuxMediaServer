@@ -1,4 +1,4 @@
-package com.github.rahmnathan.localmovies.persistence.data;
+package com.github.rahmnathan.localmovies.service.persistence.data;
 
 import com.github.rahmnathan.omdb.data.Movie;
 

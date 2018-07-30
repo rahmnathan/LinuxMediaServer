@@ -1,4 +1,4 @@
-package com.github.rahmnathan.localmovies.pushnotification.persistence;
+package com.github.rahmnathan.localmovies.event.data;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;

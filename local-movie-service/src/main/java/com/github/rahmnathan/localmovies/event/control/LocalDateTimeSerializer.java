@@ -1,4 +1,4 @@
-package com.github.rahmnathan.localmovies.event;
+package com.github.rahmnathan.localmovies.event.control;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;

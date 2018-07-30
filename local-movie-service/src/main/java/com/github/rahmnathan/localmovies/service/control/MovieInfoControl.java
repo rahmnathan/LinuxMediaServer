@@ -1,6 +1,6 @@
 package com.github.rahmnathan.localmovies.service.control;
 
-import com.github.rahmnathan.localmovies.persistence.data.MediaFile;
+import com.github.rahmnathan.localmovies.service.persistence.data.MediaFile;
 import com.github.rahmnathan.localmovies.service.data.MovieClient;
 import com.github.rahmnathan.localmovies.service.data.MovieSearchCriteria;
 import com.github.rahmnathan.localmovies.service.utils.MediaFileUtils;

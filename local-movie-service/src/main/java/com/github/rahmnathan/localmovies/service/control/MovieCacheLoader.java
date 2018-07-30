@@ -1,16 +1,13 @@
 package com.github.rahmnathan.localmovies.service.control;
 
-import com.github.rahmnathan.localmovies.persistence.data.MediaFile;
+import com.github.rahmnathan.localmovies.service.persistence.data.MediaFile;
 import com.github.rahmnathan.omdb.boundary.OmdbMovieProvider;
 import com.github.rahmnathan.omdb.exception.MovieProviderException;
-import com.github.rahmnathan.localmovies.persistence.MovieRepository;
+import com.github.rahmnathan.localmovies.service.persistence.MovieRepository;
 import com.github.rahmnathan.localmovies.service.utils.PathUtils;
 import com.google.common.cache.CacheLoader;
-import org.apache.camel.CamelContext;
-import org.apache.camel.ProducerTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.ManagedBean;
 import java.io.File;

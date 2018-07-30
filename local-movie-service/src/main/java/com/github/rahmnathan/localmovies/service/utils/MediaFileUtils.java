@@ -1,6 +1,6 @@
 package com.github.rahmnathan.localmovies.service.utils;
 
-import com.github.rahmnathan.localmovies.persistence.data.MediaFile;
+import com.github.rahmnathan.localmovies.service.persistence.data.MediaFile;
 import com.github.rahmnathan.localmovies.service.data.MovieOrder;
 import com.github.rahmnathan.localmovies.service.data.MovieSearchCriteria;
 import org.slf4j.Logger;

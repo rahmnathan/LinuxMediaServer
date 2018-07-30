@@ -1,6 +1,6 @@
-package com.github.rahmnathan.localmovies.persistence;
+package com.github.rahmnathan.localmovies.service.persistence;
 
-import com.github.rahmnathan.localmovies.persistence.data.MediaFile;
+import com.github.rahmnathan.localmovies.service.persistence.data.MediaFile;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

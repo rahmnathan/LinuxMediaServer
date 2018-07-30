@@ -1,6 +1,6 @@
 package com.github.rahmnathan.localmovies.service.control;
 
-import com.github.rahmnathan.localmovies.persistence.data.MediaFile;
+import com.github.rahmnathan.localmovies.service.persistence.data.MediaFile;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.LoadingCache;
 import org.slf4j.Logger;

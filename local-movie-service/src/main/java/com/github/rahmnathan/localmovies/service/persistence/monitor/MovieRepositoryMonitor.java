@@ -1,6 +1,6 @@
-package com.github.rahmnathan.localmovies.persistence.monitor;
+package com.github.rahmnathan.localmovies.service.persistence.monitor;
 
-import com.github.rahmnathan.localmovies.persistence.MovieRepository;
+import com.github.rahmnathan.localmovies.service.persistence.MovieRepository;
 import com.github.rahmnathan.omdb.boundary.OmdbMovieProvider;
 import com.github.rahmnathan.omdb.data.Movie;
 import com.github.rahmnathan.omdb.exception.MovieProviderException;

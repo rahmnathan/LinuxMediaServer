@@ -1,6 +1,5 @@
 package com.github.rahmnathan.localmovies.service.filesystem;
 
-import com.github.rahmnathan.localmovies.persistence.data.MediaFile;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;

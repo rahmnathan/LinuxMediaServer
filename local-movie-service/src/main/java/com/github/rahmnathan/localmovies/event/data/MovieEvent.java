@@ -1,4 +1,4 @@
-package com.github.rahmnathan.localmovies.event;
+package com.github.rahmnathan.localmovies.event.data;
 
 public enum MovieEvent {
     ENTRY_CREATE("CREATE"),

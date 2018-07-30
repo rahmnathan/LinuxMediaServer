@@ -1,9 +1,9 @@
-package com.github.rahmnathan.localmovies.pushnotification.control;
+package com.github.rahmnathan.localmovies.event.control;
 
 import com.github.rahmnathan.google.pushnotification.boundary.FirebaseNotificationService;
 import com.github.rahmnathan.google.pushnotification.data.PushNotification;
-import com.github.rahmnathan.localmovies.pushnotification.persistence.AndroidPushClient;
-import com.github.rahmnathan.localmovies.pushnotification.persistence.AndroidPushTokenRepository;
+import com.github.rahmnathan.localmovies.event.data.AndroidPushClient;
+import com.github.rahmnathan.localmovies.event.repository.AndroidPushTokenRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

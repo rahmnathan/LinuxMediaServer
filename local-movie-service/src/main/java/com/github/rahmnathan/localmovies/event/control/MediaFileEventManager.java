@@ -1,8 +1,10 @@
-package com.github.rahmnathan.localmovies.event;
+package com.github.rahmnathan.localmovies.event.control;
 
 import com.github.rahmnathan.directory.monitor.DirectoryMonitorObserver;
-import com.github.rahmnathan.localmovies.persistence.data.MediaFile;
-import com.github.rahmnathan.localmovies.pushnotification.control.MoviePushNotificationHandler;
+import com.github.rahmnathan.localmovies.event.data.MediaFileEvent;
+import com.github.rahmnathan.localmovies.event.data.MovieEvent;
+import com.github.rahmnathan.localmovies.event.repository.MediaEventRepository;
+import com.github.rahmnathan.localmovies.service.persistence.data.MediaFile;
 import com.github.rahmnathan.localmovies.service.control.MovieInfoProvider;
 import com.github.rahmnathan.localmovies.service.filesystem.FileListProvider;
 import com.github.rahmnathan.video.cast.handbrake.control.VideoController;

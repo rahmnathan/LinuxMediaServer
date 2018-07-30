@@ -1,4 +1,4 @@
-package com.github.rahmnathan.localmovies.service.config;
+package com.github.rahmnathan.localmovies.event.control;
 
 import com.github.rahmnathan.directory.monitor.DirectoryMonitor;
 import com.github.rahmnathan.directory.monitor.DirectoryMonitorObserver;

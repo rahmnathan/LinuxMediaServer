@@ -1,7 +1,7 @@
 package com.github.rahmnathan.localmovies.service.boundary;
 
 import com.github.rahmnathan.localmovies.service.control.MovieInfoControl;
-import com.github.rahmnathan.localmovies.persistence.data.MediaFile;
+import com.github.rahmnathan.localmovies.service.persistence.data.MediaFile;
 import com.github.rahmnathan.localmovies.service.data.MovieSearchCriteria;
 import com.github.rahmnathan.localmovies.service.filesystem.FileListProvider;
 

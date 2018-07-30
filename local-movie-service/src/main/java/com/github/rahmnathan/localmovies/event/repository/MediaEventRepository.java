@@ -1,5 +1,6 @@
-package com.github.rahmnathan.localmovies.event;
+package com.github.rahmnathan.localmovies.event.repository;
 
+import com.github.rahmnathan.localmovies.event.data.MediaFileEvent;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
