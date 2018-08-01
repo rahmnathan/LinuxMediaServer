@@ -1,4 +1,6 @@
 {
+  "concurrent.conversion.limit": 3,
+  "endpoints.health.enabled": true,
   "ffmpeg.location": "/usr/bin/ffmpeg",
   "ffprobe.location": "/usr/bin/ffprobe",
   "keycloak.auth-server-url": "https://localmovies.hopto.org/auth",
@@ -14,7 +16,7 @@
         {
           "name": "secure stuff",
           "patterns": [
-            "/"
+            "/localmovies/*"
           ]
         }
       ]
@@ -24,14 +26,15 @@
   "logging.pattern.level": "%5p %mdc",
   "media.path": "/opt/localmovies/data/internal/LocalMedia/,/opt/localmovies/data/external1/LocalMedia/",
   "omdb.api.key": "a825746e",
-  "push.notification.key": "AAAANcLZzr8:APA91bGtlqRsfRbBaXu2-5u0Ak7xaTdV__pkqaGzkz2fFcNIANG6KyF4OIU5wvfpfYYuEFzsojXZ698RkMUAsRYJe7qShabYZvbGKNe3R9fH0yVJtz_s3bjw-afW94NGHa7Tt3akXJJb",
+  "push.notification.key": "",
   "server.port": "8444",
-  "server.servlet-path": "/movie-api",
+  "server.servlet-path": "/",
   "server.ssl.enabled": true,
-  "spring.datasource.password": "pw123",
-  "spring.datasource.url": "jdbc:postgresql://192.168.1.8:5432/localmovies",
+  "spring.datasource.password": "",
+  "spring.datasource.url": "jdbc:postgresql://postgres-postgresql.default:5432/localmovies",
   "spring.datasource.username": "localmovies",
   "spring.jpa.database-platform": "org.hibernate.dialect.PostgreSQLDialect",
-  "spring.jpa.hibernate.ddl-auto": "create",
+  "spring.jpa.hibernate.ddl-auto": "validate",
+  "spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation": true,
   "spring.jpa.show-sql": "false"
 }
