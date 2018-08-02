@@ -6,6 +6,8 @@ import com.github.rahmnathan.omdb.exception.MovieProviderException;
 import com.github.rahmnathan.localmovies.service.persistence.MovieRepository;
 import com.github.rahmnathan.localmovies.service.utils.PathUtils;
 import com.google.common.cache.CacheLoader;
+import io.micrometer.core.instrument.Metrics;
+import io.micrometer.core.instrument.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +18,7 @@ import java.util.Optional;
 @ManagedBean
 public class MovieCacheLoader extends CacheLoader<String, MediaFile> {
     private final Logger logger = LoggerFactory.getLogger(MovieCacheLoader.class.getName());
+    private static final Timer MOVIE_PROVIDER_TIMER = Metrics.timer("localmovies.omdb.timer");
     private final OmdbMovieProvider movieProvider;
     private final MovieRepository repository;
 
@@ -46,11 +49,14 @@ public class MovieCacheLoader extends CacheLoader<String, MediaFile> {
                 .setFileName(fileName)
                 .setPath(path)
                 .setViews(0);
-        try {
-            builder.setMovie(movieProvider.getMovie(title));
-        } catch (MovieProviderException e){
-            logger.error("Error getting movie from provider", e);
-        }
+
+        MOVIE_PROVIDER_TIMER.record(() -> {
+            try {
+                builder.setMovie(movieProvider.getMovie(title));
+            } catch (MovieProviderException e){
+                logger.error("Error getting movie from provider", e);
+            }
+        });
 
         MediaFile mediaFile = builder.build();
         repository.save(mediaFile);

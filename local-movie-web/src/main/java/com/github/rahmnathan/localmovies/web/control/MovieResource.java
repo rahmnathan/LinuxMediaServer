@@ -8,8 +8,9 @@ import com.github.rahmnathan.localmovies.event.data.AndroidPushClient;
 import com.github.rahmnathan.localmovies.service.boundary.MovieInfoFacade;
 import com.github.rahmnathan.localmovies.service.data.MovieSearchCriteria;
 import com.github.rahmnathan.localmovies.web.data.MovieInfoRequest;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Metrics;
 import org.apache.http.HttpHeaders;
-import org.apache.http.client.methods.HttpHead;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -39,6 +40,13 @@ public class MovieResource {
     private final MovieInfoFacade movieInfoFacade;
     private final String[] mediaPaths;
 
+    private static final Counter MOVIES_COUNTER = Metrics.counter("localmovies.movies.request.counter");
+    private static final Counter COUNT_COUNTER = Metrics.counter("localmovies.count.request.counter");
+    private static final Counter POSTER_COUNTER = Metrics.counter("localmovies.poster.request.counter");
+    private static final Counter STREAM_COUNTER = Metrics.counter("localmovies.stream.request.counter");
+    private static final Counter EVENTS_COUNTER = Metrics.counter("localmovies.events.request.counter");
+
+
     public MovieResource(MovieInfoFacade movieInfoControl, MoviePushNotificationHandler notificationHandler,
                          @Value("${media.path}") String[] mediaPaths,
                          MediaFileEventManager eventManager){
@@ -51,6 +59,7 @@ public class MovieResource {
     @PostMapping(value = "/localmovies/v2/movies", produces=MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public List<MediaFile> getMovies(@RequestBody MovieInfoRequest movieInfoRequest, HttpServletResponse response) {
         MDC.put(TRANSACTION_ID, UUID.randomUUID().toString());
+        MOVIES_COUNTER.increment();
         logger.info("Received request: {}", movieInfoRequest.toString());
 
         if(movieInfoRequest.getPushToken() != null && movieInfoRequest.getDeviceId() != null){
@@ -75,7 +84,7 @@ public class MovieResource {
     @GetMapping(value = "/localmovies/v2/movies/count")
     public void getMovieCount(@RequestParam(value = "path") String path, HttpServletResponse response){
         MDC.put(TRANSACTION_ID, UUID.randomUUID().toString());
-
+        COUNT_COUNTER.increment();
         logger.info("Received count request for path - {}", path);
 
         int count = movieInfoFacade.loadMovieListLength(path);
@@ -90,6 +99,7 @@ public class MovieResource {
     @GetMapping(value = "/localmovies/v2/movie/stream.mp4", produces = "video/mp4")
     public void streamVideo(@RequestParam("path") String path, HttpServletResponse response, HttpServletRequest request) {
         MDC.put(TRANSACTION_ID, UUID.randomUUID().toString());
+        STREAM_COUNTER.increment();
         response.setHeader("Access-Control-Allow-Origin", "*");
 
         MediaFile movie = movieInfoFacade.loadSingleMovie(path);
@@ -113,6 +123,7 @@ public class MovieResource {
     @GetMapping(path = "/localmovies/v2/movie/poster")
     public ResponseEntity<byte[]> getPoster(@RequestParam("path") String path) {
         MDC.put(TRANSACTION_ID, UUID.randomUUID().toString());
+        POSTER_COUNTER.increment();
         logger.info("Streaming poster - {}", path);
 
         String image = movieInfoFacade.loadSingleMovie(path).getMovie().getImage();
@@ -127,6 +138,7 @@ public class MovieResource {
     @GetMapping(path = "/localmovies/v2/movie/events")
     public ResponseEntity<List<MediaFileEvent>> getPoster(@RequestParam("timestamp") Long epoch) {
         MDC.put(TRANSACTION_ID, UUID.randomUUID().toString());
+        EVENTS_COUNTER.increment();
 
         logger.info("Request for events since: {}", epoch);
         List<MediaFileEvent> events = eventManager.getMediaFileEvents(LocalDateTime.ofInstant(Instant.ofEpochMilli(epoch), ZoneId.systemDefault()));
