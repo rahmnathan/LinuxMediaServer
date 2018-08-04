@@ -94,7 +94,7 @@ public class MediaFileEventManager implements DirectoryMonitorObserver {
         return mediaFile;
     }
 
-    void addEvent(WatchEvent watchEvent, MediaFile mediaFile, String resultFilePath){
+    private void addEvent(WatchEvent watchEvent, MediaFile mediaFile, String resultFilePath){
         logger.info("Adding event to repository.");
         MediaFileEvent event = new MediaFileEvent(MovieEvent.valueOf(watchEvent.kind().name()).getMovieEventString(), mediaFile, resultFilePath.split("/LocalMedia/")[1]);
         mediaFileEvents.add(event);
