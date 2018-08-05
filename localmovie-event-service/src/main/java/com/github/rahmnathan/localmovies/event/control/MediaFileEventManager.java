@@ -8,6 +8,7 @@ import com.github.rahmnathan.localmovies.event.repository.MediaEventRepository;
 import com.github.rahmnathan.localmovie.service.boundary.MediaMetadataService;
 import com.github.rahmnathan.video.cast.handbrake.control.VideoController;
 import com.github.rahmnathan.video.cast.handbrake.data.SimpleConversionJob;
+import io.micrometer.core.instrument.Metrics;
 import net.bramp.ffmpeg.FFprobe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,10 +25,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Component
 public class MediaFileEventManager implements DirectoryMonitorObserver {
+    private final AtomicInteger activeConversionGauge = Metrics.gauge("localmovies.conversions.active", new AtomicInteger(0));
     private final Logger logger = LoggerFactory.getLogger(MediaFileEventManager.class);
     private volatile Set<String> activeConversions = ConcurrentHashMap.newKeySet();
     private final List<MediaFileEvent> mediaFileEvents = new ArrayList<>();
@@ -68,9 +71,12 @@ public class MediaFileEventManager implements DirectoryMonitorObserver {
             if(event.kind() == StandardWatchEventKinds.ENTRY_CREATE) {
                 if (Files.isRegularFile(absolutePath) && ffprobe != null) {
                     try {
+                        activeConversionGauge.getAndIncrement();
                         resultFilePath = launchVideoConverter(resultFilePath).get();
                     } catch (InterruptedException | ExecutionException e){
                         logger.error("Failuring launching video converter", e);
+                    } finally {
+                        activeConversionGauge.getAndDecrement();
                     }
                 }
 
