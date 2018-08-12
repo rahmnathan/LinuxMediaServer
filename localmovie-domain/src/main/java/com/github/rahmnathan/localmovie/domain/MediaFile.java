@@ -100,18 +100,18 @@ public class MediaFile {
             return new MediaFile(path, movieInfo, views, fileName);
         }
 
-        public static MediaFile copyWithNewTitle(MediaFile mediaFile, String fileName, String title){
+        public static MediaFile copyWithNewTitle(MediaFile mediaFile, String fileName, String title, String path){
             if(mediaFile == null)
                 return Builder.newInstance()
                         .setFileName(fileName)
+                        .setPath(path)
                         .setMovie(Movie.Builder.newInstance().setTitle(title).build())
                         .build();
 
             return Builder.newInstance()
                     .setFileName(fileName)
                     .setMovie(Movie.Builder.copyWithNewTitle(mediaFile.getMovie(), title))
-                    .setPath(mediaFile.getPath())
-                    .setViews(mediaFile.getViews())
+                    .setPath(path)
                     .build();
         }
 

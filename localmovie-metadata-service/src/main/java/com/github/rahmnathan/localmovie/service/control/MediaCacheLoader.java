@@ -70,6 +70,6 @@ public class MediaCacheLoader extends CacheLoader<String, MediaFile> {
         logger.info("{} - Parent resolved to: {}", path, file.getPath());
 
         MediaFile parentInfo = load(file.getPath());
-        return MediaFile.Builder.copyWithNewTitle(parentInfo, filename, PathUtils.getTitle(filename));
+        return MediaFile.Builder.copyWithNewTitle(parentInfo, filename, PathUtils.getTitle(filename), path);
     }
 }
