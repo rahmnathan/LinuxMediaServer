@@ -44,7 +44,7 @@ public class MediaFileUtils {
         switch (order){
             case DATE_ADDED:
                 return movieInfoList.stream()
-                        .sorted((movie1, movie2) -> Long.compare(movie2.getDateCreated(), movie1.getDateCreated()))
+                        .sorted((movie1, movie2) -> Long.compare(movie2.getCreated(), movie1.getCreated()))
                         .collect(Collectors.toList());
             case MOST_VIEWS:
                 return movieInfoList.stream()
@@ -57,8 +57,8 @@ public class MediaFileUtils {
                         .collect(Collectors.toList());
             case RATING:
                 return movieInfoList.stream()
-                        .sorted((movie1, movie2) -> Double.valueOf(movie2.getMovie().getIMDBRating())
-                                .compareTo(Double.valueOf(movie1.getMovie().getIMDBRating())))
+                        .sorted((movie1, movie2) -> Double.valueOf(movie2.getMovie().getImdbRating())
+                                .compareTo(Double.valueOf(movie1.getMovie().getImdbRating())))
                         .collect(Collectors.toList());
             case SEASONS_EPISODES:
                 return movieInfoList.stream()

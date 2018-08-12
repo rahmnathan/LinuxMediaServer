@@ -1,5 +1,6 @@
 package com.github.rahmnathan.localmovie.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.rahmnathan.omdb.data.Movie;
 
 import javax.persistence.Entity;
@@ -17,6 +18,7 @@ public class MediaFile {
     private int views;
     private Movie movie;
     @Version
+    @JsonIgnore
     private long version;
 
     private MediaFile(String path, Movie movie, int views, String fileName) {
@@ -47,7 +49,7 @@ public class MediaFile {
         return views;
     }
 
-    public long getDateCreated() {
+    public long getCreated() {
         return created;
     }
 
